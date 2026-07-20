@@ -370,7 +370,7 @@ function Map({ children }) {
 
   return (
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data }}>
-      <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
+      <div ref={mapContainer} style={{ width: "78dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       {children}
     </MapContext.Provider>
   );

@@ -147,7 +147,7 @@ function PrimaryPanels() {
         filter.appendChild(controlContainer) // Append control panel to filter panel
 
 
-    }, [fuelFilter]);
+    }, [fuelFilter,powerPlants, regionFilter, yearFilter, generationFilter]);
 
     // Handle zoom in click
     function handleZoomIn(){
@@ -159,21 +159,74 @@ function PrimaryPanels() {
         mapRef.current?.zoomOut({ duration: 800 });
     }
 
+    function getBounds(coordinates){ // coordinates -> long [0], lat [1]
+        const lngs = coordinates.map(coord => coord[0]);
+        const lats = coordinates.map(coord => coord[1]);
+
+        // Find the extremes
+        const minLat = Math.min(...lats);
+        const maxLat = Math.max(...lats);
+        const minLng = Math.min(...lngs);
+        const maxLng = Math.max(...lngs);
+
+        return {
+            southWest: [minLng, minLat],
+            northEast: [maxLng, maxLat]
+        };
+    }
+
     // Handle zoom selection click
     function handleZoomSelection(element){
+        const fullScreen = () =>{
+            mapRef.current?.flyTo({
+                center: [23.333333, 15.5],
+                zoom: 1.8,
+                speed: 0.8,
+                curve: 1.4
+            });
+        }
+
         if(element.classList.contains("selection")){
             element.src = assetSources.zoomFullScreen
-            // Find the centre of all shown power plants after selection, if 'All regions', and 'All power sources' are selected,
-            // use the below code for this button. 
-            // .flyTo() the centre coordinates with a suitable zoom level to show the current selection.
+            const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
+            const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
+            const yearValues = yearFilter.length === 2 ? yearFilter[0] : null;
+            const yearBounds = yearFilter.length === 2 ? yearFilter[1] : null;
+            const genValues = generationFilter.length === 2 ? generationFilter[0] : null;
+            const genBounds = generationFilter.length === 2 ? generationFilter[1] : null;
+
+            const coordinates = []
+
+            // Filter out unselected powerplants
+            for (const f of powerPlants.features) {
+                const p = f.properties
+                const c = f.geometry.coordinates
+                if (!shownRegions.includes(p.country)) continue;
+                if (!shownFuels.includes(p.primary_fuel)) continue;
+                if (yearValues && yearBounds && (yearValues[0] !== yearBounds[0] || yearValues[1] !== yearBounds[1])) {
+                    const y = Number(p.commissioning_year);
+                    if (isNaN(y) || y < yearValues[0] || y > yearValues[1]) continue;
+                }
+                if (genValues && genBounds && (genValues[0] !== genBounds[0] || genValues[1] !== genBounds[1])) {
+                    const gMin = Number(p.minMax[0])
+                    const gMax = Number(p.minMax[1])
+                    if (isNaN(gMin) || isNaN(gMax) || gMin < genValues[0] || gMax > genValues[1]) continue;
+                }
+                coordinates.push(c)
+            }
+            
+            if(coordinates.length && coordinates.length != powerPlants.features.length){
+                const bounds = getBounds(coordinates)
+                mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
+                    padding: 50,
+                    maxZoom: 15
+                });
+            }else{
+                fullScreen()
+            }
         }else{
             element.src = assetSources.zoomSelection
-            mapRef.current?.flyTo({
-                center: [51.3897, 35.6889],
-                zoom: 2,
-                speed: 0.8, // Optional: Control animation speed
-                curve: 1.4 // Optional: Zoom curve
-            });
+            fullScreen()
         }
         element.classList.toggle("selection");
     }
