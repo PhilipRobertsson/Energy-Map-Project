@@ -1,5 +1,5 @@
 .maplibregl-popup-close-button{
-    font-size: 3.0rem;
+    font-size: 3.0vmin;
     position: relative;
     right: unset;
     top: unset;
@@ -38,7 +38,7 @@
     font-family: "Lato", sans-serif;
     width: 7dvw;
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: 2vmin;
     line-height: 1;
     font-style: normal;
     color: #004B70;
@@ -57,7 +57,7 @@
     margin-top:0.5dvh;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5rem;
+    font-size: 1.5vmin;
     display: flex;
     align-items: center;
 }
@@ -67,7 +67,7 @@
     margin-right: 0.3dvw;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.5rem;
+    font-size: 1.5vmin;
 }
 
 .popupInfoIcon{
@@ -129,7 +129,7 @@
     margin-top:0.5dvh;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5rem;
+    font-size: 1.5vmin;
     display: flex;
     align-items: center;
 }
@@ -139,7 +139,7 @@
     margin-right: 0.3dvw;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.5rem;
+    font-size: 1.5vmin;
 }
 
 .regionalInfoIcon{
