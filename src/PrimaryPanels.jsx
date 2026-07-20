@@ -64,7 +64,7 @@ function PrimaryPanels() {
 
     // Set initial filter, also get all fuel types
     useEffect(() => {
-    fetch("./fuelCatagories.json")
+    fetch("./fuelCatagories.json") // Go through this file and ensure the colours have more contrast between one another
       .then((response) => response.json())
       .then((data) => {
         setFuelFilter(data);
@@ -139,7 +139,7 @@ function PrimaryPanels() {
         var zoomSelection = document.createElement("img")
         zoomSelection.classList.add("controlIcon", "selection")
         zoomSelection.src = assetSources.zoomSelection
-        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
+        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection) /*Fix so the icon doesn't change when filters are changed*/
 
         controlContainer.appendChild(zoomIn) // Append zoom in button
         controlContainer.appendChild(zoomOut) // Append zoom out button
@@ -494,6 +494,7 @@ function PrimaryPanels() {
                     const toggle = document.createElement("div")
                     toggle.classList.add("filterLegend")
 
+                    /*Use checkmark instead*/
                     const checkBox = document.createElement("div")
                     checkBox.classList.add("legendColour", "sidePanelFilterColour")
                     checkBox.style.backgroundColor = "#11658C"

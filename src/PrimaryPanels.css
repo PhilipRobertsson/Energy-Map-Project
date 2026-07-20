@@ -1,6 +1,6 @@
 /*CSS for the filter container, background, border styling, and content positioning*/
 #fuelFilter{
-    background-color: rgba(184, 214, 229, 0.88);
+    background-color: rgba(239, 239, 239, 0.88); /*changed from rgba(184, 214, 229, 0.88) in previous version*/
     border-radius: 0 25px 0 0;
 
     display: flex;
@@ -13,6 +13,7 @@
     flex-direction: row;
     align-items: center;
     margin: 0;
+    cursor: pointer;/*Pointer instead of text input cursor*/
 }
 .legendColour{ /*The coloured box representing each fuel type*/
     width: 2.1dvh;
@@ -24,7 +25,7 @@
 .legendName{ /*The name for each fuel type*/
     padding: 0;
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 2vmin;
     margin-left: 0.46dvw;
     font-family: "Lato", sans-serif;
     font-weight: 400;
@@ -33,13 +34,14 @@
 
 #controlContainer{ /*Container for the control buttons*/
     width: 100%;
-    margin-top: 0.18dvh;
+    margin-top: 1dvh;
     display: flex;
     justify-content: space-between;
 }
 .controlIcon{
-    width: 3.8dvh;
-    height: 3.8dvh;
+    width: 3.04dvh; /*Have been made 20% smaller, previous 3.8dvh*/
+    height: 3.04dvh; /*Have been made 20% smaller, previous 3.8dvh*/
+    cursor: pointer; /*Pointer instead of standard cursor*/
 }
 
 /*CSS for the side panel container, background and border styling*/
@@ -50,10 +52,10 @@
 }
 
 .sidePanelPageContainer{
-    width: 80%;
+    width: 100%;
     height: 95%;
-    margin-top: 2dvh;
-    margin-left: 2dvw;
+    margin-left: 3dvw;
+    padding: 0 1dvw 0 1dvw;
     display: flex;
     flex-direction: column;
 }
@@ -63,7 +65,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 6.0rem;
+    font-size: 8vmin;
     margin: 0;
     align-self:center;
     color: #004B70;
@@ -74,7 +76,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 2.5rem;
+    font-size: 3.2vmin;
     margin: 0 0 3dvh 0;
     align-self:center;
     color: #004B70;
@@ -85,7 +87,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 6.0rem;
+    font-size: 8vmin;
     margin: 0;
     align-self:flex-start;
     color: #004B70;
@@ -100,7 +102,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.3rem;
+    font-size: 1.5vmin;
     margin: 0;
 }
 
@@ -117,8 +119,8 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.8rem;
-    margin: 0 0 1dvh 0;
+    font-size: 2.2vmin;
+    margin: 2dvh 0 1dvh 0;
     align-self:flex-start;
     color: #004B70;
 }
@@ -126,9 +128,9 @@
 .sidePanelFilterContainer{
     display: block;
     background-color: #f7f7f7;
-    margin-bottom: 3dvh;
-    width: 95%;
-    min-height: 5dvh;
+    margin-bottom: 1.5dvh;
+    width: 100%;
+    min-height: 4.5dvh;
     align-self: center;
     border-radius: 11px;
     filter: drop-shadow(0px 8px 11px rgba(0, 0, 0, 0.22));
@@ -142,6 +144,7 @@
     width: 100%;
     margin: 0;
     padding: 0;
+    cursor: pointer; /*Added to show that the header is clickable*/
 }
 
 .sidePanelFilterDropDown{
@@ -154,20 +157,25 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.6rem;
+    font-size: 1.8vmin;
     margin: 0 0 0 1dvw;
     color: #11658C;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 .sidePanelFilterIcon{
-    width: 1.3dvw;
+    width: 1dvw;
     height: auto;
     margin: 0 1dvw 0 0;
 }
 
 .sidePanelDropDownField{
     position: absolute;
-    top: 5dvh;
+    top: 4.5dvh;
     left: 0px;
     display: flex;
     flex-direction: column;
@@ -185,13 +193,18 @@
 }
 
 .sidePanelFilterColour{
-    width: 3dvh;
-    height: 3dvh;
+    width: 2.5dvh;
+    height: 2.5dvh;
 }
 
 .sidePanelFilterName{
-    font-size: 1.8rem;
-    font-weight: 600;
+    font-size: 1.8vmin;
+    font-weight: 400;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 .hide {
@@ -207,7 +220,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 800;
     font-style: normal;
-    font-size: 1.8rem;
+    font-size: 2vmin;
     margin: 1dvh 0 0.5dvh 0;
     align-self:center;
     color: #004B70;
@@ -217,7 +230,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.3rem;
+    font-size: 1.5vmin;
     margin: 0 0 0.5dvh 0;
 }
 
@@ -226,7 +239,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.5rem;
+    font-size: 1.5vmin;
     margin: 1dvh 0 0 0;
     align-self:center;
     color: #004B70;
@@ -236,7 +249,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.3rem;
+    font-size: 1.5vmin;
     margin: 0;
 }
 
@@ -244,7 +257,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.3rem;
+    font-size: 1.5vmin;
     margin: 0;
 }
 
@@ -252,7 +265,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.3rem;
+    font-size: 1.5vmin;
     margin: 0;
     color: #004B70;
 }
@@ -263,19 +276,21 @@
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
-    width: 24dvw;
+    width: 20dvw;
     justify-content: space-around;
     align-items: center;
 }
 
 .navigationBarIconLarge{
-    height: 3.8dvh;
+    height: 3dvh;
     width: auto;
+    cursor: pointer; /*Pointer instead of standard cursor*/
 }
 
 .navigationBarIconSmall{
-    height: 2.5dvh;
+    height: 1.7dvh;
     width: auto;
+    cursor: pointer; /*Pointer instead of standard cursor*/
 }
 
 /*Scroll bar*/
@@ -311,15 +326,15 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 80%;
-    height: 4dvh;
-    margin: 4dvh auto;
+    width: 100%;
+    min-height: 4dvh;
+    margin: 0 2dvw 0 2dvw;
 }
 
 .sliderTrack{
     position: absolute;
     width: 100%;
-    height: 1dvh;
+    height: 0.5dvh;
     background-color: #f7f7f7;
     border: 2px solid #11658C;
     border-radius: 1dvh;
@@ -334,8 +349,8 @@
 
 .sliderThumb{
     position: absolute;
-    width: 2dvh;
-    height: 2dvh;
+    width: 1.8dvh;
+    height: 1.8dvh;
     background-color: #ffffff;
     border: 2px solid #11658C;
     border-radius: 50%;
@@ -348,12 +363,12 @@
 }
 .sliderValueText{
     position: relative;
-    top: -4.5dvh;
+    top: -4.2dvh;
     display: block;
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.6rem;
+    font-size: 1.8vmin;
     color: #11658C;
     white-space: nowrap;
 }
@@ -372,14 +387,24 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.4rem;
+    font-size: 1.5vmin;
     margin: 0;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 .sliderTitle{
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.4rem;
+    font-size: 1.6vmin;
     margin: 0;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }

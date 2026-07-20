@@ -206,7 +206,7 @@ function Map({ children }) {
   const mapInstance = useRef(null);
 
   useEffect(() => {
-    fetch("./fuelCatagories.json")
+    fetch("./fuelCatagories.json") // Go through this file and ensure the colours have more contrast between one another
       .then((response) => response.json())
       .then((data) => {
             powerPlantPaint["circle-color"] = ["match", ["get", "primary_fuel"]]
@@ -265,7 +265,7 @@ function Map({ children }) {
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
-
+        
         const popup = new maplibregl.Popup({maxWidth: '450px', closeOnClick: false})
             .setLngLat(coordinates)
             .setHTML("<h1>"+ properties.name +"</h1>")
