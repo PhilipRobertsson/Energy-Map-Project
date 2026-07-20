@@ -261,60 +261,64 @@ function Map({ children }) {
     const displayInformation = (e) =>{
         const coordinates = e.features[0].geometry.coordinates.slice();
         const properties = e.features[0].properties;
-
+        console.log(document.querySelectorAll(".maplibregl-popup"))
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
-        
-        const popup = new maplibregl.Popup({maxWidth: '450px', closeOnClick: false})
+
+        if(document.querySelectorAll(".maplibregl-popup").length < 4){
+          const popup = new maplibregl.Popup({maxWidth: '450px', closeOnClick: false})
             .setLngLat(coordinates)
             .setHTML("<h1>"+ properties.name +"</h1>")
             .addTo(map);
         
-        const contentElement = popup.getElement().children[1]
+          const contentElement = popup.getElement().children[1]
         
-        // Power plant information
-        var consiseInformation = document.createElement("div")
-        consiseInformation.classList.add("pop-up-info")
-        consiseInformation = getPowerPlantInfo(properties, consiseInformation)
+          // Power plant information
+          var consiseInformation = document.createElement("div")
+          consiseInformation.classList.add("pop-up-info")
+          consiseInformation = getPowerPlantInfo(properties, consiseInformation)
 
-        // Get regionalInfoIcon
-        if(consiseInformation.children[3].children[2]){
-            const consiseInformationIcon = consiseInformation.children[3].children[2]
-            consiseInformationIcon.onmouseover = () => handleIconHoverOver(consiseInformationIcon)
-            consiseInformationIcon.onmouseout = () => handleIconHoverOut(consiseInformationIcon)
+          // Get regionalInfoIcon
+          if(consiseInformation.children[3].children[2]){
+              const consiseInformationIcon = consiseInformation.children[3].children[2]
+              consiseInformationIcon.onmouseover = () => handleIconHoverOver(consiseInformationIcon)
+              consiseInformationIcon.onmouseout = () => handleIconHoverOut(consiseInformationIcon)
+          }
+
+          contentElement.appendChild(consiseInformation)
+
+          // Regional overview panel, given the data, this is currently the country which the powerplant is located in
+          const regionalOverview = document.createElement("div")
+          regionalOverview.classList.add("regional-overview-panel")
+          const overviewHeader = document.createElement("div")
+          overviewHeader.classList.add("regional-overview-header")
+          const overviewTitle = document.createElement("h1")
+          const overviewOpen = document.createElement("img")
+
+          // Set header title and add open/clsoe image
+          overviewTitle.textContent = `${properties.country_long}`
+          overviewOpen.src = assetSources.popupRollupClosed
+
+          const regionalInformation = getRegionalInfo(properties, regionalData, colourData)
+          
+          overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
+        
+          // Get regionalInfoIcon
+          if(regionalInformation.children[0].children[2]){
+              const regionalInfoIcon = regionalInformation.children[0].children[2]
+              regionalInfoIcon.onmouseover = () => handleIconHoverOver(regionalInfoIcon)
+              regionalInfoIcon.onmouseout = () => handleIconHoverOut(regionalInfoIcon)
+          }
+
+          overviewHeader.appendChild(overviewTitle)
+          overviewHeader.appendChild(overviewOpen)
+          regionalOverview.appendChild(overviewHeader)
+          regionalOverview.appendChild(regionalInformation)
+          contentElement.appendChild(regionalOverview)
+        }else{
+          alert("You can only have 4 pop ups open at a time") // Temporary fix
         }
-
-        contentElement.appendChild(consiseInformation)
-
-        // Regional overview panel, given the data, this is currently the country which the powerplant is located in
-        const regionalOverview = document.createElement("div")
-        regionalOverview.classList.add("regional-overview-panel")
-        const overviewHeader = document.createElement("div")
-        overviewHeader.classList.add("regional-overview-header")
-        const overviewTitle = document.createElement("h1")
-        const overviewOpen = document.createElement("img")
-
-        // Set header title and add open/clsoe image
-        overviewTitle.textContent = `${properties.country_long}`
-        overviewOpen.src = assetSources.popupRollupClosed
-
-        const regionalInformation = getRegionalInfo(properties, regionalData, colourData)
-        
-        overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
-        
-        // Get regionalInfoIcon
-        if(regionalInformation.children[0].children[2]){
-            const regionalInfoIcon = regionalInformation.children[0].children[2]
-            regionalInfoIcon.onmouseover = () => handleIconHoverOver(regionalInfoIcon)
-            regionalInfoIcon.onmouseout = () => handleIconHoverOut(regionalInfoIcon)
-        }
-
-        overviewHeader.appendChild(overviewTitle)
-        overviewHeader.appendChild(overviewOpen)
-        regionalOverview.appendChild(overviewHeader)
-        regionalOverview.appendChild(regionalInformation)
-        contentElement.appendChild(regionalOverview)
     }
 
     const addSourceAndLayer = () => {
