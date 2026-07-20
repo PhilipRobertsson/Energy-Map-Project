@@ -7,9 +7,11 @@ import './Map.css'
 
 export const MapContext = createContext({ mapRef: null, powerPlants: null });
 
+// Previous mapStyle version
+  /*
 // Styling for the background map
 const mapStyle = {
-  version: 8,
+   version: 8,
   name: "Energy Map Visualization",
   layers: [
     {
@@ -144,21 +146,42 @@ const mapStyle = {
       url: "https://demotiles.maplibre.org/tiles/tiles.json",
     },
   },
-};
+}; */
 
 // Styling for the points representing each power plant
 const powerPlantPaint = {
-  'circle-radius': [
+  'circle-radius': ['interpolate', ['linear'], ['zoom'],
+    4, ['interpolate', ['linear'], ['to-number', ['get', 'capacity_mw']], // Zoom level 4
+        0,   4, // 0 - 99 capacity, 4px radii
+        100, 6, // 100 - 999 capacity, 6px radii
+        1000, 8, // 1000 - 4999 capacity, 8px radii
+        5000, 14 // 5000+ capacity, 14px radii
+    ],
+    10, ['interpolate', ['linear'], ['to-number', ['get', 'capacity_mw']], // Zoom level 10
+        0,   4, // 0 - 99 capacity, 4px radii
+        100, 8, // 100 - 999 capacity, 8px radii
+        1000, 16, // 1000 - 4999 capacity, 16px radii
+        5000, 28 // 5000+ capacity, 28px radii
+    ],
+    18, ['interpolate', ['linear'], ['to-number', ['get', 'capacity_mw']], // Zoom level 18
+        0,   8, // 0 - 99 capacity, 8px radii
+        100, 16, // 100 - 999 capacity, 16px radii
+        1000, 32, // 1000 - 4999 capacity, 32px radii
+        5000, 56 // 5000+ capacity, 56px radii
+    ]
+  ],
+  // Static circle radii
+  /* [
     'interpolate',
     ['linear'],
     ['zoom'],
     5, 4,   // At zoom 5 (or less), radius is 4 pixels
     12, 20, // At zoom 12, radius is 20 pixels
     20, 80  // At zoom 20 (or greater), radius is 80 pixels
-  ],
+  ], */
   "circle-color": [],
   "circle-stroke-width": 1,
-  "circle-stroke-color": "#FFFFFF",
+  "circle-stroke-color": "#efefef",
 };
 
 // Sources for the different svg files stored in the public folder
@@ -212,12 +235,16 @@ function Map({ children }) {
   useEffect(() => {
     if (mapInstance.current) return;
 
-    mapInstance.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: mapStyle,
-      center: [9.902056, 49.843],
-      zoom: 4,
-    });
+    fetch("./mapStyles.json")
+      .then((response)=> response.json())
+      .then((data) => {
+        mapInstance.current = new maplibregl.Map({
+          container: mapContainer.current,
+          style: data, //mapStyle,
+          center: [9.902056, 49.843],
+          zoom: 4,
+        });
+      });
 
     return () => {
       mapInstance.current?.remove();
