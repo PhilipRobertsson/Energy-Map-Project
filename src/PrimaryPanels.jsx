@@ -137,8 +137,9 @@ function PrimaryPanels() {
         zoomOut.onclick = handleZoomOut
         // Zoom selection
         var zoomSelection = document.createElement("img")
-        zoomSelection.className = "controlIcon"
+        zoomSelection.classList.add("controlIcon", "selection")
         zoomSelection.src = assetSources.zoomSelection
+        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
 
         controlContainer.appendChild(zoomIn) // Append zoom in button
         controlContainer.appendChild(zoomOut) // Append zoom out button
@@ -155,7 +156,26 @@ function PrimaryPanels() {
 
     // Handle zoom out click
     function handleZoomOut(){
-        map.current?.zoomOut({ duration: 800 });
+        mapRef.current?.zoomOut({ duration: 800 });
+    }
+
+    // Handle zoom selection click
+    function handleZoomSelection(element){
+        if(element.classList.contains("selection")){
+            element.src = assetSources.zoomFullScreen
+            // Find the centre of all shown power plants after selection, if 'All regions', and 'All power sources' are selected,
+            // use the below code for this button. 
+            // .flyTo() the centre coordinates with a suitable zoom level to show the current selection.
+        }else{
+            element.src = assetSources.zoomSelection
+            mapRef.current?.flyTo({
+                center: [51.3897, 35.6889],
+                zoom: 2,
+                speed: 0.8, // Optional: Control animation speed
+                curve: 1.4 // Optional: Zoom curve
+            });
+        }
+        element.classList.toggle("selection");
     }
 
     // Handle clicks on the seperate legends
