@@ -242,7 +242,7 @@ function Map({ children }) {
           container: mapContainer.current,
           style: data, //mapStyle,
           center: [9.902056, 49.843],
-          zoom: 4,
+          zoom: 3.2,
         });
       });
 
@@ -402,7 +402,7 @@ function getPowerPlantInfo(feature, htmlElement){
     const capacityTitle = document.createElement("strong")
     const capacityValue = document.createElement("span")
     capacityTitle.textContent = "Capacity:"
-    capacityValue.textContent = `${(feature.capacity_mw==="")? "N/A" : feature.capacity_mw + " MW"}` 
+    capacityValue.textContent = `${(feature.capacity_mw)? "N/A" : feature.capacity_mw + " MW"}` 
         
     capacityField.appendChild(capacityTitle)
     capacityField.appendChild(capacityValue)
@@ -419,12 +419,12 @@ function getPowerPlantInfo(feature, htmlElement){
     for(var i = _latestYearOfGenerationData; i >=_firstYearOfGenerationData; i--){
         var tempReported = eval("feature.generation_gwh_" + i)
         var tempEstimated = eval("feature.estimated_generation_gwh_" + i)
-        if(tempReported != ""){
+        if(tempReported != null){
             latestDataYear = i
             latestDataValue = tempReported
             reported = true
             break;
-        }else if(i <= _latestYearOfEstimatedGenerationData && !isNaN(tempEstimated)){
+        }else if(i <= _latestYearOfEstimatedGenerationData && tempEstimated){
             latestDataYear = i
             latestDataValue = tempEstimated
             reported = false
