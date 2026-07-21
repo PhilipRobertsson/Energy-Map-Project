@@ -404,7 +404,7 @@ function getPowerPlantInfo(feature, htmlElement){
     const yearStartedTitle = document.createElement("strong")
     const yearStartedValue = document.createElement("span")
     yearStartedTitle.textContent = "Commissioning Year:"
-    yearStartedValue.textContent = `${(feature.commissioning_year==="")? "N/A" : Math.trunc(feature.commissioning_year)}` 
+    yearStartedValue.textContent = `${(feature.commissioning_year==null)? "N/A" : Math.trunc(feature.commissioning_year)}` 
         
     yearStartedField.appendChild(yearStartedTitle)
     yearStartedField.appendChild(yearStartedValue)
@@ -414,7 +414,7 @@ function getPowerPlantInfo(feature, htmlElement){
     const primaryFuelTitle = document.createElement("strong")
     const primaryFuelName = document.createElement("span")
     primaryFuelTitle.textContent = "Primary Fuel:"
-    primaryFuelName.textContent = `${(feature.primary_fuel==="")? "N/A" : feature.primary_fuel}` 
+    primaryFuelName.textContent = `${(feature.primary_fuel==null)? "N/A" : feature.primary_fuel}` 
         
     primaryFuelField.appendChild(primaryFuelTitle)
     primaryFuelField.appendChild(primaryFuelName)
@@ -424,7 +424,7 @@ function getPowerPlantInfo(feature, htmlElement){
     const capacityTitle = document.createElement("strong")
     const capacityValue = document.createElement("span")
     capacityTitle.textContent = "Capacity:"
-    capacityValue.textContent = `${(feature.capacity_mw)? "N/A" : feature.capacity_mw + " MW"}` 
+    capacityValue.textContent = `${(feature.capacity_mw==null)? "N/A" : feature.capacity_mw + " MW"}` 
         
     capacityField.appendChild(capacityTitle)
     capacityField.appendChild(capacityValue)

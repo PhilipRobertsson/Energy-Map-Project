@@ -983,7 +983,7 @@ function getInstructions(page){
             firstItem.appendChild(makeStandard(', like Sweden, Norway, and others.'))
             stepsList.appendChild(firstItem)
 
-            secondItem.appendChild(makeTitle('Choose a place: '))
+            secondItem.appendChild(makeTitle('Choose a power source: '))
             secondItem.appendChild(makeStandard('Tap the second drop-down list to select different '))
             secondItem.appendChild(makeHighlight('power sources'))
             secondItem.appendChild(makeStandard('.'))
