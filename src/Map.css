@@ -1,3 +1,4 @@
+/*Break points should be added for smaller devices <= 1500px width*/
 .maplibregl-popup-close-button{
     font-size: 3.2vmin;
     position: relative;
@@ -177,4 +178,37 @@
 .regional-overview-svg{
     display: flex;
     justify-content: center;   
+}
+
+@keyframes slideInOut {
+  0% { transform: translateX(-100%); }
+  15% { transform: translateX(0); }
+  85% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+#popUpAlert{
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    z-index: 1; /* Ensure alert is displayed above map */
+    left: 0;
+    top: 5dvh;
+    background-color: rgba(239, 239, 239, 0.88);
+    border-radius: 0 15px 15px 0;
+    transform: translateX(-100%);
+}
+
+#popUpAlert.animate{
+    animation: slideInOut 2s ease forwards;
+}
+
+#popUpAlert *{
+    padding: 0;
+    margin: 1vmin;
+    font-size: 2.5vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    color: #004B70;
 }

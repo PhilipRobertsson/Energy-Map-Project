@@ -1,4 +1,5 @@
 /*CSS for the filter container, background, border styling, and content positioning*/
+/*Break points should be added for smaller devices <= 1500px width*/
 #fuelFilter{
     background-color: rgba(239, 239, 239, 0.88); /*changed from rgba(184, 214, 229, 0.88) in previous version*/
     border-radius: 0 25px 0 0;

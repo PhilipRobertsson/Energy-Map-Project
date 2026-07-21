@@ -189,7 +189,8 @@ const assetSources ={
     popupInfo: "./popup/popupInfo.svg",
     popupClose: "./popup/popupClose.svg",
     popupRollupOpened: "./popup/popupRollupOpen.svg",
-    popupRollupClosed: "./popup/popupRollupClosed.svg"
+    popupRollupClosed: "./popup/popupRollupClosed.svg",
+    alertIcon: "./sidePanel/sidePanelInfoIcon.svg"
 }
 
 // Update based on "global_power_plant_database.geojson"
@@ -261,12 +262,22 @@ function Map({ children }) {
     const displayInformation = (e) =>{
         const coordinates = e.features[0].geometry.coordinates.slice();
         const properties = e.features[0].properties;
-        console.log(document.querySelectorAll(".maplibregl-popup"))
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
-        if(document.querySelectorAll(".maplibregl-popup").length < 4){
+        // Check if the clicked power plant has been opened already
+        var isOpen = false
+        const openPopups = document.querySelectorAll(".maplibregl-popup")
+        for(var i = 0; i < openPopups.length; i++){
+          let name = openPopups[i].children[1].children[0].textContent
+          if(name === properties.name){
+            isOpen = true
+            break;
+          }
+        }
+
+        if(openPopups.length < 4 && !isOpen){
           const popup = new maplibregl.Popup({maxWidth: '450px', closeOnClick: false})
             .setLngLat(coordinates)
             .setHTML("<h1>"+ properties.name +"</h1>")
@@ -316,8 +327,11 @@ function Map({ children }) {
           regionalOverview.appendChild(overviewHeader)
           regionalOverview.appendChild(regionalInformation)
           contentElement.appendChild(regionalOverview)
-        }else{
-          alert("You can only have 4 pop ups open at a time") // Temporary fix
+        }else if(!isOpen){
+          const alertEl = document.getElementById("popUpAlert");
+          alertEl.classList.remove("animate");
+          void alertEl.offsetWidth;
+          alertEl.classList.add("animate");
         }
     }
 
@@ -375,6 +389,10 @@ function Map({ children }) {
   return (
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data }}>
       <div ref={mapContainer} style={{ width: "78dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
+      <div id="popUpAlert">
+        <h1>You can only open 4 cards at a time</h1>
+        <img src={assetSources.alertIcon}></img>
+      </div>
       {children}
     </MapContext.Provider>
   );
