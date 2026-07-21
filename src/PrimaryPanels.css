@@ -3,11 +3,10 @@
 #fuelFilter{
     background-color: rgba(239, 239, 239, 0.88); /*changed from rgba(184, 214, 229, 0.88) in previous version*/
     border-radius: 0 25px 0 0;
-
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0.80dvh 0.78dvw 0.75dvh 0.78dvw;
+    padding: 1dvh;
 }
 .filterLegend{ /*Container for each legend element*/
     display: flex;
@@ -47,8 +46,10 @@
     margin-top: 1dvh;
     display: flex;
     justify-content: space-between;
+    margin-top: 0.2dvh;
 }
 .controlIcon{
+    padding: 0.2dvh;
     width: 3.04dvh; /*Have been made 20% smaller, previous 3.8dvh*/
     height: 3.04dvh; /*Have been made 20% smaller, previous 3.8dvh*/
     cursor: pointer; /*Pointer instead of standard cursor*/

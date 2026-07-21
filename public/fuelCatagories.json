@@ -2,89 +2,47 @@
   {
     "id": 0,
     "fuel": "Coal",
-    "colour": "#754a00",
+    "colour": "#66c2a5",
     "show": true
   },
   {
     "id": 1,
-    "fuel": "Petcoke",
-    "colour": "#a3a3a3",
+    "fuel": "Gas",
+    "colour": "#fc8d62",
     "show": true
   },
   {
     "id": 2,
-    "fuel": "Gas",
-    "colour": "#fe95e2",
+    "fuel": "Oil",
+    "colour": "#8da0cb",
     "show": true
   },
   {
     "id": 3,
-    "fuel": "Oil",
-    "colour": "#000000",
+    "fuel": "Nuclear",
+    "colour": "#e78ac3",
     "show": true
   },
   {
     "id": 4,
-    "fuel": "Nuclear",
-    "colour": "#ffa742",
+    "fuel": "Hydro",
+    "colour": "#a6d854",
     "show": true
   },
   {
     "id": 5,
-    "fuel": "Biomass",
-    "colour": "#80b3af",
+    "fuel": "Wind",
+    "colour": "#ffd92f",
     "show": true
   },
   {
     "id": 6,
-    "fuel": "Waste",
-    "colour": "#81e4be",
+    "fuel": "Solar",
+    "colour": "#e5c494",
     "show": true
   },
   {
     "id": 7,
-    "fuel": "Hydro",
-    "colour": "#0892e7",
-    "show": true
-  },
-  {
-    "id": 9,
-    "fuel": "Wave and Tidal",
-    "colour": "#0a027e",
-    "show": true
-  },
-  {
-    "id": 10,
-    "fuel": "Wind",
-    "colour": "#89bcd7",
-    "show": true
-  },
-  {
-    "id": 11,
-    "fuel": "Solar",
-    "colour": "#fed72a",
-    "show": true
-  },
-  {
-    "id": 12,
-    "fuel": "Geothermal",
-    "colour": "#ea0611",
-    "show": true
-  },
-  {
-    "id": 13,
-    "fuel": "Cogeneration",
-    "colour": "#8f2d0f",
-    "show": true
-  },
-  {
-    "id": 14,
-    "fuel": "Storage",
-    "colour": "#7b653d",
-    "show": true
-  },
-  {
-    "id": 15,
     "fuel": "Other",
     "colour": "#606280",
     "show": true

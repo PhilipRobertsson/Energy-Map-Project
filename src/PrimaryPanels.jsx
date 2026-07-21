@@ -8,8 +8,6 @@ import './PrimaryPanels.css'
 // Definition for the filter panel
 const fuelFilterDef = {
     id: "fuelFilter",
-    width: 11 + "dvw", // 10% of screen width
-    height: 44 + "dvh", // 44% of screen height
     position: ["absolute", null, null, 0, 0], // Bottom left corner, css -> [position, top, right, bottom, left]
 };
 
@@ -369,10 +367,16 @@ function PrimaryPanels() {
         const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
         const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
 
+        const otherFuels = ["Petcoke", "Wave and Tidal", "Tidal",
+                                       "Geothermal", "Cogeneration", "Storage",
+                                       "Biomass", "Waste", "Other"];
+
         const filters = ["all"];
 
         if (shownFuels.length < fuelFilter.length) {
-            filters.push(["in", ["get", "primary_fuel"], ["literal", [...shownFuels]]]);
+            const matchFuels = shownFuels.flatMap(f => f === "Other" ? [...otherFuels] : [f]);
+            console.log(matchFuels)
+            filters.push(["in", ["get", "primary_fuel"], ["literal", matchFuels]]);
         }
         if (shownRegions.length < regionFilter.length) {
             filters.push(["in", ["get", "country"], ["literal", [...shownRegions]]]);
@@ -407,7 +411,6 @@ function PrimaryPanels() {
 
         const total = powerPlants.features.length;
         const shown = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter).length
-
         const pageContainer = sidePanel.children[0];
         const filterCounterValue = pageContainer.querySelector("#filterCounterValue");
         const filterCounterStatic = pageContainer.querySelector("#filterCounterStatic");
@@ -534,8 +537,6 @@ function PrimaryPanels() {
 
     return(<>
         <div id={fuelFilterDef.id} ref={filterContainer} style={{
-            width: fuelFilterDef.width,
-            height: fuelFilterDef.height,
             position: fuelFilterDef.position[0],
             top: fuelFilterDef.position[1],
             right: fuelFilterDef.position[2],
@@ -568,6 +569,11 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
 
     for (const f of pps.features) {
         const p = f.properties;
+        if(["Petcoke", "Wave and Tidal", "Tidal",
+             "Geothermal", "Cogeneration", "Storage",
+             "Biomass", "Waste"].includes(p.primary_fuel)){
+            p.primary_fuel = "Other"
+        }
         if (!shownRegions.includes(p.country)) continue;
         if (!shownFuels.includes(p.primary_fuel)) continue;
         if (yearValues && yearBounds && (yearValues[0] !== yearBounds[0] || yearValues[1] !== yearBounds[1])) {

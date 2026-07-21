@@ -626,7 +626,47 @@ function getRegionalInfo(feature, data, colours){
         value: data.value,
         reported: data.reported,
         year: data.year,
-    })).sort((a,b) => b.value - a.value)
+    }))
+
+    // If "Other" isn't present, add it
+    if(!latestDataArray.some((d) =>"Other" == d.fuel)){
+      latestDataArray.push({
+        fuel: "Other",
+        value: 0,
+        reported: false,
+        year: 0,
+      })
+    }
+
+    const unwantedCatagories = ["Petcoke", "Wave and Tidal", "Tidal","Geothermal", "Cogeneration", "Storage","Biomass", "Waste"]
+
+    // Go through array and reassign unwanted catagories to "Other"
+    latestDataArray.forEach((d)=>{
+      if(unwantedCatagories.includes(d.fuel)){
+        var otherField = latestDataArray.find((d) =>"Other" == d.fuel)
+        otherField.value += d.value
+        if(d.reported){
+          otherField.reported =d.reported
+          otherField.year = d.year
+        }else{
+          if(d.year > otherField.year){
+            otherField.year = d.year
+            otherField.reported =d.reported
+          }
+        }
+      }
+    })
+
+    // Trim the array from unwanted catagories and sort it
+    unwantedCatagories.forEach((u) =>{
+      const index = latestDataArray.findIndex((d) => u == d.fuel);
+      if (index > -1) { // only splice array when item is found
+        latestDataArray.splice(index, 1); // 2nd parameter means remove one item only
+      }
+    })
+    
+    // Sort the array
+    latestDataArray.sort((a,b) => b.value - a.value)
 
     const findMax = (data) =>{
         var max = 0
@@ -698,6 +738,11 @@ function getRegionalInfo(feature, data, colours){
     
     // Colour function
     const colour = (fuel) => {
+        if(["Petcoke", "Wave and Tidal", "Tidal",
+             "Geothermal", "Cogeneration", "Storage",
+             "Biomass", "Waste"].includes(fuel)){
+          fuel = "Other"
+        }
         return colours[colours.findIndex((elem) => elem.fuel == fuel)].colour
     }
 

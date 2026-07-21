@@ -8,37 +8,37 @@ def loadCSV(path, delimiter=','):
 def getColourAndID(fuelName):
     match fuelName:
         case "Coal":
-            return ["#754a00", 0]
-        case "Petcoke":
-            return ["#a3a3a3", 1]
+            return ["#66c2a5", 0]
+        #case "Petcoke": Only 12 points in data
+            #return ["#a3a3a3", 1]
         case "Gas":
-            return ["#fe95e2", 2]
+            return ["#fc8d62", 1]
         case "Oil":
-            return ["#000000", 3]
+            return ["#8da0cb", 2]
         case "Nuclear":
-            return ["#ffa742", 4]
-        case "Biomass":
-            return ["#80b3af", 5]
-        case "Waste":
-            return ["#81e4be", 6]
+            return ["#e78ac3", 3]
+        #case "Biomass":
+            #return ["#80b3af", 4]
+        #case "Waste":
+            #return ["#81e4be", 5]
         case "Hydro":
-            return ["#0892e7", 7]
-        case "Tidal":
-            return ["#2d6c94", 8]
-        case "Wave and Tidal":
-            return ["#0a027e", 9]
+            return ["#a6d854", 4]
+        #case "Tidal": Does not show up apparently
+            #return ["#2d6c94", 8]
+        #case "Wave and Tidal": Only 10 points in data
+            #return ["#0a027e", 9]
         case "Wind":
-            return ["#89bcd7", 10]
+            return ["#ffd92f", 5]
         case "Solar":
-            return ["#fed72a", 11]
-        case "Geothermal":
-            return ["#ea0611", 12]
-        case "Cogeneration":
-            return ["#8f2d0f", 13]
-        case "Storage":
-            return ["#7b653d", 14]
-        case "Other":
-            return ["#606280", 15]
+            return ["#e5c494", 6]
+        #case "Geothermal": Only 189 points in data
+            #return ["#ea0611", 12]
+        #case "Cogeneration": Only 41 points in data
+            #return ["#8f2d0f", 13]
+        #case "Storage": Only 135 points in data
+            #return ["#7b653d", 14]
+        case "Other" | "Petcoke" | "Wave and Tidal" | "Tidal" | "Geothermal" | "Cogeneration" | "Storage" | "Biomass" | "Waste":
+            return ["#606280", 7]
         case _:
             return ["#E4E4E4", None]
 
@@ -46,11 +46,12 @@ def createJSON(path, list):
     entries = []
     for idx, x in enumerate(list):
         data = {}
-        data['id'] = getColourAndID(x)[1] if getColourAndID(x)[1] is not None else list.len()
+        data['id'] = getColourAndID(x)[1] #if getColourAndID(x)[1] is not None else list.len()
         data['fuel'] = x
         data['colour'] = getColourAndID(x)[0]
         data['show'] = True
-        entries.append(data)
+        if data['fuel'] not in ["Petcoke", "Wave and Tidal", "Tidal", "Geothermal", "Cogeneration", "Storage","Biomass", "Waste"]:
+            entries.append(data)
 
     sortedEntries = sorted(entries, key=lambda x: x['id'], reverse=False)
     with open(path, "w") as f:
