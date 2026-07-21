@@ -75,7 +75,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 8vmin;
+    font-size: 4.5vmax;
     margin: 0;
     align-self:center;
     color: #004B70;
@@ -86,7 +86,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 3.2vmin;
+    font-size: 1.9vmax;
     margin: 0 0 3dvh 0;
     align-self:center;
     color: #004B70;
@@ -284,7 +284,7 @@
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
-    width: 60ch;
+    width: 25%;
     justify-content: space-around;
     align-items: center;
 }

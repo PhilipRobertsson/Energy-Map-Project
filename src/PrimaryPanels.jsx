@@ -8,7 +8,7 @@ import './PrimaryPanels.css'
 // Definition for the filter panel
 const fuelFilterDef = {
     id: "fuelFilter",
-    width: 30 + "ch", // 30 characters wide, ensures text fits
+    width: 11 + "dvw", // 10% of screen width
     height: 44 + "dvh", // 44% of screen height
     position: ["absolute", null, null, 0, 0], // Bottom left corner, css -> [position, top, right, bottom, left]
 };
@@ -16,7 +16,7 @@ const fuelFilterDef = {
 // Definition for the side panel
 const sidePanelDef ={
     id: "sidePanel",
-    width: 80 + "ch", // 80 characters wide, ensures text fits
+    width: 30 + "dvw", // 30% of screen height
     height: 100 + "dvh", // 100% of screen height
     position: ["absolute", 0, 0, null, null], // Right hand side, css -> [position, top, right, bottom, left]
 };
