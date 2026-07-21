@@ -61,6 +61,7 @@ function PrimaryPanels() {
     const [regionalData, setRegionalData] = useState([]);
     const [sidePanelPage, setSidePanelPage] = useState(allPages[0]);
     const [pages, setPages] = useState(null);
+    const zoomSelectionState = useRef({ isSelection: true });
 
     // Set initial filter, also get all fuel types
     useEffect(() => {
@@ -137,9 +138,15 @@ function PrimaryPanels() {
         zoomOut.onclick = handleZoomOut
         // Zoom selection
         var zoomSelection = document.createElement("img")
-        zoomSelection.classList.add("controlIcon", "selection")
+        zoomSelection.classList.add("controlIcon")
         zoomSelection.src = assetSources.zoomSelection
-        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection) /*Fix so the icon doesn't change when filters are changed*/
+        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
+
+        if (zoomSelectionState.current.isSelection) {
+          zoomSelection.classList.add("selection")
+        } else {
+          zoomSelection.src = assetSources.zoomFullScreen
+        }
 
         controlContainer.appendChild(zoomIn) // Append zoom in button
         controlContainer.appendChild(zoomOut) // Append zoom out button
@@ -188,6 +195,7 @@ function PrimaryPanels() {
 
         if(element.classList.contains("selection")){
             element.src = assetSources.zoomFullScreen
+            zoomSelectionState.current.isSelection = false
             const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
             const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
             const yearValues = yearFilter.length === 2 ? yearFilter[0] : null;
@@ -226,6 +234,7 @@ function PrimaryPanels() {
             }
         }else{
             element.src = assetSources.zoomSelection
+            zoomSelectionState.current.isSelection = true
             fullScreen()
         }
         element.classList.toggle("selection");
