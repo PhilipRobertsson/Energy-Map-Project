@@ -1,5 +1,5 @@
 .maplibregl-popup-close-button{
-    font-size: 3.0vmin;
+    font-size: 3.2vmin;
     position: relative;
     right: unset;
     top: unset;
@@ -19,7 +19,7 @@
 }
 
 .maplibregl-popup-tip {
-    border-width: 25px;
+    border-width: 1dvh; /*To adjust the size of the pop-up tip*/
 }
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
     border-top-color: #F2FBFF !important;
@@ -36,10 +36,10 @@
 
 .maplibregl-popup-content h1{
     font-family: "Lato", sans-serif;
-    width: 7dvw;
+    width: 6dvw;
     font-weight: 700;
-    font-size: 2vmin;
-    line-height: 1;
+    font-size: 2.2vmin;
+    line-height: 2vmin;
     font-style: normal;
     color: #004B70;
 }
@@ -48,31 +48,31 @@
     display: flex;
     flex-direction: column;
     border-bottom: 0.3dvh solid #e0e0e0;
-    padding-bottom: 1dvh;
+    padding-bottom: 0.5dvh;
     width: 100%;
 }
 
 .pop-up-info > span{
     font-family: "Lato", sans-serif;
-    margin-top:0.5dvh;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     display: flex;
     align-items: center;
 }
 
 .pop-up-info strong{
     font-family: "Lato", sans-serif;
-    margin-right: 0.3dvw;
+    margin-right: 0.3vmin;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
+    margin-bottom: 0.2vmin;
 }
 
 .popupInfoIcon{
-    width: 0.9dvw;
-    height: 0.9dvw;
+    width: 1.5vmin;
+    height: 1.5vmin;
     padding-left: 0.3dvw
 }
 
@@ -113,7 +113,7 @@
 }
 
 .regional-overview-header img{
-    width: 1.2dvw;
+    width: 2vmin;
     margin-right: 0.1dvw;
 }
 
@@ -126,10 +126,9 @@
 
 .regional-overview-info > span{
     font-family: "Lato", sans-serif;
-    margin-top:0.5dvh;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     display: flex;
     align-items: center;
 }
@@ -139,12 +138,13 @@
     margin-right: 0.3dvw;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
+    margin-bottom:0.2vmin;
 }
 
 .regionalInfoIcon{
-    width: 0.9dvw;
-    height: 0.9dvw;
+    width: 1,5vmin;
+    height: 1.5vmin;
     padding-left: 0.3dvw
 }
 

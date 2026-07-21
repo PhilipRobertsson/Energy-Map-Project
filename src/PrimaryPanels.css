@@ -276,7 +276,7 @@
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
-    width: 20dvw;
+    width: 60ch;
     justify-content: space-around;
     align-items: center;
 }

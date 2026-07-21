@@ -674,7 +674,7 @@ function getRegionalInfo(feature, data, colours){
             .tickPadding(8))          // Add space between label and "line"
         .call(g => g.select(".domain").remove()) // Hide the main axis line
         .selectAll(".tick text")
-            .style("font-size", "1.5rem")
+            .style("font-size", "1.8vmin")
             .style("font-family", "'Lato', sans-serif")
             .call(truncateLabel)
     
