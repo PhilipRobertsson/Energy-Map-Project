@@ -17,6 +17,9 @@
     cursor: pointer;/*Pointer instead of text input cursor*/
 }
 .legendColour{ /*The coloured box representing each fuel type*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 2.1dvh;
     height: 2.1dvh;
     margin: 0.16dvh 0 0.16dvh 0;
@@ -31,6 +34,12 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
+}
+
+.legendCheck{
+    width: 1.8dvh;
+    height: 1.8dvh;
+    margin-left: unset;
 }
 
 #controlContainer{ /*Container for the control buttons*/
@@ -189,13 +198,10 @@
     padding: 10px 0;
 }
 
-.sidePanelDropDownField *{
-    margin-left: 1dvh;
-}
-
 .sidePanelFilterColour{
     width: 2.5dvh;
     height: 2.5dvh;
+    margin-left: 1dvh;
 }
 
 .sidePanelFilterName{
@@ -206,6 +212,7 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
+    margin-left: 1dvh;
 }
 
 .hide {

@@ -32,6 +32,7 @@ const assetSources ={
     sidePanelInfo: "./sidePanel/sidePanelInfoIcon.svg",
     sidePanelRollupOpen: "./sidePanel/sidePanelRollupOpen.svg",
     sidePanelRollupClose: "./sidePanel/sidePanelRollupClose.svg",
+    sidePanelCheckMark: "./sidePanel/sidePanelCheckMark.svg"
 }
 
 // The different pages on the instruction page
@@ -228,38 +229,33 @@ function PrimaryPanels() {
 
     // Handle clicks on the seperate legends
     function handleLegendClick(clickedFuel){
-        // Set filter state
-        setFuelFilter(prev => { // Take previous filter
-            const clicked = prev.find(f => f.fuel === clickedFuel); // Find the clicked fuel type in the previous state of fuelFilter
-            const add = prev.filter(f=>f.show).find(f=>f.fuel === clickedFuel) == null // If the clickedFuel was not part of the filter -> add true
-            const reset = clicked.show && prev.filter(f => f.show).length < prev.length; // Reset if clickedFuel is already shown and the number of shown fuel types are less than all
-
-            if(add){
-                const valid = prev.filter(f => f.show) // Find the previously shown fuel types
-                return prev.map(f => ({ ...f, show: f.fuel == clickedFuel || valid.some(v=>v.fuel == f.fuel)})); // Previously shown are kept for the new filter, along with the clicked one 
+        setFuelFilter(prev => { // prev, previous filter
+            if (prev.every(f => f.show)) { // Are all options shown?
+                return prev.map(f => ({ ...f, show: f.fuel === clickedFuel })); // If true, deselect everything but the clicked option
             }
-            if (reset) {
-                return prev.map(f => ({ ...f, show: true })); // Set all fuel types to be shown
+            const toggled = prev.map(f =>
+                f.fuel === clickedFuel ? { ...f, show: !f.show } : f // Deselect or select the clicked option
+            );
+            if (toggled.every(f => !f.show)) { // Are all options hidden?
+                return prev.map(f => ({ ...f, show: true })); // If true, select everything 
             }
-            return prev.map(f => ({ ...f, show: f.fuel === clickedFuel })); // First click if previous filter shows all fuels
+            return toggled;
         });
     }
 
     // Handle clicks on the seperate country toggles
     function handleToggleClick(clickedCountry){
-        // Set filter state
-        setRegionFilter(prev => { // Take previous filter
-            const clicked = prev.find(r => r.country === clickedCountry); // Find the clicked fuel type in the previous state of fuelFilter
-            const add = prev.filter(r=>r.show).find(r=>r.country === clickedCountry) == null // If the clickedFuel was not part of the filter -> add true
-            const reset = clicked.show && prev.filter(r => r.show).length < prev.length; // Reset if clickedFuel is already shown and the number of shown fuel types are less than all
-            if(add){
-                const valid = prev.filter(r => r.show) // Find the previously shown fuel types
-                return prev.map(r => ({ ...r, show: r.country == clickedCountry || valid.some(v=>v.country == r.country)})); // Previously shown are kept for the new filter, along with the clicked one 
+        setRegionFilter(prev => { // prev, previous filter
+            if (prev.every(r => r.show)) { // Are all options shown?
+                return prev.map(r => ({ ...r, show: r.country === clickedCountry })); // If true, deselect everything but the clicked option
             }
-            if (reset) {
-                return prev.map(r => ({ ...r, show: true })); // Set all fuel types to be shown
+            const toggled = prev.map(r =>
+                r.country === clickedCountry ? { ...r, show: !r.show } : r // Deselect or select the clicked option
+            );
+            if (toggled.every(r => !r.show)) { // Are all options hidden?
+                return prev.map(r => ({ ...r, show: true })); // If true, select everything 
             }
-            return prev.map(r => ({ ...r, show: r.country === clickedCountry })); // First click if previous filter shows all fuels
+            return toggled;
         });
     }
 
@@ -361,6 +357,7 @@ function PrimaryPanels() {
         regionFilter.forEach((region, i)=>{
             if(toggleSidePanel[i]){
                 toggleSidePanel[i].style.opacity = region.show ? "1" : "0.3";
+                toggleSidePanel[i].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
             }
         })
     }, [fuelFilter,regionFilter]);
@@ -470,6 +467,12 @@ function PrimaryPanels() {
                     const checkBox = document.createElement("div")
                     checkBox.classList.add("legendColour", "sidePanelFilterColour")
                     checkBox.style.backgroundColor = "#11658C"
+
+                    const checkMark = document.createElement("img")
+                    checkMark.classList.add("legendCheck")
+                    checkMark.src = assetSources.sidePanelCheckMark
+
+                    checkBox.appendChild(checkMark)
 
                     const name = document.createElement("p")
                     name.classList.add("legendName", "sidePanelFilterName")
