@@ -5,55 +5,56 @@ import json
 def loadCSV(path, delimiter=','):
     return pd.read_csv(path, delimiter=delimiter)
 
-def getColour(fuelName):
+def getColourAndID(fuelName):
     match fuelName:
         case "Coal":
-            return "#BA9C69"
+            return ["#754a00", 0]
         case "Petcoke":
-            return "#8B8373"
+            return ["#a3a3a3", 1]
         case "Gas":
-            return "#E5BDBE"
+            return ["#fe95e2", 2]
         case "Oil":
-            return "#706557"
+            return ["#000000", 3]
         case "Nuclear":
-            return "#E5D347"
+            return ["#ffa742", 4]
         case "Biomass":
-            return "#8DCFCB"
+            return ["#80b3af", 5]
         case "Waste":
-            return "#7dc1a8"
+            return ["#81e4be", 6]
         case "Hydro":
-            return "#5A9FC9"
+            return ["#0892e7", 7]
         case "Tidal":
-            return "#2d6c94"
+            return ["#2d6c94", 8]
         case "Wave and Tidal":
-            return "#0E3751"
+            return ["#0a027e", 9]
         case "Wind":
-            return "#9BBFD2"
+            return ["#89bcd7", 10]
         case "Solar":
-            return "#DDCF90"
+            return ["#fed72a", 11]
         case "Geothermal":
-            return "#9d4429"
+            return ["#ea0611", 12]
         case "Cogeneration":
-            return "#db552c"
+            return ["#8f2d0f", 13]
         case "Storage":
-            return "#50442e"
+            return ["#7b653d", 14]
         case "Other":
-            return "#8E91BC"
+            return ["#606280", 15]
         case _:
-            return "#000000"
+            return ["#E4E4E4", None]
 
 def createJSON(path, list):
     entries = []
     for idx, x in enumerate(list):
         data = {}
-        data['id'] = idx
+        data['id'] = getColourAndID(x)[1] if getColourAndID(x)[1] is not None else list.len()
         data['fuel'] = x
-        data['colour'] = getColour(x)
+        data['colour'] = getColourAndID(x)[0]
         data['show'] = True
         entries.append(data)
 
+    sortedEntries = sorted(entries, key=lambda x: x['id'], reverse=False)
     with open(path, "w") as f:
-        json.dump(entries, f, indent=2)
+        json.dump(sortedEntries, f, indent=2)
 
 
 if __name__ == '__main__':

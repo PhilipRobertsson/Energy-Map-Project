@@ -1,92 +1,92 @@
 [
   {
     "id": 0,
-    "fuel": "Hydro",
-    "colour": "#5A9FC9",
+    "fuel": "Coal",
+    "colour": "#754a00",
     "show": true
   },
   {
     "id": 1,
-    "fuel": "Solar",
-    "colour": "#DDCF90",
+    "fuel": "Petcoke",
+    "colour": "#a3a3a3",
     "show": true
   },
   {
     "id": 2,
     "fuel": "Gas",
-    "colour": "#E5BDBE",
+    "colour": "#fe95e2",
     "show": true
   },
   {
     "id": 3,
-    "fuel": "Other",
-    "colour": "#8E91BC",
+    "fuel": "Oil",
+    "colour": "#000000",
     "show": true
   },
   {
     "id": 4,
-    "fuel": "Oil",
-    "colour": "#706557",
+    "fuel": "Nuclear",
+    "colour": "#ffa742",
     "show": true
   },
   {
     "id": 5,
-    "fuel": "Wind",
-    "colour": "#9BBFD2",
+    "fuel": "Biomass",
+    "colour": "#80b3af",
     "show": true
   },
   {
     "id": 6,
-    "fuel": "Nuclear",
-    "colour": "#E5D347",
+    "fuel": "Waste",
+    "colour": "#81e4be",
     "show": true
   },
   {
     "id": 7,
-    "fuel": "Coal",
-    "colour": "#BA9C69",
-    "show": true
-  },
-  {
-    "id": 8,
-    "fuel": "Waste",
-    "colour": "#7dc1a8",
+    "fuel": "Hydro",
+    "colour": "#0892e7",
     "show": true
   },
   {
     "id": 9,
-    "fuel": "Biomass",
-    "colour": "#8DCFCB",
+    "fuel": "Wave and Tidal",
+    "colour": "#0a027e",
     "show": true
   },
   {
     "id": 10,
-    "fuel": "Wave and Tidal",
-    "colour": "#0E3751",
+    "fuel": "Wind",
+    "colour": "#89bcd7",
     "show": true
   },
   {
     "id": 11,
-    "fuel": "Petcoke",
-    "colour": "#8B8373",
+    "fuel": "Solar",
+    "colour": "#fed72a",
     "show": true
   },
   {
     "id": 12,
     "fuel": "Geothermal",
-    "colour": "#9d4429",
+    "colour": "#ea0611",
     "show": true
   },
   {
     "id": 13,
-    "fuel": "Storage",
-    "colour": "#50442e",
+    "fuel": "Cogeneration",
+    "colour": "#8f2d0f",
     "show": true
   },
   {
     "id": 14,
-    "fuel": "Cogeneration",
-    "colour": "#db552c",
+    "fuel": "Storage",
+    "colour": "#7b653d",
+    "show": true
+  },
+  {
+    "id": 15,
+    "fuel": "Other",
+    "colour": "#606280",
     "show": true
   }
 ]
