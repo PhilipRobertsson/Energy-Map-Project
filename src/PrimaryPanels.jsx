@@ -96,7 +96,7 @@ function PrimaryPanels() {
     // Add information and buttons to filter panel
     useEffect(() =>{
         const filter = filterContainer.current;
-        if (!filter || !fuelFilter.length) return;
+        if (!filter || !regionFilter.length ||!fuelFilter.length || !yearFilter.length || !generationFilter.length || !powerPlants) return;
         filter.replaceChildren();
 
         // Create colour legends for each fuel available
@@ -142,7 +142,10 @@ function PrimaryPanels() {
         zoomSelection.src = assetSources.zoomSelection
         zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
 
-        if (zoomSelectionState.current.isSelection) {
+        const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter,generationFilter)
+        if (zoomSelectionState.current.isSelection ||
+             powerPlants.features.length != 
+             pps.length) {
           zoomSelection.classList.add("selection")
         } else {
           zoomSelection.src = assetSources.zoomFullScreen
@@ -193,35 +196,18 @@ function PrimaryPanels() {
             });
         }
 
-        if(element.classList.contains("selection")){
+        const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
+
+
+        if(element.classList.contains("selection") && powerPlants.length != pps.length){
             element.src = assetSources.zoomFullScreen
             zoomSelectionState.current.isSelection = false
-            const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
-            const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
-            const yearValues = yearFilter.length === 2 ? yearFilter[0] : null;
-            const yearBounds = yearFilter.length === 2 ? yearFilter[1] : null;
-            const genValues = generationFilter.length === 2 ? generationFilter[0] : null;
-            const genBounds = generationFilter.length === 2 ? generationFilter[1] : null;
 
             const coordinates = []
-
-            // Filter out unselected powerplants
-            for (const f of powerPlants.features) {
-                const p = f.properties
-                const c = f.geometry.coordinates
-                if (!shownRegions.includes(p.country)) continue;
-                if (!shownFuels.includes(p.primary_fuel)) continue;
-                if (yearValues && yearBounds && (yearValues[0] !== yearBounds[0] || yearValues[1] !== yearBounds[1])) {
-                    const y = Number(p.commissioning_year);
-                    if (isNaN(y) || y < yearValues[0] || y > yearValues[1]) continue;
-                }
-                if (genValues && genBounds && (genValues[0] !== genBounds[0] || genValues[1] !== genBounds[1])) {
-                    const gMin = Number(p.minMax[0])
-                    const gMax = Number(p.minMax[1])
-                    if (isNaN(gMin) || isNaN(gMax) || gMin < genValues[0] || gMax > genValues[1]) continue;
-                }
-                coordinates.push(c)
-            }
+            
+            pps.forEach((p) =>{
+                coordinates.push(p.geometry.coordinates)
+            })
             
             if(coordinates.length && coordinates.length != powerPlants.features.length){
                 const bounds = getBounds(coordinates)
@@ -422,31 +408,8 @@ function PrimaryPanels() {
         if (!sidePanel || !powerPlants?.features?.length || !fuelFilter.length || !regionFilter.length) return;
         if (sidePanel.children.length === 0) return;
 
-        const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
-        const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
-        const yearValues = yearFilter.length === 2 ? yearFilter[0] : null;
-        const yearBounds = yearFilter.length === 2 ? yearFilter[1] : null;
-        const genValues = generationFilter.length === 2 ? generationFilter[0] : null;
-        const genBounds = generationFilter.length === 2 ? generationFilter[1] : null;
-
-        let shown = 0;
         const total = powerPlants.features.length;
-
-        for (const f of powerPlants.features) {
-            const p = f.properties;
-            if (!shownRegions.includes(p.country)) continue;
-            if (!shownFuels.includes(p.primary_fuel)) continue;
-            if (yearValues && yearBounds && (yearValues[0] !== yearBounds[0] || yearValues[1] !== yearBounds[1])) {
-                const y = Number(p.commissioning_year);
-                if (isNaN(y) || y < yearValues[0] || y > yearValues[1]) continue;
-            }
-            if (genValues && genBounds && (genValues[0] !== genBounds[0] || genValues[1] !== genBounds[1])) {
-                const gMin = Number(p.minMax[0])
-                const gMax = Number(p.minMax[1])
-                if (isNaN(gMin) || isNaN(gMax) || gMin < genValues[0] || gMax > genValues[1]) continue;
-            }
-            shown++;
-        }
+        const shown = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter).length
 
         const pageContainer = sidePanel.children[0];
         const filterCounterValue = pageContainer.querySelector("#filterCounterValue");
@@ -589,6 +552,34 @@ function PrimaryPanels() {
 }
 
 export default PrimaryPanels
+
+function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
+    const shownRegions = rFilter.filter(r => r.show).map(r => r.country);
+    const shownFuels = fFilter.filter(f => f.show).map(f => f.fuel);
+    const yearValues = yFilter.length === 2 ? yFilter[0] : null;
+    const yearBounds = yFilter.length === 2 ? yFilter[1] : null;
+    const genValues = gFilter.length === 2 ? gFilter[0] : null;
+    const genBounds = gFilter.length === 2 ? gFilter[1] : null;
+
+    const shownPowerPlants = []
+
+    for (const f of pps.features) {
+        const p = f.properties;
+        if (!shownRegions.includes(p.country)) continue;
+        if (!shownFuels.includes(p.primary_fuel)) continue;
+        if (yearValues && yearBounds && (yearValues[0] !== yearBounds[0] || yearValues[1] !== yearBounds[1])) {
+            const y = Number(p.commissioning_year);
+            if (isNaN(y) || y < yearValues[0] || y > yearValues[1]) continue;
+        }
+         if (genValues && genBounds && (genValues[0] !== genBounds[0] || genValues[1] !== genBounds[1])) {
+            const gMin = Number(p.minMax[0])
+            const gMax = Number(p.minMax[1])
+            if (isNaN(gMin) || isNaN(gMax) || gMin < genValues[0] || gMax > genValues[1]) continue;
+        }
+        shownPowerPlants.push(f)
+    }
+    return shownPowerPlants
+}
 
 function createPages(powerPlants, regionalData, onYearChange, onGenerationChange){
     /*--[Plan]--*/
