@@ -983,7 +983,7 @@ function getSliders(filter, regionalData, onChange){
                 document.removeEventListener("mouseup", onEnd)
                 document.removeEventListener("touchmove", onMove)
                 document.removeEventListener("touchend", onEnd)
-    if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+                if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
             }
 
             document.addEventListener("mousemove", onMove)
@@ -996,8 +996,58 @@ function getSliders(filter, regionalData, onChange){
         thumb.addEventListener("touchstart", onStart, { passive: false })
     }
 
+    function makeDraggableRange(rangeElement) {
+        const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX
+
+        const onStart = (e) => {
+            e.preventDefault()
+            const trackRect = track.getBoundingClientRect()
+            const trackWidth = trackRect.width
+            const startX = getClientX(e)
+            const rangeSize = valueMax - valueMin
+            const startMin = valueMin
+
+            const onMove = (ev) => {
+                const deltaX = getClientX(ev) - startX
+                const deltaValue = (deltaX / trackWidth) * (maxVal - minVal)
+                let newMin = startMin + deltaValue
+                let newMax = newMin + rangeSize
+
+                if (newMin < minVal) {
+                    newMin = minVal
+                    newMax = minVal + rangeSize
+                }
+                if (newMax > maxVal) {
+                    newMax = maxVal
+                    newMin = maxVal - rangeSize
+                }
+
+                valueMin = Math.round(newMin)
+                valueMax = Math.round(newMax)
+                updateSlider()
+            }
+
+            const onEnd = () => {
+                document.removeEventListener("mousemove", onMove)
+                document.removeEventListener("mouseup", onEnd)
+                document.removeEventListener("touchmove", onMove)
+                document.removeEventListener("touchend", onEnd)
+                if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+            }
+
+            document.addEventListener("mousemove", onMove)
+            document.addEventListener("mouseup", onEnd)
+            document.addEventListener("touchmove", onMove, { passive: false })
+            document.addEventListener("touchend", onEnd)
+        }
+
+        rangeElement.addEventListener("mousedown", onStart)
+        rangeElement.addEventListener("touchstart", onStart, { passive: false })
+    }
+
     makeDraggable(thumbMin, true)
     makeDraggable(thumbMax, false)
+    makeDraggableRange(range)
     updateSlider()
     if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
 
