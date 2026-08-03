@@ -278,12 +278,30 @@ function Map({ children }) {
         }
 
         if(openPopups.length < 4 && !isOpen){
-          const popup = new maplibregl.Popup({maxWidth: '450px', closeOnClick: false})
+          var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+          const popup = new maplibregl.Popup({maxWidth: Math.round(450*scale) + "px", closeOnClick: false})
             .setLngLat(coordinates)
             .setHTML("<h1>"+ properties.name +"</h1>")
             .addTo(map);
         
           const contentElement = popup.getElement().children[1]
+
+          // Replace text based close button with image based icon instead
+          const closeButton = contentElement.children[1]
+          closeButton.textContent = ""
+          const closeIcon = document.createElement("img")
+          closeIcon.src = assetSources.popupClose
+          closeButton.appendChild(closeIcon)
+
+          // Reorder header content
+          const popUpHeader = document.createElement("div")
+          popUpHeader.classList.add("pop-up-header")
+          const popupTitle = contentElement.children[0]
+
+          popUpHeader.appendChild(popupTitle)
+          popUpHeader.appendChild(closeButton)
+          contentElement.appendChild(popUpHeader)
+
         
           // Power plant information
           var consiseInformation = document.createElement("div")
@@ -687,11 +705,17 @@ function getRegionalInfo(feature, data, colours){
     // Variables for D3 code
     const barChartContainer = document.createElement("div")
     barChartContainer.classList.add("regional-overview-svg")
-    var barChartPadding = 0.2
-    var barHeight = 35
-    var barChartWidth = 400
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    var barChartPadding = 0.2 
+    var barHeight = Math.round(35 * scale)
+    var barChartWidth = Math.round(400 * scale)
     var barChartHeight = latestDataArray.length * (barHeight + barChartPadding)
-    var margin = {top: 0, right: 80, bottom: 0, left: 100},
+    var margin = {
+      top: 0,
+      right: Math.round(80 * scale),
+      bottom: 0,
+      left: Math.round(100 * scale)
+    },
           width = barChartWidth - margin.left - margin.right,
           height = barChartHeight - margin.top - margin.bottom;
     
@@ -768,7 +792,7 @@ function getRegionalInfo(feature, data, colours){
         .text(d =>  getPercentage(d.value).toFixed(2) + "%")
         .style("fill", "black")
         .style("text-anchor", "start")
-        .style("font-size", "1.2rem")
+        .style("font-size", "1.8vmin")
         .style("font-family", "'Lato', sans-serif");
 
     htmlElement.appendChild(infoHeader)
