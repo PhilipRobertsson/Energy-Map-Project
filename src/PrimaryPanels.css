@@ -417,3 +417,14 @@
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
 }
+
+.selectAllDropdown > p {
+    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.selectAllDropdown > div {
+    border: 0.1vmin solid #11658C;
+    border-radius: 50%;
+}

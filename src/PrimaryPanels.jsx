@@ -228,13 +228,29 @@ function PrimaryPanels() {
     // Handle clicks on the seperate legends
     function handleLegendClick(clickedFuel){
         setFuelFilter(prev => { // prev, previous filter
+            const selectAllOption = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
             if (prev.every(f => f.show)) { // Are all options shown?
+                selectAllOption.children[1].textContent = "Select all fuels"
+                selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
+                if(clickedFuel == "all"){
+                    return prev.map(f => ({ ...f, show: false}));
+                }
                 return prev.map(f => ({ ...f, show: f.fuel === clickedFuel })); // If true, deselect everything but the clicked option
             }
+
             const toggled = prev.map(f =>
                 f.fuel === clickedFuel ? { ...f, show: !f.show } : f // Deselect or select the clicked option
             );
+            if(clickedFuel == "all"){
+                    selectAllOption.children[1].textContent = "Deselect all fuels"
+                    selectAllOption.children[0].style.backgroundColor = "#11658C"
+                    return prev.map(f => ({ ...f, show: true}));
+            }
+
             if (toggled.every(f => !f.show)) { // Are all options hidden?
+                selectAllOption.children[1].textContent = "Deselect all fuels"
+                selectAllOption.children[0].style.backgroundColor = "#11658C"
+                console.log(prev)
                 return prev.map(f => ({ ...f, show: true })); // If true, select everything 
             }
             return toggled;
@@ -244,13 +260,28 @@ function PrimaryPanels() {
     // Handle clicks on the seperate country toggles
     function handleToggleClick(clickedCountry){
         setRegionFilter(prev => { // prev, previous filter
+            const selectAllOption = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
             if (prev.every(r => r.show)) { // Are all options shown?
+                selectAllOption.children[1].textContent = "Select all regions"
+                selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
+                if(clickedCountry == "all"){
+                    return prev.map(f => ({ ...f, show: false}));
+                }
                 return prev.map(r => ({ ...r, show: r.country === clickedCountry })); // If true, deselect everything but the clicked option
             }
+
             const toggled = prev.map(r =>
                 r.country === clickedCountry ? { ...r, show: !r.show } : r // Deselect or select the clicked option
             );
+
+            if(clickedCountry == "all"){
+                    selectAllOption.children[1].textContent = "Deselect all regions"
+                    selectAllOption.children[0].style.backgroundColor = "#11658C"
+                    return prev.map(f => ({ ...f, show: true}));
+            }
             if (toggled.every(r => !r.show)) { // Are all options hidden?
+                selectAllOption.children[1].textContent = "Deselect all regions"
+                selectAllOption.children[0].style.backgroundColor = "#11658C"
                 return prev.map(r => ({ ...r, show: true })); // If true, select everything 
             }
             return toggled;
@@ -333,29 +364,33 @@ function PrimaryPanels() {
         const shownFuels = fuelFilter.filter((fuel) => fuel.show)
         const shownRegions = regionFilter.filter((region) => region.show)
 
-        if(shownFuels.length == legendsSidePanel.length || legendsSidePanel.length == 0){
+        if(shownFuels.length == (legendsSidePanel.length - 1)){
             fuelFilterDropDownTitle.textContent = "All Power Sources"
+        }else if(shownFuels.length == 0){
+            fuelFilterDropDownTitle.textContent = "No power sources selected"
         }else{
             var newFuelTitle = getNewDropDownTitle(shownFuels, "fuel")
             fuelFilterDropDownTitle.textContent = newFuelTitle
         }
 
-        if(shownRegions.length == toggleSidePanel.length || toggleSidePanel.length == 0){
+        if(shownRegions.length == (toggleSidePanel.length - 1)){
             regionFilterDropDownTitle.textContent = "All Regions"
+        }else if(shownRegions.length == 0){
+            regionFilterDropDownTitle.textContent = "No regions selected"
         }else{
             var newRegionTitle = getNewDropDownTitle(shownRegions, "region")
             regionFilterDropDownTitle.textContent = newRegionTitle
         }
 
         fuelFilter.forEach((fuel, i) => {
-            if (legendsSidePanel[i]) { // If legend exists
-                legendsSidePanel[i].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
+            if (legendsSidePanel[i+1]) { // If legend exists, +1 to skip select all option
+                legendsSidePanel[i+1].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
             }
         });
         regionFilter.forEach((region, i)=>{
-            if(toggleSidePanel[i]){
-                toggleSidePanel[i].style.opacity = region.show ? "1" : "0.3";
-                toggleSidePanel[i].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
+            if(toggleSidePanel[i+1]){
+                toggleSidePanel[i+1].style.opacity = region.show ? "1" : "0.3";
+                toggleSidePanel[i+1].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
             }
         })
     }, [fuelFilter,regionFilter]);
@@ -460,6 +495,23 @@ function PrimaryPanels() {
             // Fill drop down windows
             const regionDropDown = sidePanelRegionFilter.children[1]
             if(regionDropDown.children.length == 0){
+
+                let selectAllField = document.createElement("div")
+                selectAllField.classList.add("filterLegend", "selectAllDropdown")
+
+                let selectAllCheckBox = document.createElement("div")
+                selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
+                selectAllCheckBox.style.backgroundColor = "#11658C"
+
+                let selectAllName = document.createElement("p")
+                selectAllName.classList.add("legendName", "sidePanelFilterName")
+                selectAllName.textContent = "Deselect all regions"
+
+                selectAllField.onclick = () => handleToggleClick("all"); // Selects all regions on click
+                selectAllField.appendChild(selectAllCheckBox)
+                selectAllField.appendChild(selectAllName) // Append the text to the legend element
+                regionDropDown.appendChild(selectAllField) // Append the legend to the filter container
+
                 for(let i = 0; i < regionFilter.length; i++){
                     const region = regionFilter[i] // Used for easier access
 
@@ -491,6 +543,24 @@ function PrimaryPanels() {
 
             const fuelDropDown = sidePanelFuelFilter.children[1]
             if(fuelDropDown.children.length == 0){
+
+                let selectAllField = document.createElement("div")
+                selectAllField.classList.add("filterLegend", "selectAllDropdown")
+
+                let selectAllCheckBox = document.createElement("div")
+                selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
+                selectAllCheckBox.style.backgroundColor = "#11658C"
+
+                let selectAllName = document.createElement("p")
+                selectAllName.classList.add("legendName", "sidePanelFilterName")
+                selectAllName.textContent = "Deselect all fuels"
+
+                selectAllField.onclick = () => handleLegendClick("all"); // Selects all regions on click
+                selectAllField.appendChild(selectAllCheckBox)
+                selectAllField.appendChild(selectAllName) // Append the text to the legend element
+                fuelDropDown.appendChild(selectAllField) // Append the legend to the filter container
+
+
                 for(let i = 0; i < fuelFilter.length; i++){
                     const fuel = fuelFilter[i] // Used for easier access
 
