@@ -281,7 +281,7 @@ function Map({ children }) {
 
         if(openPopups.length < 4 && !isOpen){
           var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-          const popup = new maplibregl.Popup({maxWidth: Math.round(450*scale) + "px", closeOnClick: false})
+          const popup = new maplibregl.Popup({maxWidth: Math.round(400*scale) + "px", closeOnClick: false})
             .setLngLat(coordinates)
             .setHTML("<h1>"+ properties.name +"</h1>")
             .addTo(map);
@@ -726,7 +726,7 @@ function getRegionalInfo(feature, data, colours){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
     var barChartPadding = 0.2 
     var barHeight = Math.round(35 * scale)
-    var barChartWidth = Math.round(400 * scale)
+    var barChartWidth = Math.round(350 * scale)
     var barChartHeight = latestDataArray.length * (barHeight + barChartPadding)
     var margin = {
       top: 0,

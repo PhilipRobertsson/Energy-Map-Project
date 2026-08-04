@@ -65,7 +65,7 @@
     flex-direction: column;
     border-bottom: 0.3dvh solid #e0e0e0;
     width: 100%;
-    padding: 0.5dvh 0 0.5dvh;
+    padding: 0.5dvh 0 0.5dvh 0;
 }
 
 .pop-up-info > span{
@@ -75,6 +75,7 @@
     font-size: 1.8vmin;
     display: flex;
     align-items: center;
+    align-items: baseline
 }
 
 .pop-up-info strong{
@@ -83,7 +84,7 @@
     font-weight: 700;
     font-style: normal;
     font-size: 1.8vmin;
-    margin-bottom: 0.2vmin;
+    margin-bottom: 0.5dvh;
 }
 
 .popupInfoIcon{
