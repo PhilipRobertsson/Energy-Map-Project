@@ -14,7 +14,7 @@ const fuelFilterDef = {
 // Definition for the side panel
 const sidePanelDef ={
     id: "sidePanel",
-    width: 30 + "dvw", // 30% of screen height
+    width: 25 + "dvw", // 25% of screen height
     height: 100 + "dvh", // 100% of screen height
     position: ["absolute", 0, 0, null, null], // Right hand side, css -> [position, top, right, bottom, left]
 };
@@ -306,11 +306,11 @@ function PrimaryPanels() {
     function toggleDropDown(element){
         if(element.children[1].classList.contains("hide")){ // Open the rollup
             element.children[0].children[1].src = assetSources.sidePanelRollupClose
-            element.parentElement.style['border-radius'] = "11px 11px 0 0";
+            element.parentElement.style['border-radius'] = "1dvh 1dvh 0 0";
             element.parentElement.style['z-index'] = "100" // Arbitrary value to show it on top
         }else{ // Close the rollup
             element.children[0].children[1].src = assetSources.sidePanelRollupOpen
-            element.parentElement.style['border-radius'] = "11px 11px 11px 11px";
+            element.parentElement.style['border-radius'] = "1dvh";
             element.parentElement.style['z-index'] = "unset"
         }
         element.children[1].classList.toggle("hide");

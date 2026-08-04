@@ -2,7 +2,7 @@
 /*Break points should be added for smaller devices <= 1500px width*/
 #fuelFilter{
     background-color: rgba(239, 239, 239, 0.88); /*changed from rgba(184, 214, 229, 0.88) in previous version*/
-    border-radius: 0 25px 0 0;
+    border-radius: 0 2.5dvh 0 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -57,7 +57,7 @@
 
 /*CSS for the side panel container, background and border styling*/
 #sidePanel{
-    background: linear-gradient(90deg,rgba(255, 255, 255, 0.0) 0%, rgba(239, 239, 239, 0.96) 8%, rgba(222, 234, 237, 1) 100%);
+    background: linear-gradient(90deg,rgba(255, 255, 255, 0.0) 0%, rgba(239, 239, 239, 0.96) 5%, rgba(222, 234, 237, 1) 100%);
     display: flex;
     justify-content: center;
 }
@@ -65,7 +65,7 @@
 .sidePanelPageContainer{
     width: 100%;
     height: 95%;
-    margin-left: 3dvw;
+    margin-left: 1dvw;
     padding: 0 1dvw 0 1dvw;
     display: flex;
     flex-direction: column;
@@ -76,7 +76,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 4.5vmax;
+    font-size: 4vmax;
     margin: 0;
     align-self:center;
     color: #004B70;
@@ -87,8 +87,8 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.9vmax;
-    margin: 0 0 3dvh 0;
+    font-size: 1.7vmax;
+    margin: -1.5dvh 0 2dvh 0;
     align-self:center;
     color: #004B70;
 }
@@ -139,12 +139,12 @@
 .sidePanelFilterContainer{
     display: block;
     background-color: #f7f7f7;
-    margin-bottom: 1.5dvh;
+    margin-bottom: 1dvh;
     width: 100%;
     min-height: 4.5dvh;
     align-self: center;
-    border-radius: 11px;
-    filter: drop-shadow(0px 8px 11px rgba(0, 0, 0, 0.22));
+    border-radius: 1dvh;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
 }
 
 .sidePanelDropDownHeader{
@@ -229,7 +229,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 800;
     font-style: normal;
-    font-size: 2vmin;
+    font-size: 2.5vmin;
     margin: 1dvh 0 0.5dvh 0;
     align-self:center;
     color: #004B70;
@@ -239,7 +239,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     margin: 0 0 0.5dvh 0;
 }
 
@@ -248,17 +248,21 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     margin: 1dvh 0 0 0;
     align-self:center;
     color: #004B70;
+}
+
+.instructionStepsList{
+    font-size: 1.8vmin;
 }
 
 .instructionStepsItemTitle{
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     margin: 0;
 }
 
@@ -266,7 +270,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     margin: 0;
 }
 
@@ -274,7 +278,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     margin: 0;
     color: #004B70;
 }
@@ -285,7 +289,7 @@
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
-    width: 25%;
+    width: 20%;
     justify-content: space-around;
     align-items: center;
 }
@@ -353,7 +357,7 @@
     position: absolute;
     height: 1dvh;
     background-color: #11658C;
-    border-radius: 3px;
+    border-radius: 1dvh;
 }
 
 .sliderThumb{
@@ -409,7 +413,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
-    font-size: 1.6vmin;
+    font-size: 1.3vmin;
     margin: 0;
     /*Added to remove selection from drop down texts*/
     -webkit-user-select: none; /* Safari */        
