@@ -229,3 +229,7 @@
     font-style: normal;
     color: #004B70;
 }
+
+.bar_filtered {
+    border: 0.1vmin solid #11658C;
+}

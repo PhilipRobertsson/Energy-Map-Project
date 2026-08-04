@@ -50,7 +50,7 @@ const _firstYearOfEstimatedGenerationData = 2013;
 const _latestYearOfEstimatedGenerationData = 2017;
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants } = useContext(MapContext);
+    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
     const [fuelFilter, setFuelFilter] = useState([]);
@@ -61,6 +61,7 @@ function PrimaryPanels() {
     const [sidePanelPage, setSidePanelPage] = useState(allPages[0]);
     const [pages, setPages] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
+    const prevBarChartFilter = useRef([]);
 
     // Set initial filter, also get all fuel types
     useEffect(() => {
@@ -227,6 +228,14 @@ function PrimaryPanels() {
 
     // Handle clicks on the seperate legends
     function handleLegendClick(clickedFuel){
+        if (clickedFuel === "all") {
+            setBarChartFilter(null)
+        } else {
+            setBarChartFilter(prev => {
+                if (!prev) return prev
+                return prev.filter(f => f !== clickedFuel)
+            })
+        }
         setFuelFilter(prev => { // prev, previous filter
             const selectAllOption = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
             if (prev.every(f => f.show)) { // Are all options shown?
@@ -250,7 +259,6 @@ function PrimaryPanels() {
             if (toggled.every(f => !f.show)) { // Are all options hidden?
                 selectAllOption.children[1].textContent = "Deselect all fuels"
                 selectAllOption.children[0].style.backgroundColor = "#11658C"
-                console.log(prev)
                 return prev.map(f => ({ ...f, show: true })); // If true, select everything 
             }
             return toggled;
@@ -277,7 +285,7 @@ function PrimaryPanels() {
             if(clickedCountry == "all"){
                     selectAllOption.children[1].textContent = "Deselect all regions"
                     selectAllOption.children[0].style.backgroundColor = "#11658C"
-                    return prev.map(f => ({ ...f, show: true}));
+                    return prev.map(r => ({ ...r, show: true}));
             }
             if (toggled.every(r => !r.show)) { // Are all options hidden?
                 selectAllOption.children[1].textContent = "Deselect all regions"
@@ -343,6 +351,39 @@ function PrimaryPanels() {
         return newTitle
     }
 
+    // Check the context filter for any updates
+    useEffect(()=>{
+        if(!fuelFilter.length) return
+        const currentBCF = barChartFilter
+        const prevBCF = [...prevBarChartFilter.current]
+        setFuelFilter(prev => {
+            if (!currentBCF || !currentBCF.length) {
+                const result = prev.map(f =>
+                    prevBCF.includes(f.fuel) ? { ...f, show: false } : f
+                )
+                if (result.every(f => !f.show)) {
+                    return prev.map(f => ({ ...f, show: true }))
+                }
+                return result
+            }
+            const added = currentBCF.filter(f => !prevBCF.includes(f))
+            const removed = prevBCF.filter(f => !currentBCF.includes(f))
+            if(prev.every(r => r.show)){
+                return prev.map(f => ({ ...f, show: added.includes(f.fuel) }));
+            }
+            const result = prev.map(f => {
+                if (added.includes(f.fuel)) return { ...f, show: true }
+                if (removed.includes(f.fuel)) return { ...f, show: false }
+                return f
+            })
+            if (result.every(f => !f.show)) {
+                return prev.map(f => ({ ...f, show: true }))
+            }
+            return result
+        })
+        prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
+    }, [barChartFilter])
+
     // Update legend opacity when filter changes
     useEffect(() => {
         const filter = filterContainer.current; // Get the current filter component
@@ -357,6 +398,7 @@ function PrimaryPanels() {
         if (!sidePanel || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
         const legendsSidePanel = sidePanel.children[0].children[9].querySelectorAll(".filterLegend"); // Find all legends
         const toggleSidePanel = sidePanel.children[0].children[8].querySelectorAll(".filterLegend");
+        const bars = document.querySelectorAll(".barchartContainer");
 
         const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
@@ -382,6 +424,22 @@ function PrimaryPanels() {
             regionFilterDropDownTitle.textContent = newRegionTitle
         }
 
+        if(bars.length){
+            for(var i = 0; i < bars.length; i++){
+                let children = Array.from(bars[i].children)
+                children.forEach(c =>{
+                    let cName = c.classList.value
+                    if(cName.includes("bar_") && shownFuels.some(f => f.fuel == cName.slice(4)) && shownFuels.length < (legendsSidePanel.length - 1)){
+                        c.style.stroke = "#11658C"
+                        c.style.strokeWidth = "0.2dvh"
+                    }else{
+                        c.style.stroke = "unset"
+                        c.style.strokeWidth = "unset"
+                    }
+                })
+            }
+        }
+
         fuelFilter.forEach((fuel, i) => {
             if (legendsSidePanel[i+1]) { // If legend exists, +1 to skip select all option
                 legendsSidePanel[i+1].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
@@ -393,7 +451,7 @@ function PrimaryPanels() {
                 toggleSidePanel[i+1].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
             }
         })
-    }, [fuelFilter,regionFilter]);
+    }, [fuelFilter,regionFilter,popupCount]);
 
     // Update map layer filter
     useEffect(() => {
@@ -410,7 +468,6 @@ function PrimaryPanels() {
 
         if (shownFuels.length < fuelFilter.length) {
             const matchFuels = shownFuels.flatMap(f => f === "Other" ? [...otherFuels] : [f]);
-            console.log(matchFuels)
             filters.push(["in", ["get", "primary_fuel"], ["literal", matchFuels]]);
         }
         if (shownRegions.length < regionFilter.length) {

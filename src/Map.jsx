@@ -5,7 +5,7 @@ import * as d3 from "d3";
 
 import './Map.css'
 
-export const MapContext = createContext({ mapRef: null, powerPlants: null });
+export const MapContext = createContext({ mapRef: null, powerPlants: null, barChartFilter: null, setBarChartFilter: null, popupCount: 0 });
 
 // Previous mapStyle version
   /*
@@ -201,6 +201,8 @@ const _latestYearOfEstimatedGenerationData = 2017;
 
 function Map({ children }) {
   const [data, setData] = useState(null);
+  const [filter, setFilter] = useState(null);
+  const [popupCount, setPopupCount] = useState(0);
   const [colourData, setColourData] = useState(null);
   const [regionalData, setRegionalData] = useState(null);
   const mapContainer = useRef(null);
@@ -345,6 +347,22 @@ function Map({ children }) {
           regionalOverview.appendChild(overviewHeader)
           regionalOverview.appendChild(regionalInformation)
           contentElement.appendChild(regionalOverview)
+
+          const barElements = regionalInformation.querySelectorAll('[class*="bar_"]')
+          barElements.forEach(bar => {
+            bar.style.cursor = "pointer"
+            bar.onclick = () => {
+              setFilter(prev => {
+                const fuel = bar.getAttribute("class").split(" ").find(c => c.startsWith("bar_")).slice(4)
+                const updated = prev ? (prev.includes(fuel)
+                  ? prev.filter(f => f !== fuel)
+                  : [...prev, fuel])
+                  : [fuel]
+                return updated.length ? updated : null
+              })
+            }
+          })
+          setPopupCount(pc => pc + 1)
         }else if(!isOpen){
           const alertEl = document.getElementById("popUpAlert");
           alertEl.classList.remove("animate");
@@ -405,7 +423,7 @@ function Map({ children }) {
   }
 
   return (
-    <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data }}>
+    <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data, barChartFilter: filter, setBarChartFilter: setFilter, popupCount }}>
       <div ref={mapContainer} style={{ width: "78dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>
@@ -725,6 +743,7 @@ function getRegionalInfo(feature, data, colours){
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
+            .attr("class", "barchartContainer")
             .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
     // Add X axis
@@ -733,6 +752,7 @@ function getRegionalInfo(feature, data, colours){
         .range([ 0, width]);
     svg.append("g")
     .attr("transform", "translate(0," + height + ")")
+
 
     // To truncate fuel names which might be too long
     const truncateLabel = (text) =>{
@@ -777,6 +797,7 @@ function getRegionalInfo(feature, data, colours){
         .append("rect")
         .attr("x", x(0))
         .attr("y", d => y(d.fuel))
+        .attr("class", d => "bar_" + d.fuel)
         .attr("width", d => x(d.value))
         .attr("height", y.bandwidth())
         .attr("fill", d=>colour(d.fuel))
