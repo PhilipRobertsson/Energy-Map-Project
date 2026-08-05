@@ -7,6 +7,8 @@
     color: #A8A8A8;
     padding: 0;
     margin: 0;
+    display: flex;
+    align-items: center;
 }
 
 .maplibregl-popup-close-button img{
@@ -16,12 +18,11 @@
 
 .maplibregl-popup-content{
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     justify-content: space-between;
     background: #F2FBFF;
-    border-radius: 11px;
+    border-radius: 1.1dvh;
     padding: 1dvh 1dvh 1dvh 1dvh;
 }
 
@@ -73,6 +74,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 1.8vmin;
+    line-height: 1.4vmin;
     display: flex;
     align-items: baseline;
 }
@@ -88,8 +90,8 @@
 
 .popupInfoIcon{
     width: 1.5vmin;
-    height: 1.5vmin;
-    padding-left: 0.3dvw
+    height: auto;
+    margin-left: 0.3dvw;
 }
 
 .popupInfoWrapper{
@@ -100,46 +102,48 @@
 .generationInfoTooltip{
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black; /* Add dots under the hoverable text */
     cursor: pointer;
 }
 
 .generationInfoTooltipText{
-  visibility: hidden; /* Hidden by default */
-  width: 130px;
-  background-color: black;
-  color: #ffffff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1; /* Ensure tooltip is displayed above content */
-  top: -5px;
-  left: 105%;
+    visibility: hidden; /* Hidden by default */
+    width: 9dvw;
+    background-color: black;
+    color: #ffffff;
+    text-align: center;
+    padding: 1dvh;
+    border-radius: 0.5dvh;
+    position: absolute;
+    z-index: 1; /* Ensure tooltip is displayed above content */
+    left: 105%;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.8vmin;
+    line-height: 1.9vmin;
 }
 
 .regional-overview-panel{
     width: 100%;
-    padding-top: 1dvh;
+    padding-top: 0.5dvh;
 }
 
 .regional-overview-header{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
 .regional-overview-header img{
     width: 2vmin;
-    margin-right: 0.1dvw;
 }
 
 .regional-overview-info{
     display: none;
     flex-direction: column;
-    padding-bottom: 1dvh;
     width: 100%;
-    padding: 0.5dvh 0 0.5dvh;
+    padding: 0.5dvh 0 0.5dvh 0;
 }
 
 .regional-overview-info > span{
@@ -147,6 +151,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 1.8vmin;
+    line-height: 1.4vmin;
     display: flex;
     align-items: center;
 }
@@ -157,39 +162,18 @@
     font-weight: 700;
     font-style: normal;
     font-size: 1.8vmin;
-    margin-bottom:0.2vmin;
+    margin-bottom: 0.5dvh;
 }
 
 .regionalInfoIcon{
-    width: 1,5vmin;
-    height: 1.5vmin;
-    padding-left: 0.3dvw
+    width: 1.5vmin;
+    height: auto;
+    margin-left: 0.3dvw;
 }
 
 .regionalInfoWrapper{
     position: relative;
     display: inline-block;
-}
-
-.regionalInfoTooltip{
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black; /* Add dots under the hoverable text */
-  cursor: pointer;
-}
-
-.regionalInfoTooltipText{
-  visibility: hidden; /* Hidden by default */
-  width: 130px;
-  background-color: black;
-  color: #ffffff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1; /* Ensure tooltip is displayed above content */
-  top: -5px;
-  left: 105%;
 }
 
 .regional-overview-svg{

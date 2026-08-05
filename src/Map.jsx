@@ -287,6 +287,7 @@ function Map({ children }) {
             .addTo(map);
         
           const contentElement = popup.getElement().children[1]
+          contentElement.style.width = Math.round(400*scale) + "px"
 
           // Replace text based close button with image based icon instead
           const closeButton = contentElement.children[1]
@@ -508,8 +509,9 @@ function getPowerPlantInfo(feature, htmlElement){
         generationToolTip.className = "generationInfoTooltip"
         const generationToolTipText = document.createElement("span")
         generationToolTipText.className = "generationInfoTooltipText"
-        generationToolTipText.textContent = reported? "Reported value":"Estimated value"
-        generationToolTipText.textContent+= " from " + latestDataYear
+        generationToolTipText.textContent = "[PLACEHOLDER TEXT] Annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
+        /* generationToolTipText.textContent = reported? "Reported value":"Estimated value"
+        generationToolTipText.textContent+= " from " + latestDataYear */
 
         generationToolTip.appendChild(generationToolTipText)
         infoWrapper.appendChild(generationInfo)
@@ -569,11 +571,12 @@ function getRegionalInfo(feature, data, colours){
         
         // Add tooltip
         const infoToolTip = document.createElement("div")
-        infoToolTip.className = "regionalInfoTooltip"
+        infoToolTip.className = "generationInfoTooltip"
         const infoToolTipText = document.createElement("span")
-        infoToolTipText.className = "regionalInfoTooltipText"
-        infoToolTipText.textContent = reported? "Reported value":"Estimated value"
-        infoToolTipText.textContent+= " from " + latestDataYear
+        infoToolTipText.className = "generationInfoTooltipText"
+        /* infoToolTipText.textContent = reported? "Reported value":"Estimated value"
+        infoToolTipText.textContent+= " from " + latestDataYear */
+        infoToolTipText.textContent = "[PLACEHOLDER TEXT] Annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
         
         infoToolTip.appendChild(infoToolTipText)
         infoWrapper.appendChild(infoIcon)
