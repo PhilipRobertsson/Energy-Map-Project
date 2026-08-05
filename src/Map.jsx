@@ -332,8 +332,10 @@ function Map({ children }) {
           overviewTitle.textContent = `${properties.country_long}`
           overviewOpen.src = assetSources.popupRollupClosed
 
+          // Get the regional information about the corresponding country
           const regionalInformation = getRegionalInfo(properties, regionalData, colourData)
           
+          // Handle clicks on the rollup icon
           overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
         
           // Get regionalInfoIcon

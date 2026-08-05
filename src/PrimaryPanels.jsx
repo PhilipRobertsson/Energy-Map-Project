@@ -31,7 +31,14 @@ const assetSources ={
     sidePanelRollupOpen: "./sidePanel/sidePanelRollupOpen.svg",
     sidePanelRollupClose: "./sidePanel/sidePanelRollupClose.svg",
     sidePanelCheckMark: "./sidePanel/sidePanelCheckMark.svg"
-}
+};
+
+// Used to filter out fuels which either are too uncommon or unimportant for the visualization
+const otherFuels =[
+    "Petcoke", "Wave and Tidal", "Tidal",
+    "Geothermal", "Cogeneration", "Storage",
+    "Biomass", "Waste", "Other"
+];
 
 // The different pages on the instruction page
 const allPages = [
@@ -42,7 +49,7 @@ const allPages = [
     {id: 4, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false, false, false, true,false,false, true]},
     {id: 5, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false,true,false, true]},
     {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false,false,true, true]},
-]
+];
 
 const _firstYearOfGenerationData = 2013;
 const _latestYearOfGenerationData = 2019;
@@ -60,6 +67,7 @@ function PrimaryPanels() {
     const [regionalData, setRegionalData] = useState([]);
     const [sidePanelPage, setSidePanelPage] = useState(allPages[0]);
     const [pages, setPages] = useState(null);
+    const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
 
@@ -81,6 +89,12 @@ function PrimaryPanels() {
       .then((response) => response.json())
       .then((data) => {
         setRegionFilter(data);
+      });
+
+    fetch("./instructions.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setPageContent(data);
       });
     }, []);
 
@@ -395,7 +409,7 @@ function PrimaryPanels() {
                 legendsFilter[i].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
             }
         });
-        if (!sidePanel || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
+        if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
         const legendsSidePanel = sidePanel.children[0].children[9].querySelectorAll(".filterLegend"); // Find all legends
         const toggleSidePanel = sidePanel.children[0].children[8].querySelectorAll(".filterLegend");
         const bars = document.querySelectorAll(".barchartContainer");
@@ -460,10 +474,6 @@ function PrimaryPanels() {
         const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
         const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
 
-        const otherFuels = ["Petcoke", "Wave and Tidal", "Tidal",
-                                       "Geothermal", "Cogeneration", "Storage",
-                                       "Biomass", "Waste", "Other"];
-
         const filters = ["all"];
 
         if (shownFuels.length < fuelFilter.length) {
@@ -515,13 +525,14 @@ function PrimaryPanels() {
         const sidePanel = sidePanelContainer.current; // Get the current sidePanel component
 
         if (!sidePanel) return;
+        if (!pageContent) return;
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
-            if (pages) sidePanel.replaceChildren()
-            const newPages = createPages(powerPlants, regionalData,
+            if (pages){sidePanel.replaceChildren()}
+            const newPages = createPages(pageContent, powerPlants, regionalData,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds])
             )
-            if (powerPlants) newPages.dataset.powerPlantsSynced = "true"
+            if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
             return
         }else{ // The pages exists
@@ -660,7 +671,7 @@ function PrimaryPanels() {
             }
         }
         
-    }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants])
+    }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent])
 
     return(<>
         <div id={fuelFilterDef.id} ref={filterContainer} style={{
@@ -696,9 +707,7 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
 
     for (const f of pps.features) {
         const p = f.properties;
-        if(["Petcoke", "Wave and Tidal", "Tidal",
-             "Geothermal", "Cogeneration", "Storage",
-             "Biomass", "Waste"].includes(p.primary_fuel)){
+        if(otherFuels.includes(p.primary_fuel)){
             p.primary_fuel = "Other"
         }
         if (!shownRegions.includes(p.country)) continue;
@@ -717,16 +726,7 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
     return shownPowerPlants
 }
 
-function createPages(powerPlants, regionalData, onYearChange, onGenerationChange){
-    /*--[Plan]--*/
-    // - The different filters, ensure these are stae-based, so that the filter parameters are saved when page is changed
-    // - This also goes for the counter showing the number of displayed power plants
-    // - The container for the instruction text, change text for each page and just hide it for the home page and info-page
-    // - The smaller title used in each instruction page, change text for each page and hide on home page and info-page
-    // - Large title, show only on home page, hide on in rest
-    // - Entire info page will be unique
-    // - Navigation bar is freestanding and will be updated in main function 
-
+function createPages(pageContent, powerPlants, regionalData, onYearChange, onGenerationChange){
     // All of this should preferable be generated from a JSON file or similar, allows for quick addition of additional
     // pages or different languages
 
@@ -802,12 +802,12 @@ function createPages(powerPlants, regionalData, onYearChange, onGenerationChange
     filterCounter.appendChild(filterCounterStatic)
 
     // Instruction containers / Info text
-    const filtersPageContainer = getInstructions("filter")
-    const legendsPageContainer = getInstructions("legends")
-    const dataCardsPageContainer = getInstructions("dataCards")
-    const overviewPageContainer = getInstructions("overview")
-    const comparePageContainer = getInstructions("compare")
-    const infoPageContainer = getInstructions("info")
+    const filtersPageContainer = getInstructions(pageContent, 0)
+    const legendsPageContainer = getInstructions(pageContent, 1)
+    const dataCardsPageContainer = getInstructions(pageContent, 2)
+    const overviewPageContainer = getInstructions(pageContent, 3)
+    const comparePageContainer = getInstructions(pageContent, 4)
+    const infoPageContainer = getInstructions(pageContent, 5)
 
 
     // Navigation bar at bottom of side panel
@@ -972,9 +972,7 @@ function getSliders(filter, regionalData, onChange){
                     let min = 0;
                     if(values.length){
                         min = Math.min(...values)
-                        if(min < smallest){
-                            smallest = min
-                        }
+                        if(min < smallest){ smallest = min }
                     }
                 })
 
@@ -983,9 +981,7 @@ function getSliders(filter, regionalData, onChange){
                     let max = 0;
                     if(values.length){
                         max = Math.max(...values)
-                        if(max > largest){
-                            largest = max
-                        }
+                        if(max > largest){ largest = max }
                     }
                 })
 
@@ -1027,11 +1023,8 @@ function getSliders(filter, regionalData, onChange){
                 const px = getClientX(ev) - trackRect.left
                 const percentage = Math.max(0, Math.min(100, (px / trackWidth) * 100))
                 const value = Math.round(minVal + (percentage / 100) * (maxVal - minVal))
-                if (isMin) {
-                    valueMin = Math.min(value, valueMax - 1)
-                } else {
-                    valueMax = Math.max(value, valueMin + 1)
-                }
+                if (isMin) { valueMin = Math.min(value, valueMax - 1) }
+                else { valueMax = Math.max(value, valueMin + 1) }
                 updateSlider()
             }
 
@@ -1111,28 +1104,9 @@ function getSliders(filter, regionalData, onChange){
     return sliderContainer
 }
 
-// This entire function will be rewritten to better suit JSON data (and shorten it)
-function getInstructions(page){
+function getInstructions(pageContent, id){
     const container = document.createElement("div")
     container.classList.add('sidePanelInstructionsContainer')
-
-    const title = document.createElement("h2")
-    const introText = document.createElement("p")
-    title.classList.add('instructionsTitle')
-    introText.classList.add('instructionsIntro')
-
-    const stepsTitle = document.createElement("h3")
-    const stepsList = document.createElement("ul")
-    stepsTitle.classList.add('instructionStepsTitle')
-    stepsList.classList.add('instructionStepsList')
-
-    // List items
-    const firstItem = document.createElement("li") // First item in list
-    const secondItem = document.createElement("li") // Second item in list
-    const thirdItem = document.createElement("li") // Third item in list
-    const fourthItem = document.createElement("li") // Fourth item in list
-    const fifthItem = document.createElement("li") // Fifth item in list
-    const sixthItem = document.createElement("li") // Sixth item in list
 
     const makeTitle = (text) => {
         const element = document.createElement("strong")
@@ -1140,12 +1114,14 @@ function getInstructions(page){
         element.textContent = text
         return element
     }
+
     const makeStandard = (text) => {
         const element = document.createElement("span")
         element.classList.add("instructionStepsItemStandard")
         element.textContent = text
         return element
     }
+
     const makeHighlight = (text) => {
         const element = document.createElement("strong")
         element.classList.add("instructionStepsItemHighlight")
@@ -1153,221 +1129,67 @@ function getInstructions(page){
         return element
     }
 
-    switch(page){
-        case "filter":
-            title.textContent = "Filter your map view"
-            introText.textContent = "Use the drop-downs and sliders to filter what is shown on the map to filter what is shown on the map."
-            stepsTitle.textContent = "Try these steps:"
+    pageContent.forEach(content =>{
+        if(id == content.id){
+            if(content.title){ // If the page contains a title
+                const title = document.createElement("h2")
+                title.classList.add('instructionsTitle')
+                title.textContent = content.title
+                container.appendChild(title)
+            }
 
-            // Instructions for this page
-            firstItem.appendChild(makeTitle('Choose a place: '))
-            firstItem.appendChild(makeStandard('Tap the top drop-down list to select '))
-            firstItem.appendChild(makeHighlight('regions'))
-            firstItem.appendChild(makeStandard(', like Sweden, Norway, and others.'))
-            stepsList.appendChild(firstItem)
+            if(content.introText){ // If the page contains an intro text
+                const introText = document.createElement("p")
+                introText.classList.add('instructionsIntro')
+                introText.textContent = content.introText
+                container.appendChild(introText)
+            }
 
-            secondItem.appendChild(makeTitle('Choose a power source: '))
-            secondItem.appendChild(makeStandard('Tap the second drop-down list to select different '))
-            secondItem.appendChild(makeHighlight('power sources'))
-            secondItem.appendChild(makeStandard('.'))
-            stepsList.appendChild(secondItem)
+            if(content.stepsTitle){ // If the page contains a steps title
+                const stepsTitle = document.createElement("h3")
+                stepsTitle.classList.add('instructionStepsTitle')
+                stepsTitle.textContent = content.stepsTitle
+                container.appendChild(stepsTitle)
+            }
 
-            thirdItem.appendChild(makeTitle('Select a time range: '))
-            thirdItem.appendChild(makeStandard('Drag the handles on the '))
-            thirdItem.appendChild(makeHighlight('year started '))
-            thirdItem.appendChild(makeStandard('slider to select a specific time period.'))
-            stepsList.appendChild(thirdItem)
+            if(content.stepsItems){ // If the page contains a list of steps
+                const stepsList = document.createElement("ul")
+                stepsList.classList.add('instructionStepsList')
+                content.stepsItems.forEach(item =>{
+                    let collector = document.createElement("li")
+                    item.forEach(s =>{
+                        collector.appendChild(eval('make'+s[0]+'("'+s[1]+'")'))
+                    })
+                    stepsList.appendChild(collector)
+                })
+                container.append(stepsList)
+            }
 
-            fourthItem.appendChild(makeTitle('Select plants by size: '))
-            fourthItem.appendChild(makeStandard('Drag the '))
-            fourthItem.appendChild(makeHighlight('electricity generated per year '))
-            fourthItem.appendChild(makeStandard('slider to filter out smaller and larger stations and see only the middle-range power generators.'))
-            stepsList.appendChild(fourthItem)
+            if(content.paragraphs){ // If the page contains paragraphs
+                content.paragraphs.forEach(p =>{
+                    const paragraph = document.createElement("p")
+                    paragraph.classList.add('instructionsIntro')
+                    paragraph.textContent = p
+                    container.append(paragraph)
+                })
+            }
 
-            break;
-        case "legends":
-            title.textContent = "Reading the Map"
-            introText.textContent = "The coloured circles on the map show individual power plants scattered across the landscape."
-            stepsTitle.textContent = "How to read the symbols:"
+            if(content.secondTitle){ // If the page contains a second title
+                const secondTitle = document.createElement("h2")
+                secondTitle.classList.add('instructionsTitle')
+                secondTitle.textContent = content.secondTitle
+                container.appendChild(secondTitle)
+            }
 
-            // Instructions for this page
-            firstItem.appendChild(makeTitle('Circle size (capacity): '))
-            firstItem.appendChild(makeStandard('Bigger circles represent major power stations that generate large amounts of electicity, while smaller dots represent smaller stations.'))
-
-            secondItem.appendChild(makeTitle('Circle colour (energy source): '))
-            secondItem.appendChild(makeStandard('Each colour stands for a different type of energy. Check the map legend for the full list.'))
-
-            // Append list items to list
-            stepsList.appendChild(firstItem)
-            stepsList.appendChild(secondItem)
-            break;
-        case "dataCards":
-            title.textContent = "Compare Power Plant Details"
-            introText.textContent = "Tap on the map to open data cards and compare information across different power plants."
-            stepsTitle.textContent = "Try these steps:"
-
-            // Instructions for this page
-            firstItem.appendChild(makeTitle('Open a card: '))
-            firstItem.appendChild(makeStandard('Tap any circle on the map to view its specific '))
-            firstItem.appendChild(makeHighlight('data panel'))
-            firstItem.appendChild(makeStandard('.'))
-
-            secondItem.appendChild(makeTitle('Review the data: '))
-            secondItem.appendChild(makeStandard("Check the panel to see the facility's location, year started, and annual energy output."))
-
-            thirdItem.appendChild(makeTitle('Compare side-by-side: '))
-            thirdItem.appendChild(makeStandard('Tap another circle on the map. The new data panel will open next to the first one for direct comparison.'))
-            
-            fourthItem.appendChild(makeTitle('Compare the mix: '))
-            fourthItem.appendChild(makeStandard('Tap the '))
-            fourthItem.appendChild(makeHighlight('arrow next to the region '))
-            fourthItem.appendChild(makeStandard('on the data card to open the '))
-            fourthItem.appendChild(makeHighlight('regional overview panel '))
-            fourthItem.appendChild(makeStandard('to see the percentages of wind, water, and other sources of the region.'))
-
-            fifthItem.appendChild(makeTitle('Close a panel: '))
-            fifthItem.appendChild(makeStandard('Tap the "'))
-            fifthItem.appendChild(makeHighlight('X'))
-            fifthItem.appendChild(makeStandard('" in the corner of any data card to remove it from your screen.'))
-            
-            // Append list items to list
-            stepsList.appendChild(firstItem)
-            stepsList.appendChild(secondItem)
-            stepsList.appendChild(thirdItem)
-            stepsList.appendChild(fourthItem)
-            stepsList.appendChild(fifthItem)
-            break;
-        case "overview":
-            title.textContent = "What powers Sweden?"
-            introText.textContent = "Explore how Swedish power plants catch the energy of nature to keep your lights on."
-            stepsTitle.textContent = "Try these steps:"
-
-            // Instructions for this page
-            firstItem.appendChild(makeTitle('Find your region: '))
-            firstItem.appendChild(makeStandard('Tap the top '))
-            firstItem.appendChild(makeHighlight('region dropdown '))
-            firstItem.appendChild(makeStandard('and select '))
-            firstItem.appendChild(makeTitle('Sweden'))
-            firstItem.appendChild(makeStandard('.'))
-
-            secondItem.appendChild(makeTitle('Select your source: '))
-            secondItem.appendChild(makeStandard('Switch the '))
-            secondItem.appendChild(makeHighlight('power source dropdown '))
-            secondItem.appendChild(makeStandard('to '))
-            secondItem.appendChild(makeTitle('wind '))
-            secondItem.appendChild(makeStandard('or '))
-            secondItem.appendChild(makeTitle('water '))
-            secondItem.appendChild(makeStandard('to see where they are on the map.'))
-
-            thirdItem.appendChild(makeTitle('Change the time range: '))
-            thirdItem.appendChild(makeStandard('Drag the '))
-            thirdItem.appendChild(makeHighlight('year started slider '))
-            thirdItem.appendChild(makeStandard('to see how the plants grew over the decades.'))
-
-            fourthItem.appendChild(makeTitle('Find your local source: '))
-            fourthItem.appendChild(makeStandard('Tap a large '))
-            fourthItem.appendChild(makeHighlight('circle '))
-            fourthItem.appendChild(makeStandard('near your city to see its opening year and annual energy output.'))
-
-            fifthItem.appendChild(makeTitle('Open the reginal overview: '))
-            fifthItem.appendChild(makeStandard('Tap the '))
-            fifthItem.appendChild(makeHighlight('arrow next to the region '))
-            fifthItem.appendChild(makeStandard('to open the '))
-            fifthItem.appendChild(makeHighlight('regional overview panel '))
-            fifthItem.appendChild(makeStandard('to read about the energy sources and total capacity of '))
-            fifthItem.appendChild(makeTitle('Sweden'))
-            fifthItem.appendChild(makeStandard('.'))
-
-            // Append list items to list
-            stepsList.appendChild(firstItem)
-            stepsList.appendChild(secondItem)
-            stepsList.appendChild(thirdItem)
-            stepsList.appendChild(fourthItem)
-            stepsList.appendChild(fifthItem)
-            break;
-        case "compare":
-            title.textContent = "Why does Sweden and Denmark use different energy sources?"
-            introText.style.display = "none" // No text for this part of the page
-            stepsTitle.textContent = "Follow these steps to see how geography shapes energy:"
-
-            // Instructions for this page
-            firstItem.appendChild(makeTitle('Filter by regions: '))
-            firstItem.appendChild(makeStandard('Use the '))
-            firstItem.appendChild(makeHighlight('region dropdown '))
-            firstItem.appendChild(makeStandard('to show plants in Sweden and Denmark on the map.'))
-
-            secondItem.appendChild(makeTitle('Compare side-by-side: '))
-            secondItem.appendChild(makeStandard('Look at the dominant colors in each country, and see what energy source they represent.'))
-
-            thirdItem.appendChild(makeTitle('Compare data: '))
-            thirdItem.appendChild(makeStandard('Tap a plant in each region to open its '))
-            thirdItem.appendChild(makeHighlight('data card'))
-            thirdItem.appendChild(makeStandard(', then open and read the '))
-            thirdItem.appendChild(makeHighlight('regional overview'))
-            thirdItem.appendChild(makeStandard('.'))
-
-            fourthItem.appendChild(makeTitle('See the difference: '))
-            fourthItem.appendChild(makeStandard('Notice how Sweden’s rivers favor hydropower, while Denmark’s flat coasts favor wind energy.'))
-
-            fifthItem.appendChild(makeTitle('Explore changes over time: '))
-            fifthItem.appendChild(makeStandard('Adjust the '))
-            fifthItem.appendChild(makeHighlight('year slider '))
-            fifthItem.appendChild(makeStandard('how wind and water power expanded over the decades.'))
-
-            sixthItem.appendChild(makeTitle('Finding the "giants": '))
-            sixthItem.appendChild(makeStandard('Slide the '))
-            sixthItem.appendChild(makeHighlight('electricity generation filter '))
-            sixthItem.appendChild(makeStandard('to high to locate the country’s most powerful energy stations.'))
-
-            // Append list items to list
-            stepsList.appendChild(firstItem)
-            stepsList.appendChild(secondItem)
-            stepsList.appendChild(thirdItem)
-            stepsList.appendChild(fourthItem)
-            stepsList.appendChild(fifthItem)
-            stepsList.appendChild(sixthItem)
-            break;
-        case "info":
-            title.textContent = "Introduction"
-
-            const firstParagraph = document.createElement("p")
-            const secondParagraph = document.createElement("p")
-            const thirdParagraph = document.createElement("p")
-
-            firstParagraph.classList.add('instructionsIntro')
-            secondParagraph.classList.add('instructionsIntro')
-            thirdParagraph.classList.add('instructionsIntro')
-
-            firstParagraph.textContent = "This PhD research project visualizes the distribution and capacity of power plants worldwide. It transforms complex energy data into an interactive map, revealing how our planet stays powered. Explore the hidden infrastructure that sustains modern society across every continent."
-            secondParagraph.textContent += "By tapping individual data points, you can access specific details about any plant on the map. Use the built-in filters to compare different energy sources. \n"
-            thirdParagraph.textContent += "The Story Mode will walk you through the tool’s features while highlighting key trends in global energy. Discover the balance of power that shapes our international communities today. \n"
-            
-            const secondTitle = document.createElement("h2")
-            secondTitle.classList.add('instructionsTitle')
-            secondTitle.textContent = "Source of Information"
-
-            const sourceOfData = document.createElement("p")
-            sourceOfData.classList.add('instructionsIntro')
-            sourceOfData.textContent = "https://www.wri.org/research/global-database-power-plants"
-            
-            container.appendChild(title)
-            container.appendChild(firstParagraph)
-            container.appendChild(secondParagraph)
-            container.appendChild(thirdParagraph)
-            container.appendChild(secondTitle)
-            container.appendChild(sourceOfData)
-
-            break;
-        default:
-            break;
-    }
-    if(page == "info"){
-        return container
-    }else{
-        container.appendChild(title)
-        container.appendChild(introText)
-        container.appendChild(stepsTitle)
-        container.appendChild(stepsList)
-        return container
-    }
+            if(content.secondParagraphs){ // If the page contains a second set of paragraphs
+                content.secondParagraphs.forEach(p =>{
+                    const secondParagraph = document.createElement("p")
+                    secondParagraph.classList.add('instructionsIntro')
+                    secondParagraph.textContent = p
+                    container.append(secondParagraph)
+                })
+            }
+        }
+    })
+    return container
 }
