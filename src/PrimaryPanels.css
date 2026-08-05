@@ -230,7 +230,7 @@
     font-weight: 800;
     font-style: normal;
     font-size: 2.5vmin;
-    margin: 1dvh 0 0.5dvh 0;
+    margin: 1dvh 0 0 0;
     align-self:center;
     color: #004B70;
 }
@@ -240,7 +240,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 1.8vmin;
-    margin: 0 0 0.5dvh 0;
+    margin: 1dvh 0 0 0;
 }
 
 .instructionStepsTitle{
@@ -256,6 +256,8 @@
 
 .instructionStepsList{
     font-size: 1.8vmin;
+    margin: 1dvh 0 0 0;
+    padding-left: 3ch;
 }
 
 .instructionStepsItemTitle{
@@ -362,8 +364,8 @@
 
 .sliderThumb{
     position: absolute;
-    width: 1.8dvh;
-    height: 1.8dvh;
+    width: 1.5dvh;
+    height: 1.5dvh;
     background-color: #ffffff;
     border: 2px solid #11658C;
     border-radius: 50%;
@@ -376,7 +378,7 @@
 }
 .sliderValueText{
     position: relative;
-    top: -4.2dvh;
+    top: -4dvh;
     display: block;
     font-family: "Lato", sans-serif;
     font-weight: 600;
@@ -394,7 +396,7 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    margin: 7dvh 0 1dvh 0;
+    margin: 5dvh 0 1dvh 0;
 }
 .sliderEdgeText{
     font-family: "Lato", sans-serif;
@@ -431,4 +433,22 @@
 .selectAllDropdown > div {
     border: 0.1vmin solid #11658C;
     border-radius: 50%;
+}
+
+/*Specific styling for tablet-sized devices*/
+@media (max-height: 1024px){
+    #sidePanel{width: 30dvw !important;}
+    .sidePanelPageContainer{margin-left: 2dvw;}
+    #sidePanelMainTitle{font-size: 4.5vmax;}
+    #sidePanelSubtitle{font-size: 1.9vmax;}
+    #InfoTitle{font-size: 4.5vmax;}
+    .instructionTitle{font-size: 1.2vmax;}
+    .instructionsTitle{font-size: 2vmin;}
+    .instructionsIntro{font-size: 1.5vmin; margin: 0.5dvh 0 0 0;}
+    .instructionStepsTitle{font-size: 1.5vmin; margin: 0.5dvh 0 0 0;}
+    .instructionStepsList{font-size: 1.5vmin; margin: 0.5dvh 0 0 0; padding-left: 2ch;}
+    .instructionStepsItemTitle{font-size: 1.5vmin;}
+    .instructionStepsItemStandard{font-size: 1.5vmin;}
+    .instructionStepsItemHighlight{font-size: 1.5vmin;}
+    #navigationBarContainer{width: 25%;}
 }
