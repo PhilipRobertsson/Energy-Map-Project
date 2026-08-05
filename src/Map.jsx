@@ -729,11 +729,11 @@ function getRegionalInfo(feature, data, colours){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
     var barChartPadding = 0.2 
     var barHeight = Math.round(35 * scale)
-    var barChartWidth = Math.round(350 * scale)
+    var barChartWidth = Math.round(390 * scale)
     var barChartHeight = latestDataArray.length * (barHeight + barChartPadding)
     var margin = {
       top: 0,
-      right: Math.round(80 * scale),
+      right: Math.round(100 * scale),
       bottom: 0,
       left: Math.round(100 * scale)
     },

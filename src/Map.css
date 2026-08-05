@@ -23,7 +23,7 @@
     justify-content: space-between;
     background: #F2FBFF;
     border-radius: 1.1dvh;
-    padding: 1dvh 1dvh 1dvh 1dvh;
+    padding: 1.5dvh;
 }
 
 .maplibregl-popup-tip {
