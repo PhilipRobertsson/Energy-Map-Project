@@ -1,7 +1,7 @@
 [
     {
         "id":0,
-        "name":"filter",
+        "name":"Energy Map - Filters",
         "title":"Filter your map view",
         "introText":"Use the drop-downs and sliders to filter what is shown on the map to filter what is shown on the map.",
         "stepsTitle":"Try these steps:",
@@ -34,7 +34,7 @@
     },
     {
         "id":1,
-        "name":"legends",
+        "name":"Energy Map - Legends",
         "title":"Reading the Map",
         "introText":"The coloured circles on the map show individual power plants scattered across the landscape.",
         "stepsTitle":"How to read the symbols:",
@@ -51,7 +51,7 @@
     },
     {
         "id":2,
-        "name":"dataCards",
+        "name":"Energy Map - Data Cards",
         "title":"Compare Power Plant Details",
         "introText":"Tap on the map to open data cards and compare information across different power plants.",
         "stepsTitle":"Try these steps:",
@@ -88,7 +88,7 @@
     },
     {
         "id":3,
-        "name":"overview",
+        "name":"Energy Map - Sweden Overview",
         "title":"What powers Sweden?",
         "introText":"Explore how Swedish power plants catch the energy of nature to keep your lights on.",
         "stepsTitle":"Try these steps:",
@@ -137,7 +137,7 @@
     },
     {
         "id":4,
-        "name":"compare",
+        "name":"Energy Map - Compare Sweden and Denmark",
         "title":"Why does Sweden and Denmark use different energy sources?",
         "stepsTitle":"Follow these steps to see how geography shapes energy:",
         "stepsItems":[
@@ -179,7 +179,7 @@
     },
     {
         "id":5,
-        "name":"info",
+        "name":"Info",
         "title":"Introduction",
         "secondTitle":"Source of Information",
         "paragraphs":[

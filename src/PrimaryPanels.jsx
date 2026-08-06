@@ -668,9 +668,6 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerpl
 }
 
 function createPages(pageContent, powerPlants, regionalData, onYearChange, onGenerationChange){
-    // All of this should preferable be generated from a JSON file or similar, allows for quick addition of additional
-    // pages or different languages
-
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
     
@@ -682,48 +679,30 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
     sidePanelMainTitle.textContent = "Energy Map"
     sidePanelSubtitle.textContent = "Mapping the Pulse of Power"
 
+    pageContainer.appendChild(sidePanelMainTitle)
+    pageContainer.appendChild(sidePanelSubtitle)
+
     // Instruction page titles
-    const titleFilters = document.createElement("h2")
-    const titleLegends = document.createElement("h2")
-    const titleDataCards = document.createElement("h2")
-    const titleDataOverview = document.createElement("h2")
-    const titleDataCompare = document.createElement("h2")
+    pageContent.forEach(content =>{
+        let titleInstructions = (content.id == 5)? document.createElement("h1") : document.createElement("h2")
+        if(content.id == 5) {titleInstructions.id = "InfoTitle"}
+        else{titleInstructions.classList.add('instructionTitle')}
+        titleInstructions.textContent = content.name
+        pageContainer.appendChild(titleInstructions)
+    })
 
-    titleFilters.classList.add('instructionTitle')
-    titleLegends.classList.add('instructionTitle')
-    titleDataCards.classList.add('instructionTitle')
-    titleDataOverview.classList.add('instructionTitle')
-    titleDataCompare.classList.add('instructionTitle')
-
-    titleFilters.textContent = "Energy Map - Filters"
-    titleLegends.textContent = "Energy Map - Legends"
-    titleDataCards.textContent = "Energy Map - Data Cards"
-    titleDataOverview.textContent = "Energy Map - Sweden Overview"
-    titleDataCompare.textContent = "Energy Map - Compare Sweden and Denmark"
-
-    // Info page title
-    const InfoTitle = document.createElement("h1")
-    InfoTitle.id = "InfoTitle"
-    InfoTitle.textContent = "Info"
-
-    // Filter drop downs
-    const regionFilterContainer = document.createElement("div")
-    const sourceFilterContainer = document.createElement("div")
-    const yearFilterContainer = document.createElement("div")
-    const generatedFilterContainer = document.createElement("div")
-
-    regionFilterContainer.classList.add('sidePanelFilterContainer')
-    sourceFilterContainer.classList.add('sidePanelFilterContainer')
-    yearFilterContainer.classList.add('sidePanelFilterContainer')
-    generatedFilterContainer.classList.add('sidePanelFilterContainer')
-
-    // Drop downs
-    regionFilterContainer.appendChild(getDropDown("region"))
-    sourceFilterContainer.appendChild(getDropDown("fuel"))
-
-    // Sliders
-    yearFilterContainer.appendChild(getSliders("year", regionalData, onYearChange))
-    generatedFilterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange))
+    // Filter drop downs and sliders
+    for(var i = 0; i < 4; i++){
+        let filterContainer = document.createElement("div")
+        filterContainer.classList.add('sidePanelFilterContainer')
+        switch (i) {
+            case 0: filterContainer.appendChild(getDropDown("region")); break;
+            case 1: filterContainer.appendChild(getDropDown("fuel")); break;
+            case 2: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
+            case 3: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
+        }
+        pageContainer.appendChild(filterContainer)
+    }
 
     // Filter counter
     const filterCounter = document.createElement("span")
@@ -735,21 +714,18 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
     filterCounterStatic.id = "filterCounterStatic"
 
     var count = powerPlants? powerPlants.features.length : "1000"
-
     filterCounterValue.textContent = count // Update based on number of power plants in the data
     filterCounterStatic.textContent = "/"+ count + " power plants selected"// Update based on number of power plants in the data
 
     filterCounter.appendChild(filterCounterValue)
     filterCounter.appendChild(filterCounterStatic)
+    pageContainer.appendChild(filterCounter)
 
     // Instruction containers / Info text
-    const filtersPageContainer = getInstructions(pageContent, 0)
-    const legendsPageContainer = getInstructions(pageContent, 1)
-    const dataCardsPageContainer = getInstructions(pageContent, 2)
-    const overviewPageContainer = getInstructions(pageContent, 3)
-    const comparePageContainer = getInstructions(pageContent, 4)
-    const infoPageContainer = getInstructions(pageContent, 5)
-
+    for(var i = 0; i<pageContent.length; i++){
+        let page = getInstructions(pageContent, i)
+        pageContainer.appendChild(page)
+    }
 
     // Navigation bar at bottom of side panel
     const navigationContainer = document.createElement("div")
@@ -769,33 +745,7 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
         }
         icon.id = "navigationID" + i
         navigationContainer.appendChild(icon)
-    }    
-
-    // Append elements
-    pageContainer.appendChild(sidePanelMainTitle)
-    pageContainer.appendChild(sidePanelSubtitle)
-
-    pageContainer.appendChild(titleFilters)
-    pageContainer.appendChild(titleLegends)
-    pageContainer.appendChild(titleDataCards)
-    pageContainer.appendChild(titleDataOverview)
-    pageContainer.appendChild(titleDataCompare)
-
-    pageContainer.appendChild(InfoTitle)
-
-    pageContainer.appendChild(regionFilterContainer)
-    pageContainer.appendChild(sourceFilterContainer)
-    pageContainer.appendChild(yearFilterContainer)
-    pageContainer.appendChild(generatedFilterContainer)
-
-    pageContainer.appendChild(filterCounter)
-
-    pageContainer.appendChild(filtersPageContainer)
-    pageContainer.appendChild(legendsPageContainer)
-    pageContainer.appendChild(dataCardsPageContainer)
-    pageContainer.appendChild(overviewPageContainer)
-    pageContainer.appendChild(comparePageContainer)
-    pageContainer.appendChild(infoPageContainer)
+    }
 
     pageContainer.appendChild(navigationContainer)
 
