@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef, useContext, createElement } from 'react'
-import * as d3 from "d3";
 
 import { MapContext } from './Map.jsx'
 
 import './PrimaryPanels.css'
-import { typeOf } from 'maplibre-gl';
 
 // Definition for the filter panel
 const fuelFilterDef = {
@@ -132,7 +130,7 @@ function PrimaryPanels() {
             label.classList.add("legendName")
             label.textContent = fuel.fuel
 
-            legend.onclick = () => handleLegendClick(fuel.fuel); // Filters the data points on the map according to fuelFilter state
+            legend.onclick = () => handleFueLegClick(fuel.fuel); // Filters the data points on the map according to fuelFilter state
             legend.appendChild(colour) // Append the colour box to the legend element
             legend.appendChild(label) // Append the text to the legend element
             filter.appendChild(legend) // Append the legend to the filter container
@@ -242,7 +240,7 @@ function PrimaryPanels() {
     }
 
     // Handle clicks on the seperate legends
-    function handleLegendClick(clickedFuel){
+    function handleFueLegClick(clickedFuel){
         if (clickedFuel === "all") {
             setBarChartFilter(null)
         } else {
@@ -281,7 +279,7 @@ function PrimaryPanels() {
     }
 
     // Handle clicks on the seperate country toggles
-    function handleToggleClick(clickedCountry){
+    function handleRegLegClick(clickedCountry){
         setRegionFilter(prev => { // prev, previous filter
             const selectAllOption = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
             if (prev.every(r => r.show)) { // Are all options shown?
@@ -561,99 +559,69 @@ function PrimaryPanels() {
             sidePanelRegionHeader.onclick = () => handleRollupClick(sidePanelRegionFilter, [sidePanelFuelFilter])
             sidePanelFuelHeader.onclick = () => handleRollupClick(sidePanelFuelFilter, [sidePanelRegionFilter])
 
+            // Fills the provided drop down with the corresponding filter contents
+            const fillDropDowns = (dropDownE,type,filter) =>{
+                if(dropDownE.children.length == 0){
+                    let selectAllField = document.createElement("div")
+                    selectAllField.classList.add("filterLegend", "selectAllDropdown")
+
+                    let selectAllCheckBox = document.createElement("div")
+                    selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
+                    selectAllCheckBox.style.backgroundColor = "#11658C"
+
+                    let selectAllName = document.createElement("p")
+                    selectAllName.classList.add("legendName", "sidePanelFilterName")
+                    selectAllName.textContent = "Deselect all fuels"
+
+                    selectAllField.appendChild(selectAllCheckBox)
+                    selectAllField.appendChild(selectAllName) // Append the text to the legend element
+                    dropDownE.appendChild(selectAllField) // Append the legend to the filter container
+
+                    for(let i = 0; i < filter.length; i++){
+                        const item = filter[i] // Used for easier access
+
+                        // Create legend element
+                        const legend = document.createElement("div")
+                        legend.classList.add("filterLegend")
+
+                        // Create colour legend / check box
+                        const colour = document.createElement("div")
+                        colour.classList.add("legendColour", "sidePanelFilterColour")
+
+                        if(type == "region"){
+                            /*Use checkmark*/
+                            colour.style.backgroundColor = "#11658C"
+
+                            const checkMark = document.createElement("img")
+                            checkMark.classList.add("legendCheck")
+                            checkMark.src = assetSources.sidePanelCheckMark
+
+                            colour.appendChild(checkMark)
+                            legend.onclick = () => handleRegLegClick(item.country); // Filters the data points on the map according to regionFilter state
+                            selectAllField.onclick = () => handleRegLegClick("all"); // Selects all regions on click
+                        }else{
+                            /*Use available colour*/
+                            colour.style.backgroundColor = item.colour
+
+                            legend.onclick = () => handleFueLegClick(item.fuel); // Filters the data points on the map according to fuelFilter state
+                            selectAllField.onclick = () => handleFueLegClick("all"); // Selects all regions on click
+                        }
+                        const name = document.createElement("p")
+                        name.classList.add("legendName", "sidePanelFilterName")
+                        name.textContent = item.country_long? item.country_long : item.fuel
+
+                        legend.appendChild(colour)
+                        legend.appendChild(name) // Append the text to the legend element
+                        dropDownE.appendChild(legend) // Append the legend to the filter container
+                    }
+                }
+            }
             // Fill drop down windows
             const regionDropDown = sidePanelRegionFilter.children[1]
-            if(regionDropDown.children.length == 0){
-
-                let selectAllField = document.createElement("div")
-                selectAllField.classList.add("filterLegend", "selectAllDropdown")
-
-                let selectAllCheckBox = document.createElement("div")
-                selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
-                selectAllCheckBox.style.backgroundColor = "#11658C"
-
-                let selectAllName = document.createElement("p")
-                selectAllName.classList.add("legendName", "sidePanelFilterName")
-                selectAllName.textContent = "Deselect all regions"
-
-                selectAllField.onclick = () => handleToggleClick("all"); // Selects all regions on click
-                selectAllField.appendChild(selectAllCheckBox)
-                selectAllField.appendChild(selectAllName) // Append the text to the legend element
-                regionDropDown.appendChild(selectAllField) // Append the legend to the filter container
-
-                for(let i = 0; i < regionFilter.length; i++){
-                    const region = regionFilter[i] // Used for easier access
-
-                    const toggle = document.createElement("div")
-                    toggle.classList.add("filterLegend")
-
-                    /*Use checkmark instead*/
-                    const checkBox = document.createElement("div")
-                    checkBox.classList.add("legendColour", "sidePanelFilterColour")
-                    checkBox.style.backgroundColor = "#11658C"
-
-                    const checkMark = document.createElement("img")
-                    checkMark.classList.add("legendCheck")
-                    checkMark.src = assetSources.sidePanelCheckMark
-
-                    checkBox.appendChild(checkMark)
-
-                    const name = document.createElement("p")
-                    name.classList.add("legendName", "sidePanelFilterName")
-                    name.textContent = region.country_long
-
-                    toggle.onclick = () => handleToggleClick(region.country); // Filters the data points on the map according to regionFilter state
-                    toggle.appendChild(checkBox)
-                    toggle.appendChild(name) // Append the text to the legend element
-                    regionDropDown.appendChild(toggle) // Append the legend to the filter container
-                }
-            }
-
-
             const fuelDropDown = sidePanelFuelFilter.children[1]
-            if(fuelDropDown.children.length == 0){
 
-                let selectAllField = document.createElement("div")
-                selectAllField.classList.add("filterLegend", "selectAllDropdown")
-
-                let selectAllCheckBox = document.createElement("div")
-                selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
-                selectAllCheckBox.style.backgroundColor = "#11658C"
-
-                let selectAllName = document.createElement("p")
-                selectAllName.classList.add("legendName", "sidePanelFilterName")
-                selectAllName.textContent = "Deselect all fuels"
-
-                selectAllField.onclick = () => handleLegendClick("all"); // Selects all regions on click
-                selectAllField.appendChild(selectAllCheckBox)
-                selectAllField.appendChild(selectAllName) // Append the text to the legend element
-                fuelDropDown.appendChild(selectAllField) // Append the legend to the filter container
-
-
-                for(let i = 0; i < fuelFilter.length; i++){
-                    const fuel = fuelFilter[i] // Used for easier access
-
-                    // Create legend element
-                    const legend = document.createElement("div")
-                    legend.classList.add("filterLegend")
-
-                    // Create colour box for legend element
-                    const colour = document.createElement("div")
-                    colour.classList.add("legendColour", "sidePanelFilterColour")
-                    colour.style.backgroundColor = fuel.colour
-
-                    // Create text for legend element
-                    const label = document.createElement("p")
-                    label.classList.add("legendName", "sidePanelFilterName")
-                    label.textContent = fuel.fuel
-
-                    legend.onclick = () => handleLegendClick(fuel.fuel); // Filters the data points on the map according to fuelFilter state
-                    legend.appendChild(colour) // Append the colour box to the legend element
-                    legend.appendChild(label) // Append the text to the legend element
-                    fuelDropDown.appendChild(legend) // Append the legend to the filter container
-                }
-            }
-
+            fillDropDowns(regionDropDown, "region", regionFilter)
+            fillDropDowns(fuelDropDown, "fuel", fuelFilter)
 
             // Add navigation and colour correct icon
             const navigationBar = pages.lastChild
@@ -696,7 +664,7 @@ function PrimaryPanels() {
 
 export default PrimaryPanels
 
-function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
+function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerplants, region, fuel, year, generation filters
     const shownRegions = rFilter.filter(r => r.show).map(r => r.country);
     const shownFuels = fFilter.filter(f => f.show).map(f => f.fuel);
     const yearValues = yFilter.length === 2 ? yFilter[0] : null;
@@ -951,22 +919,15 @@ function getSliders(filter, regionalData, onChange){
         let minVal = 0, maxVal = 100
         if (regionalData.length) {
             if (filter === "year") {
-                const minYears = regionalData
-                    .map(y => y.oldest_power_plant)
-                    .filter(y => y != null)
-                const maxYears = regionalData
-                    .map(y=> y.newest_power_plant)
-                    .filter(y => y != null)
+                const minYears = regionalData.map(y => y.oldest_power_plant).filter(y => y != null)
+                const maxYears = regionalData.map(y=> y.newest_power_plant).filter(y => y != null)
                 if (minYears.length && maxYears.length) { minVal = Math.min(...minYears); maxVal = Math.floor(Math.max(...maxYears)) }
             } else {
                 var largest = Number.NEGATIVE_INFINITY;
                 var smallest = Number.POSITIVE_INFINITY;
 
-                const minGeneration = regionalData
-                    .map(y => y.regional_min_output)
-
-                const maxGeneration = regionalData
-                    .map(y => y.regional_max_output)
+                const minGeneration = regionalData.map(y => y.regional_min_output)
+                const maxGeneration = regionalData.map(y => y.regional_max_output)
 
                 minGeneration.forEach((c) =>{
                     let values = Object.values(c).filter(g => g != null)
