@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { MapContext } from './Map.jsx'
 
 import './PrimaryPanels.css'
+import { typeOf } from 'maplibre-gl';
 
 // Definition for the filter panel
 const fuelFilterDef = {
@@ -1011,6 +1012,25 @@ function getSliders(filter, regionalData, onChange){
         range.style.width = (percentageMax - percentageMin) + "%"
     }
 
+    function addRemoveListeners(e,type="", onMove, onEnd, onStart){
+        if(type=="add" && onMove && onEnd){
+            document.addEventListener("mousemove", onMove)
+            document.addEventListener("mouseup", onEnd)
+            document.addEventListener("touchmove", onMove, { passive: false })
+            document.addEventListener("touchend", onEnd)
+        }
+        if(type=="remove" && onMove && onEnd){
+            e.removeEventListener("mousemove", onMove)
+            e.removeEventListener("mouseup", onEnd)
+            e.removeEventListener("touchmove", onMove)
+            e.removeEventListener("touchend", onEnd)
+        }
+        if(onStart){
+            e.addEventListener("mousedown", onStart)
+            e.addEventListener("touchstart", onStart, { passive: false })
+        }
+    }
+
     function makeDraggable(thumb, isMin) {
         const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX
 
@@ -1029,21 +1049,12 @@ function getSliders(filter, regionalData, onChange){
             }
 
             const onEnd = () => {
-                document.removeEventListener("mousemove", onMove)
-                document.removeEventListener("mouseup", onEnd)
-                document.removeEventListener("touchmove", onMove)
-                document.removeEventListener("touchend", onEnd)
+                addRemoveListeners(document,"remove", onMove, onEnd)
                 if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
             }
-
-            document.addEventListener("mousemove", onMove)
-            document.addEventListener("mouseup", onEnd)
-            document.addEventListener("touchmove", onMove, { passive: false })
-            document.addEventListener("touchend", onEnd)
+            addRemoveListeners(document, "add", onMove, onEnd)
         }
-
-        thumb.addEventListener("mousedown", onStart)
-        thumb.addEventListener("touchstart", onStart, { passive: false })
+        addRemoveListeners(thumb,"start",null,null, onStart)
     }
 
     function makeDraggableRange(rangeElement) {
@@ -1078,21 +1089,12 @@ function getSliders(filter, regionalData, onChange){
             }
 
             const onEnd = () => {
-                document.removeEventListener("mousemove", onMove)
-                document.removeEventListener("mouseup", onEnd)
-                document.removeEventListener("touchmove", onMove)
-                document.removeEventListener("touchend", onEnd)
+                addRemoveListeners(document, "remove", onMove, onEnd)
                 if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
             }
-
-            document.addEventListener("mousemove", onMove)
-            document.addEventListener("mouseup", onEnd)
-            document.addEventListener("touchmove", onMove, { passive: false })
-            document.addEventListener("touchend", onEnd)
+            addRemoveListeners(document, "add", onMove, onEnd)
         }
-
-        rangeElement.addEventListener("mousedown", onStart)
-        rangeElement.addEventListener("touchstart", onStart, { passive: false })
+        addRemoveListeners(rangeElement, "start", null, null, onStart)
     }
 
     makeDraggable(thumbMin, true)
