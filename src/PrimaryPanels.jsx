@@ -397,52 +397,51 @@ function PrimaryPanels() {
         prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
     }, [barChartFilter])
 
-    // Update legend opacity when filter changes
+    // Update legend opacity, drop down titles, and bar chart strokes when filter changes
     useEffect(() => {
         const filter = filterContainer.current; // Get the current filter component
         const sidePanel = sidePanelContainer.current; // Get the current sidepanel component
         if (!filter || !fuelFilter.length) return; // If id does not exsist don't update anything
+
         const legendsFilter = filter.querySelectorAll(".filterLegend"); // Find all legends
         fuelFilter.forEach((fuel, i) => {
             if (legendsFilter[i]) { // If legend exists
                 legendsFilter[i].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
             }
         });
+
         if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
-        const legendsSidePanel = sidePanel.children[0].children[9].querySelectorAll(".filterLegend"); // Find all legends
-        const toggleSidePanel = sidePanel.children[0].children[8].querySelectorAll(".filterLegend");
+        const fueLegSidePanel = sidePanel.children[0].children[9].querySelectorAll(".filterLegend"); // Find all legends
+        const regLegSidePanel = sidePanel.children[0].children[8].querySelectorAll(".filterLegend");
         const bars = document.querySelectorAll(".barchartContainer");
 
-        const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
+        const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
 
-        const shownFuels = fuelFilter.filter((fuel) => fuel.show)
         const shownRegions = regionFilter.filter((region) => region.show)
+        const shownFuels = fuelFilter.filter((fuel) => fuel.show)
 
-        if(shownFuels.length == (legendsSidePanel.length - 1)){
-            fuelFilterDropDownTitle.textContent = "All Power Sources"
-        }else if(shownFuels.length == 0){
-            fuelFilterDropDownTitle.textContent = "No power sources selected"
-        }else{
-            var newFuelTitle = getNewDropDownTitle(shownFuels, "fuel")
-            fuelFilterDropDownTitle.textContent = newFuelTitle
+        const handleDropDownTitle = (titleE, sidePanelE, type, shown)=>{
+            if(shown.length == (sidePanelE.length - 1)){
+                titleE.textContent = (type =="region")?   "All Regions" : "All Power Sources"
+            }else if(shown.length == 0){
+                titleE.textContent = "No "
+                titleE.textContent += (type =="region")? "Regions" : "Power Sources"
+                titleE.textContent += " Selected"
+            }else{
+                titleE.textContent = getNewDropDownTitle(shown, type)
+            }
         }
 
-        if(shownRegions.length == (toggleSidePanel.length - 1)){
-            regionFilterDropDownTitle.textContent = "All Regions"
-        }else if(shownRegions.length == 0){
-            regionFilterDropDownTitle.textContent = "No regions selected"
-        }else{
-            var newRegionTitle = getNewDropDownTitle(shownRegions, "region")
-            regionFilterDropDownTitle.textContent = newRegionTitle
-        }
+        handleDropDownTitle(regionFilterDropDownTitle,regLegSidePanel, "region", shownRegions)
+        handleDropDownTitle(fuelFilterDropDownTitle,fueLegSidePanel, "fuel", shownFuels)
 
         if(bars.length){
             for(var i = 0; i < bars.length; i++){
                 let children = Array.from(bars[i].children)
                 children.forEach(c =>{
                     let cName = c.classList.value
-                    if(cName.includes("bar_") && shownFuels.some(f => f.fuel == cName.slice(4)) && shownFuels.length < (legendsSidePanel.length - 1)){
+                    if(cName.includes("bar_") && shownFuels.some(f => f.fuel == cName.slice(4)) && shownFuels.length < (fueLegSidePanel.length - 1)){
                         c.style.stroke = "#11658C"
                         c.style.strokeWidth = "0.2dvh"
                     }else{
@@ -454,14 +453,14 @@ function PrimaryPanels() {
         }
 
         fuelFilter.forEach((fuel, i) => {
-            if (legendsSidePanel[i+1]) { // If legend exists, +1 to skip select all option
-                legendsSidePanel[i+1].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
+            if (fueLegSidePanel[i+1]) { // If legend exists, +1 to skip select all option
+                fueLegSidePanel[i+1].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
             }
         });
         regionFilter.forEach((region, i)=>{
-            if(toggleSidePanel[i+1]){
-                toggleSidePanel[i+1].style.opacity = region.show ? "1" : "0.3";
-                toggleSidePanel[i+1].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
+            if(regLegSidePanel[i+1]){
+                regLegSidePanel[i+1].style.opacity = region.show ? "1" : "0.3";
+                regLegSidePanel[i+1].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
             }
         })
     }, [fuelFilter,regionFilter,popupCount]);
