@@ -50,6 +50,10 @@ const allPages = [
     {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false,false,true, true]},
 ];
 
+// static JSON to fetch and states to set
+const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "instructions"]
+const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
+
 const _firstYearOfGenerationData = 2013;
 const _latestYearOfGenerationData = 2019;
 const _firstYearOfEstimatedGenerationData = 2013;
@@ -70,31 +74,16 @@ function PrimaryPanels() {
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
 
-    // Set initial filter, also get all fuel types
+    // Fetch JSON files and set relevant States
     useEffect(() => {
-    fetch("./fuelCatagories.json") // Go through this file and ensure the colours have more contrast between one another
-      .then((response) => response.json())
-      .then((data) => {
-        setFuelFilter(data);
-      });
-
-    fetch("./regionalInformation.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setRegionalData(data);
-      });
-
-    fetch("./regionalFilter.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setRegionFilter(data);
-      });
-
-    fetch("./instructions.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setPageContent(data);
-      });
+        for(var i = 0; i < fetchJSON.length; i++){
+            let state = statesToSet[i]
+            fetch("./" + fetchJSON[i] + ".json")
+                .then((response) => response.json())
+                .then((data) =>{
+                    eval("set"+state+"(data)");
+                })
+        }
     }, []);
 
     // Initial draw of panels
@@ -211,13 +200,11 @@ function PrimaryPanels() {
 
         const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
 
-
         if(element.classList.contains("selection") && powerPlants.length != pps.length){
             element.src = assetSources.zoomFullScreen
             zoomSelectionState.current.isSelection = false
 
             const coordinates = []
-            
             pps.forEach((p) =>{
                 coordinates.push(p.geometry.coordinates)
             })
@@ -272,6 +259,7 @@ function PrimaryPanels() {
         prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
     }, [barChartFilter])
 
+    // Used by the two drop down and legends filter update functions, to set corresponding filters
     function checkAndSetFilter(selectAllOption, prevFilter, clickedItem, type){
         var propName = (type=="region") ? "country" : "fuel"
         if(prevFilter.every(i => i.show)){
