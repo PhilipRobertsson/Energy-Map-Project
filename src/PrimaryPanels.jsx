@@ -239,6 +239,68 @@ function PrimaryPanels() {
         element.classList.toggle("selection");
     }
 
+    // Check the context filter for any updates
+    useEffect(()=>{
+        if(!fuelFilter.length) return
+        const currentBCF = barChartFilter
+        const prevBCF = [...prevBarChartFilter.current]
+        setFuelFilter(prev => {
+            if (!currentBCF || !currentBCF.length) {
+                const result = prev.map(f =>
+                    prevBCF.includes(f.fuel) ? { ...f, show: false } : f
+                )
+                if (result.every(f => !f.show)) {
+                    return prev.map(f => ({ ...f, show: true }))
+                }
+                return result
+            }
+            const added = currentBCF.filter(f => !prevBCF.includes(f))
+            const removed = prevBCF.filter(f => !currentBCF.includes(f))
+            if(prev.every(r => r.show)){
+                return prev.map(f => ({ ...f, show: added.includes(f.fuel) }));
+            }
+            const result = prev.map(f => {
+                if (added.includes(f.fuel)) return { ...f, show: true }
+                if (removed.includes(f.fuel)) return { ...f, show: false }
+                return f
+            })
+            if (result.every(f => !f.show)) {
+                return prev.map(f => ({ ...f, show: true }))
+            }
+            return result
+        })
+        prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
+    }, [barChartFilter])
+
+    function checkAndSetFilter(selectAllOption, prevFilter, clickedItem, type){
+        var propName = (type=="region") ? "country" : "fuel"
+        if(prevFilter.every(i => i.show)){
+            selectAllOption.children[1].textContent = "Select all " + type + "s"
+            selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
+            if(clickedItem == "all"){
+                return prevFilter.map(i => ({ ...i, show: false}));
+            }
+            return prevFilter.map(i => ({ ...i, show: eval("i."+propName) === clickedItem})); // If true, deselect everything but the clicked option
+        }
+
+        const toggled = prevFilter.map(i =>
+            eval("i."+propName) === clickedItem ? { ...i, show: !i.show } : i // Deselect or select the clicked option
+            
+        );
+        if(clickedItem == "all"){
+            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
+            selectAllOption.children[0].style.backgroundColor = "#11658C"
+            return prevFilter.map(i => ({ ...i, show: true}));
+        }
+
+        if (toggled.every(i => !i.show)) { // Are all options hidden?
+            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
+            selectAllOption.children[0].style.backgroundColor = "#11658C"
+            return prevFilter.map(i => ({ ...i, show: true })); // If true, select everything 
+        }
+        return toggled
+    }
+
     // Handle clicks on the seperate legends
     function handleFueLegClick(clickedFuel){
         if (clickedFuel === "all") {
@@ -251,29 +313,7 @@ function PrimaryPanels() {
         }
         setFuelFilter(prev => { // prev, previous filter
             const selectAllOption = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
-            if (prev.every(f => f.show)) { // Are all options shown?
-                selectAllOption.children[1].textContent = "Select all fuels"
-                selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
-                if(clickedFuel == "all"){
-                    return prev.map(f => ({ ...f, show: false}));
-                }
-                return prev.map(f => ({ ...f, show: f.fuel === clickedFuel })); // If true, deselect everything but the clicked option
-            }
-
-            const toggled = prev.map(f =>
-                f.fuel === clickedFuel ? { ...f, show: !f.show } : f // Deselect or select the clicked option
-            );
-            if(clickedFuel == "all"){
-                    selectAllOption.children[1].textContent = "Deselect all fuels"
-                    selectAllOption.children[0].style.backgroundColor = "#11658C"
-                    return prev.map(f => ({ ...f, show: true}));
-            }
-
-            if (toggled.every(f => !f.show)) { // Are all options hidden?
-                selectAllOption.children[1].textContent = "Deselect all fuels"
-                selectAllOption.children[0].style.backgroundColor = "#11658C"
-                return prev.map(f => ({ ...f, show: true })); // If true, select everything 
-            }
+           const toggled = checkAndSetFilter(selectAllOption, prev, clickedFuel, "fuel")
             return toggled;
         });
     }
@@ -281,30 +321,8 @@ function PrimaryPanels() {
     // Handle clicks on the seperate country toggles
     function handleRegLegClick(clickedCountry){
         setRegionFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
-            if (prev.every(r => r.show)) { // Are all options shown?
-                selectAllOption.children[1].textContent = "Select all regions"
-                selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
-                if(clickedCountry == "all"){
-                    return prev.map(f => ({ ...f, show: false}));
-                }
-                return prev.map(r => ({ ...r, show: r.country === clickedCountry })); // If true, deselect everything but the clicked option
-            }
-
-            const toggled = prev.map(r =>
-                r.country === clickedCountry ? { ...r, show: !r.show } : r // Deselect or select the clicked option
-            );
-
-            if(clickedCountry == "all"){
-                    selectAllOption.children[1].textContent = "Deselect all regions"
-                    selectAllOption.children[0].style.backgroundColor = "#11658C"
-                    return prev.map(r => ({ ...r, show: true}));
-            }
-            if (toggled.every(r => !r.show)) { // Are all options hidden?
-                selectAllOption.children[1].textContent = "Deselect all regions"
-                selectAllOption.children[0].style.backgroundColor = "#11658C"
-                return prev.map(r => ({ ...r, show: true })); // If true, select everything 
-            }
+            const selectAllOption = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
+            const toggled = checkAndSetFilter(selectAllOption, prev, clickedCountry, "region")
             return toggled;
         });
     }
@@ -363,39 +381,6 @@ function PrimaryPanels() {
         }
         return newTitle
     }
-
-    // Check the context filter for any updates
-    useEffect(()=>{
-        if(!fuelFilter.length) return
-        const currentBCF = barChartFilter
-        const prevBCF = [...prevBarChartFilter.current]
-        setFuelFilter(prev => {
-            if (!currentBCF || !currentBCF.length) {
-                const result = prev.map(f =>
-                    prevBCF.includes(f.fuel) ? { ...f, show: false } : f
-                )
-                if (result.every(f => !f.show)) {
-                    return prev.map(f => ({ ...f, show: true }))
-                }
-                return result
-            }
-            const added = currentBCF.filter(f => !prevBCF.includes(f))
-            const removed = prevBCF.filter(f => !currentBCF.includes(f))
-            if(prev.every(r => r.show)){
-                return prev.map(f => ({ ...f, show: added.includes(f.fuel) }));
-            }
-            const result = prev.map(f => {
-                if (added.includes(f.fuel)) return { ...f, show: true }
-                if (removed.includes(f.fuel)) return { ...f, show: false }
-                return f
-            })
-            if (result.every(f => !f.show)) {
-                return prev.map(f => ({ ...f, show: true }))
-            }
-            return result
-        })
-        prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
-    }, [barChartFilter])
 
     // Update legend opacity, drop down titles, and bar chart strokes when filter changes
     useEffect(() => {
@@ -570,7 +555,7 @@ function PrimaryPanels() {
 
                     let selectAllName = document.createElement("p")
                     selectAllName.classList.add("legendName", "sidePanelFilterName")
-                    selectAllName.textContent = "Deselect all fuels"
+                    selectAllName.textContent = "Deselect all " + type + "s"
 
                     selectAllField.appendChild(selectAllCheckBox)
                     selectAllField.appendChild(selectAllName) // Append the text to the legend element
