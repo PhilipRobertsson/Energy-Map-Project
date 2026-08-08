@@ -220,9 +220,6 @@ function Map({ children }) {
             powerPlantPaint["circle-color"].push("#8E91BC")
             setColourData(data)
       });
-  }, []);
-
-  useEffect(() => {
     fetch("./global_power_plant_database.geojson")
       .then((response) => response.json())
       .then((powerPlants) => {
@@ -345,19 +342,22 @@ function Map({ children }) {
               regionalInfoIcon.onmouseout = () => handleIconHoverOut(regionalInfoIcon)
           }
 
+          // Append elements to created elements
           overviewHeader.appendChild(overviewTitle)
           overviewHeader.appendChild(overviewOpen)
           regionalOverview.appendChild(overviewHeader)
           regionalOverview.appendChild(regionalInformation)
           contentElement.appendChild(regionalOverview)
 
+          // Get bar chart bars and make them clickable
           const barElements = regionalInformation.querySelectorAll('[class*="bar_"]')
-          barElements.forEach(bar => {
+          barElements.forEach(bar => { 
             bar.style.cursor = "pointer"
             bar.onclick = () => {
               setFilter(prev => {
+                // Each bar has a name in the form "bar_Fuel"
                 const fuel = bar.getAttribute("class").split(" ").find(c => c.startsWith("bar_")).slice(4)
-                const updated = prev ? (prev.includes(fuel)
+                const updated = prev ? (prev.includes(fuel) // Update the filter from the map context, used in PrimaryPanels.jsx
                   ? prev.filter(f => f !== fuel)
                   : [...prev, fuel])
                   : [fuel]
@@ -365,7 +365,7 @@ function Map({ children }) {
               })
             }
           })
-          setPopupCount(pc => pc + 1)
+          setPopupCount(pc => pc + 1) // Count each pop-up window open
         }else if(!isOpen){
           const alertEl = document.getElementById("popUpAlert");
           alertEl.classList.remove("animate");
@@ -375,28 +375,31 @@ function Map({ children }) {
     }
 
     const addSourceAndLayer = () => {
-      if (map.getSource("powerplants")) return;
+      if (map.getSource("powerplants")) return; // If the power plants layer already has been added, return
+      // Add the power plant data as a source to the map
       map.addSource("powerplants", {
         type: "geojson",
         data: data,
       });
+      // Create the power plants layer on the map, each circle is a power plant
       map.addLayer({
         id: "powerplants-layer",
         type: "circle",
         source: "powerplants",
         paint: powerPlantPaint
-      }).on('click', 'powerplants-layer', (e) => {
+      }).on('click', 'powerplants-layer', (e) => { // If any feature on the layer is clicked on, open pop-up
             displayInformation(e)
       });
       
-      map.on('mouseenter', 'powerplants-layer', () => {
+      map.on('mouseenter', 'powerplants-layer', () => { // Relevant for screens with mouse input, make the mouse a pointer if hovered
             map.getCanvas().style.cursor = 'pointer';
       });
-      map.on('mouseleave', 'powerplants-layer', () => {
+      map.on('mouseleave', 'powerplants-layer', () => { // Relevant for screens with mouse input, remove cursor style when mouse leaves feature
             map.getCanvas().style.cursor = '';
       });
     };
 
+    // Add the source layer if map is loaded, else load the map
     if (map.loaded()) {
       addSourceAndLayer();
     } else {
@@ -498,6 +501,7 @@ function getPowerPlantInfo(feature, htmlElement){
     
     generationField.appendChild(generationTitle)
     generationField.appendChild(generationValue)
+
     if(generationTitle.textContent !== "Generation Data Not available"){
         const infoWrapper = document.createElement("span")
         infoWrapper.className = "popupInfoWrapper"
@@ -528,6 +532,7 @@ function getPowerPlantInfo(feature, htmlElement){
     return htmlElement;
 }
 
+// Function to generate the regional information stored in each pop-up
 function getRegionalInfo(feature, data, colours){
     const region = data.find((c) => c.country == feature.country)
     const htmlElement = document.createElement("div")
@@ -605,20 +610,24 @@ function getRegionalInfo(feature, data, colours){
             var gotEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] != null)
         }
 
+        // Removes null items from the object
         const cleanObject = (object) =>
                 Object.fromEntries(
                 Object.entries(object)
                 .filter(([_, value]) => value)
         );
 
+        // Insert year into data
         const insertLastDataYear = (fuel, year) =>{
             latestData[fuel]['year'] = year
         }
 
+        // Insert generation value into data
         const insertLastDataValue = (fuel, value) =>{
             latestData[fuel]['value'] = value
         }
 
+        // Insert if reported  into data
         const insertReported = (fuel, rep) =>{
             latestData[fuel]['reported'] = rep
         }
@@ -679,6 +688,7 @@ function getRegionalInfo(feature, data, colours){
       })
     }
 
+    // Will be represented as "other" in the bar-charts, this methods avoids changing the data used
     const unwantedCatagories = ["Petcoke", "Wave and Tidal", "Tidal","Geothermal", "Cogeneration", "Storage","Biomass", "Waste"]
 
     // Go through array and reassign unwanted catagories to "Other"
@@ -709,6 +719,7 @@ function getRegionalInfo(feature, data, colours){
     // Sort the array
     latestDataArray.sort((a,b) => b.value - a.value)
 
+    // Finds the max value in the data
     const findMax = (data) =>{
         var max = 0
         data.forEach(d => {
@@ -717,6 +728,7 @@ function getRegionalInfo(feature, data, colours){
         return max
     }
 
+    // Converts the generation value to a percentage of the total generation in the region
     const getPercentage = (value) =>{
         var total = 0
         latestDataArray.forEach((elem)=>{
