@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as d3 from "d3";
+import { gsap } from "gsap";
 
 import './Map.css'
 
@@ -407,14 +408,30 @@ function Map({ children }) {
     }
   }, [data, regionalData, colourData]);
 
-  // Handle zoom in click
+  // Handle rollup in click
   function handleRollupClick(currentSource, element, infoElement){
-    if(currentSource.includes("/popup/popupRollupClosed.svg")){
-        element.src = assetSources.popupRollupOpened
-        infoElement.style.display = "flex"
+    const isHidden = infoElement.classList.contains("hide")
+    if(isHidden){
+        gsap.fromTo(infoElement,
+                { height: 0, opacity: 0 },
+                { height: "auto", opacity: 1, duration: 0.4, ease: "power2.out",
+                  onComplete: () => gsap.set(infoElement, { clearProps: "height" }) }
+            )
+            gsap.to(element,
+                {rotationX: 180, duration: 0.6, ease: "power4.out"}
+            )
+        infoElement.classList.toggle("hide");
     }else{
-        element.src = assetSources.popupRollupClosed
-        infoElement.style.display = "none"
+        gsap.to(infoElement,
+                { height: 0, opacity: 0, duration: 0.2, ease: "power2.in",
+                    onComplete: () => {
+                        infoElement.classList.toggle("hide");
+                    }
+                }
+            )
+            gsap.to(element,
+                {rotationX: 0, duration: 0.6, ease: "power2.out"}
+            )
     }
   }
 
@@ -536,7 +553,7 @@ function getPowerPlantInfo(feature, htmlElement){
 function getRegionalInfo(feature, data, colours){
     const region = data.find((c) => c.country == feature.country)
     const htmlElement = document.createElement("div")
-    htmlElement.classList.add("regional-overview-info")
+    htmlElement.classList.add("regional-overview-info", "hide")
 
     const infoHeader = document.createElement("span")
     const infoTitle = document.createElement("strong")

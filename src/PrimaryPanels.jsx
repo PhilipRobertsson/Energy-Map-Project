@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext, createElement } from 'react'
+import { gsap } from "gsap";
 
 import { MapContext } from './Map.jsx'
 
@@ -318,21 +319,51 @@ function PrimaryPanels() {
     // Handle navigationClick
     function handleNavigationClick(id, icon){
         setSidePanelPage(allPages[id])
+        gsap.fromTo(icon, 
+            { scale: 1 }, 
+            { 
+                scale: 1.25, 
+                duration: 0.25,
+                yoyo: true, 
+                repeat: 1, 
+                overwrite: true 
+            }
+        );
         icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
     }
 
     // Used by the below function
     function toggleDropDown(element){
-        if(element.children[1].classList.contains("hide")){ // Open the rollup
-            element.children[0].children[1].src = assetSources.sidePanelRollupClose
+        const dropdown = element.children[1]
+        const rollupIcon = element.children[0].children[1]
+        const isHidden = dropdown.classList.contains("hide")
+
+        if (isHidden) {
+            gsap.fromTo(dropdown,
+                { height: 0, opacity: 0 },
+                { height: "20dvh", opacity: 1, duration: 0.4, ease: "power4.out",
+                  onComplete: () => gsap.set(dropdown, { clearProps: "height" }) }
+            )
+            gsap.to(rollupIcon,
+                {rotationX: 180, duration: 0.6, ease: "power4.out"}
+            )
             element.parentElement.style['border-radius'] = "1dvh 1dvh 0 0";
-            element.parentElement.style['z-index'] = "100" // Arbitrary value to show it on top
-        }else{ // Close the rollup
-            element.children[0].children[1].src = assetSources.sidePanelRollupOpen
-            element.parentElement.style['border-radius'] = "1dvh";
-            element.parentElement.style['z-index'] = "unset"
+            element.parentElement.style['z-index'] = "100"
+            dropdown.classList.toggle("hide");
+        } else {
+            gsap.to(dropdown,
+                { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
+                    onComplete: () => {
+                        element.parentElement.style['border-radius'] = "1dvh";
+                        element.parentElement.style['z-index'] = "unset"
+                        dropdown.classList.toggle("hide");
+                    }
+                }
+            )
+            gsap.to(rollupIcon,
+                {rotationX: 0, duration: 0.6, ease: "power4.out"}
+            )
         }
-        element.children[1].classList.toggle("hide");
     }
 
     // Handle rollupClick
