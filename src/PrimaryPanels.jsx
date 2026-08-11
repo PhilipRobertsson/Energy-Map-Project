@@ -579,12 +579,19 @@ function PrimaryPanels() {
             // Hide/show loop
             for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
                 if(sidePanelPage.visibleHtmlElements[i]){
+                    gsap.fromTo(pages.children[i],
+                        {opacity: 0},
+                        {opacity: 1, duration: 0.6, ease: "power4.out"}
+                    )
                     if(pages.children[i].classList[0] == "sidePanelInstructionsContainer"){
                         pages.children[i].style.display = "block"
                     }else{
                         pages.children[i].style.display = "flex"
                     }
                 }else{
+                    gsap.to(pages.children[i],
+                        {opacity: 1, duration: 0.6, ease: "power4.in"}
+                    )
                     pages.children[i].style.display = "none"
                 }
             }
