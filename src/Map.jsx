@@ -411,27 +411,43 @@ function Map({ children }) {
   // Handle rollup in click
   function handleRollupClick(currentSource, element, infoElement){
     const isHidden = infoElement.classList.contains("hide")
+    const barChart = infoElement.children[1]
     if(isHidden){
         gsap.fromTo(infoElement,
-                { height: 0, opacity: 0 },
-                { height: "auto", opacity: 1, duration: 0.4, ease: "power2.out",
-                  onComplete: () => gsap.set(infoElement, { clearProps: "height" }) }
-            )
-            gsap.to(element,
-                {rotationX: 180, duration: 0.6, ease: "power4.out"}
-            )
+          { height: 0, opacity: 0 },
+          { height: "auto", opacity: 1, duration: 0.4, ease: "power2.out",
+            onComplete: () => {
+              gsap.set(infoElement, { clearProps: "height" })
+            }
+          }
+        )
+        gsap.to(element,
+          {rotationX: 180, duration: 0.6, ease: "power4.out"}
+        )
+        gsap.fromTo(barChart,
+          {opacity: 0},
+          {opacity: 1, duration: 1.2, ease: "power2.out"}
+        )
         infoElement.classList.toggle("hide");
+        barChart.classList.toggle("hide")
     }else{
+        gsap.to(barChart,
+          { opacity: 0, duration: 0.1, ease: "power2.in",
+            onComplete: () => {
+              barChart.classList.toggle("hide")
+            }
+          }
+        )
         gsap.to(infoElement,
-                { height: 0, opacity: 0, duration: 0.2, ease: "power2.in",
-                    onComplete: () => {
-                        infoElement.classList.toggle("hide");
-                    }
-                }
-            )
-            gsap.to(element,
-                {rotationX: 0, duration: 0.6, ease: "power2.out"}
-            )
+          { height: 0, opacity: 0, duration: 0.2, ease: "power2.in",
+            onComplete: () => {
+              infoElement.classList.toggle("hide");
+            }
+          }
+        )
+        gsap.to(element,
+          {rotationX: 0, duration: 0.4, ease: "power4.in"}
+        )
     }
   }
 
@@ -756,7 +772,7 @@ function getRegionalInfo(feature, data, colours){
 
     // Variables for D3 code
     const barChartContainer = document.createElement("div")
-    barChartContainer.classList.add("regional-overview-svg")
+    barChartContainer.classList.add("regional-overview-svg", "hide")
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
     var barChartPadding = 0.2 
     var barHeight = Math.round(35 * scale)
