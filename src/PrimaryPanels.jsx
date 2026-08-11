@@ -96,10 +96,11 @@ function PrimaryPanels() {
         sidePanelContainer.current = document.createElement("div");
     }, []);
 
-    // Add information and buttons to filter panel
+    // Add information and buttons to filter panel (only on load)
     useEffect(() =>{
         const filter = filterContainer.current;
         if (!filter || !regionFilter.length ||!fuelFilter.length || !yearFilter.length || !generationFilter.length || !powerPlants) return;
+        if (filter.children.length > 0) return;
         filter.replaceChildren();
 
         // Create colour legends for each fuel available
@@ -121,6 +122,7 @@ function PrimaryPanels() {
             label.textContent = fuel.fuel
 
             legend.onclick = () => handleFueLegClick(fuel.fuel); // Filters the data points on the map according to fuelFilter state
+            legend.style.opacity = fuel.show ? "1" : "0.3"
             legend.appendChild(colour) // Append the colour box to the legend element
             legend.appendChild(label) // Append the text to the legend element
             filter.appendChild(legend) // Append the legend to the filter container
@@ -141,14 +143,13 @@ function PrimaryPanels() {
         zoomOut.onclick = handleZoomOut
         // Zoom selection
         var zoomSelection = document.createElement("img")
-        zoomSelection.classList.add("controlIcon")
+        zoomSelection.classList.add("controlIcon", "selection")
         zoomSelection.src = assetSources.zoomSelection
         zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
 
-        const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter,generationFilter)
         if (zoomSelectionState.current.isSelection ||
              powerPlants.features.length != 
-             pps.length) {
+             getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter).length) {
           zoomSelection.classList.add("selection")
         } else {
           zoomSelection.src = assetSources.zoomFullScreen
@@ -158,9 +159,28 @@ function PrimaryPanels() {
         controlContainer.appendChild(zoomOut) // Append zoom out button
         controlContainer.appendChild(zoomSelection) // Append slection zoom button
         filter.appendChild(controlContainer) // Append control panel to filter panel
+    }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
 
-
-    }, [fuelFilter,powerPlants, regionFilter, yearFilter, generationFilter]);
+    // Update zoom selection icon when filters change
+    useEffect(() => {
+        const filter = filterContainer.current
+        if (!filter || !fuelFilter.length || !powerPlants) return
+        const zoomSelection = filter.querySelector(".controlIcon.selection") || filter.querySelectorAll(".controlIcon")[2]
+        if (!zoomSelection) return
+        const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
+        if (zoomSelectionState.current.isSelection ||
+             powerPlants.features.length != pps.length) {
+          if (!zoomSelection.classList.contains("selection")) {
+            zoomSelection.classList.add("selection")
+            zoomSelection.src = assetSources.zoomSelection
+          }
+        } else {
+          if (zoomSelection.classList.contains("selection")) {
+            zoomSelection.classList.remove("selection")
+            zoomSelection.src = assetSources.zoomFullScreen
+          }
+        }
+    }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants])
 
     // Handle zoom in click
     function handleZoomIn(){
@@ -410,7 +430,7 @@ function PrimaryPanels() {
         const legendsFilter = filter.querySelectorAll(".filterLegend"); // Find all legends
         fuelFilter.forEach((fuel, i) => {
             if (legendsFilter[i]) { // If legend exists
-                legendsFilter[i].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
+                legendsFilter[i].style.opacity = fuel.show ? "1" : "0.3";
             }
         });
 
