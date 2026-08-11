@@ -14,3 +14,6 @@ Since no build for the tool is available yet, it can be run on localhost followi
 - Run ```npm install``` in the terminal to install dependencies, will create the ```node_modules``` folder.
 - Once installed, run ```npm run dev``` in the terminal to start a local server.
 - Navigate to the displayed url in preferred browser.
+
+The tool is also available through GitHub pages, found here:
+-[Energy Map](https://philiprobertsson.github.io/Energy-Map-Project/)

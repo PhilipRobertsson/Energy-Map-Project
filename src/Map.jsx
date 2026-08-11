@@ -279,20 +279,28 @@ function Map({ children }) {
 
         if(openPopups.length < 4 && !isOpen){
           var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-          const popup = new maplibregl.Popup({maxWidth: Math.round(400*scale) + "px", closeOnClick: false})
+          const popup = new maplibregl.Popup({maxWidth: Math.round(400*scale) + "px", closeButton: false, closeOnClick: false})
             .setLngLat(coordinates)
             .setHTML("<h1>"+ properties.name +"</h1>")
             .addTo(map);
-        
+
+          // Pop up rotate X fade in
           const contentElement = popup.getElement().children[1]
+          gsap.set(contentElement, { rotateX: -90, opacity: 0, transformOrigin: "bottom center" })
+          gsap.set(popup.getElement(), { perspective: 800 })
+          gsap.to(contentElement, { rotateX: 0, opacity: 1, duration: 0.3, ease: "power2.out" })
           contentElement.style.width = Math.round(400*scale) + "px"
 
           // Replace text based close button with image based icon instead
-          const closeButton = contentElement.children[1]
-          closeButton.textContent = ""
-          const closeIcon = document.createElement("img")
-          closeIcon.src = assetSources.popupClose
-          closeButton.appendChild(closeIcon)
+          const closeButton = document.createElement("img")
+          closeButton.src = assetSources.popupClose
+
+          closeButton.onclick = (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            gsap.to(contentElement.children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+            gsap.to(contentElement, { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+          }
 
           // Reorder header content
           const popUpHeader = document.createElement("div")
