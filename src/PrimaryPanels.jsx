@@ -100,9 +100,43 @@ function PrimaryPanels() {
     useEffect(() =>{
         const filter = filterContainer.current;
         if (!filter || !regionFilter.length ||!fuelFilter.length || !yearFilter.length || !generationFilter.length || !powerPlants) return;
-        if (filter.children.length > 0) return;
-        filter.replaceChildren();
 
+        /*--[Control buttons at the bottom of the filter panel]--*/
+        var controlContainer = document.createElement("div")
+        controlContainer.id = "controlContainer"
+        // Zoom in button
+        var zoomIn = document.createElement("img")
+        zoomIn.className = "controlIcon"
+        zoomIn.src = assetSources.zoomIn
+        zoomIn.onclick =() => handleZoomIn(zoomIn)
+        // Zoom out button
+        var zoomOut = document.createElement("img")
+        zoomOut.className = "controlIcon"
+        zoomOut.src = assetSources.zoomOut
+        zoomOut.onclick = () => handleZoomOut(zoomOut)
+        // Zoom selection
+        var zoomSelection = document.createElement("img")
+        zoomSelection.classList.add("controlIcon", "selection")
+        zoomSelection.src = assetSources.zoomSelection
+        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
+
+        if (zoomSelectionState.current.isSelection ||
+             powerPlants.features.length != 
+             getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter).length) {
+          zoomSelection.classList.add("selection")
+        } else {
+          zoomSelection.src = assetSources.zoomFullScreen
+        }
+
+        controlContainer.appendChild(zoomIn) // Append zoom in button
+        controlContainer.appendChild(zoomOut) // Append zoom out button
+        controlContainer.appendChild(zoomSelection) // Append slection zoom button
+
+        if(filter.children.length > 0){
+            filter.replaceChild(controlContainer, filter.children[filter.children.length - 1])
+        }
+
+        if (filter.children.length > 0) return;
         // Create colour legends for each fuel available
         for(let i = 0; i < fuelFilter.length; i++){
             const fuel = fuelFilter[i] // Used for easier access
@@ -128,36 +162,6 @@ function PrimaryPanels() {
             filter.appendChild(legend) // Append the legend to the filter container
         }
 
-        /*--[Control buttons at the bottom of the filter panel]--*/
-        var controlContainer = document.createElement("div")
-        controlContainer.id = "controlContainer"
-        // Zoom in button
-        var zoomIn = document.createElement("img")
-        zoomIn.className = "controlIcon"
-        zoomIn.src = assetSources.zoomIn
-        zoomIn.onclick = handleZoomIn
-        // Zoom out button
-        var zoomOut = document.createElement("img")
-        zoomOut.className = "controlIcon"
-        zoomOut.src = assetSources.zoomOut
-        zoomOut.onclick = handleZoomOut
-        // Zoom selection
-        var zoomSelection = document.createElement("img")
-        zoomSelection.classList.add("controlIcon", "selection")
-        zoomSelection.src = assetSources.zoomSelection
-        zoomSelection.onclick = () =>  handleZoomSelection(zoomSelection)
-
-        if (zoomSelectionState.current.isSelection ||
-             powerPlants.features.length != 
-             getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter).length) {
-          zoomSelection.classList.add("selection")
-        } else {
-          zoomSelection.src = assetSources.zoomFullScreen
-        }
-
-        controlContainer.appendChild(zoomIn) // Append zoom in button
-        controlContainer.appendChild(zoomOut) // Append zoom out button
-        controlContainer.appendChild(zoomSelection) // Append slection zoom button
         filter.appendChild(controlContainer) // Append control panel to filter panel
     }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
 
@@ -183,12 +187,20 @@ function PrimaryPanels() {
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants])
 
     // Handle zoom in click
-    function handleZoomIn(){
+    function handleZoomIn(icon){
+        gsap.fromTo(icon, 
+            { scale: 1 }, 
+            { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, overwrite: true }
+        );
         mapRef.current?.zoomIn({ duration: 800 });
     }
 
     // Handle zoom out click
-    function handleZoomOut(){
+    function handleZoomOut(icon){
+        gsap.fromTo(icon, 
+            { scale: 1 }, 
+            { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, overwrite: true }
+        );
         mapRef.current?.zoomOut({ duration: 800 });
     }
 
@@ -218,6 +230,11 @@ function PrimaryPanels() {
                 curve: 1.4
             });
         }
+
+        gsap.fromTo(element, 
+            { scale: 1 }, 
+            { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, overwrite: true }
+        );
 
         const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
 
