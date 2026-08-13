@@ -245,6 +245,18 @@ function Map({ children }) {
           center: [9.902056, 49.843],
           zoom: 3.2,
         });
+
+        // disable map rotation using right click + drag
+        mapInstance.current.dragRotate.disable();
+
+        // disable map rotation using keyboard
+        mapInstance.current.keyboard.disable();
+
+        // disable map rotation using touch rotation gesture
+        mapInstance.current.touchZoomRotate.disableRotation();
+
+        // disable map tilting/pitching using touch rotation gesture
+        mapInstance.current.touchPitch.disable();
       });
 
     return () => {
@@ -471,7 +483,7 @@ function Map({ children }) {
 
   return (
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data, barChartFilter: filter, setBarChartFilter: setFilter, popupCount }}>
-      <div ref={mapContainer} style={{ width: "78dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
+      <div ref={mapContainer} style={{ width: "76dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>
         <img src={assetSources.alertIcon}></img>
@@ -556,7 +568,8 @@ function getPowerPlantInfo(feature, htmlElement){
         generationToolTip.className = "generationInfoTooltip"
         const generationToolTipText = document.createElement("span")
         generationToolTipText.className = "generationInfoTooltipText"
-        generationToolTipText.textContent = "[PLACEHOLDER TEXT] Annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
+        generationToolTipText.textContent = reported? "Reported ":"Estimated "
+        generationToolTipText.textContent += "annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
         /* generationToolTipText.textContent = reported? "Reported value":"Estimated value"
         generationToolTipText.textContent+= " from " + latestDataYear */
 
@@ -624,7 +637,8 @@ function getRegionalInfo(feature, data, colours){
         infoToolTipText.className = "generationInfoTooltipText"
         /* infoToolTipText.textContent = reported? "Reported value":"Estimated value"
         infoToolTipText.textContent+= " from " + latestDataYear */
-        infoToolTipText.textContent = "[PLACEHOLDER TEXT] Annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
+        infoToolTipText.textContent = reported? "Reported ":"Estimated "
+        infoToolTipText.textContent += "annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
         
         infoToolTip.appendChild(infoToolTipText)
         infoWrapper.appendChild(infoIcon)

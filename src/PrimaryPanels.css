@@ -107,6 +107,13 @@
     color: #004B70;
 }
 
+#sidePanelFilterAndResetWrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
 #filterCounter{
     display: block;
     align-self: center;
@@ -126,6 +133,28 @@
 
 #filterCounterStatic{
     color: #030303;
+}
+
+#sidePanelResetButton{
+    background-color: #11658C;
+    border-radius: 1dvh;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+    padding: 1dvh
+}
+
+#sidePanelResetButton span{
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.5vmin;
+    margin: 0;
+    color: #f7f7f7;
+    cursor: pointer;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 .instructionTitle{
@@ -414,6 +443,11 @@
     user-select: none; /* Standard */
 }
 
+.sliderTitleWrapper{
+    display: flex;
+    align-items: center;
+}
+
 .sliderTitle{
     font-family: "Lato", sans-serif;
     font-weight: 600;
@@ -425,6 +459,39 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
+}
+
+.sliderIcon{
+    height: 1.7vmin;
+    width: 1.7vmin;
+    margin-left: 0.3dvw;
+    cursor: pointer;
+}
+
+.sliderTooltipTooltip{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.sliderTooltipTooltipText{
+    visibility: hidden; /* Hidden by default */
+    width: 9dvw;
+    background-color: black;
+    color: #ffffff;
+    text-align: center;
+    padding: 1dvh;
+    border-radius: 0.5dvh;
+    position: absolute;
+    z-index: 1; /* Ensure tooltip is displayed above content */
+    right: 105%;
+    top: 50%;
+    transform: translateX(-10%);;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.8vmin;
+    line-height: 1.9vmin;
 }
 
 .selectAllDropdown > p {
@@ -454,4 +521,5 @@
     .instructionStepsItemStandard{font-size: 1.5vmin;}
     .instructionStepsItemHighlight{font-size: 1.5vmin;}
     #navigationBarContainer{width: 25%;}
+    #sidePanelResetButton{padding: 0.5dvh}
 }

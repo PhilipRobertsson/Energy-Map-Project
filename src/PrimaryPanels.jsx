@@ -30,7 +30,8 @@ const assetSources ={
     sidePanelInfo: "./sidePanel/sidePanelInfoIcon.svg",
     sidePanelRollupOpen: "./sidePanel/sidePanelRollupOpen.svg",
     sidePanelRollupClose: "./sidePanel/sidePanelRollupClose.svg",
-    sidePanelCheckMark: "./sidePanel/sidePanelCheckMark.svg"
+    sidePanelCheckMark: "./sidePanel/sidePanelCheckMark.svg",
+    infoIcon: "./popup/popupInfo.svg"
 };
 
 // Used to filter out fuels which either are too uncommon or unimportant for the visualization
@@ -74,6 +75,8 @@ function PrimaryPanels() {
     const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
+    const prevSidePanelState = useRef(null);
+    const prevPagesRef = useRef(null);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -297,6 +300,45 @@ function PrimaryPanels() {
         prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
     }, [barChartFilter])
 
+    // Resets all filters (fuelFilter, regionFilter, yearFilter, generationFilter)
+    function resetAllFilters(){
+        setFuelFilter(prev => prev.map(f => ({ ...f, show: true })))
+        setRegionFilter(prev => prev.map(r => ({ ...r, show: true })))
+        setYearFilter([])
+        setGenerationFilter([])
+
+        const sidePanel = sidePanelContainer.current
+        if (sidePanel && sidePanel.children.length) {
+            const fuelSelectAll = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]
+            const regionSelectAll = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]
+
+            fuelSelectAll.children[1].textContent = "Deselect all fuels"
+            fuelSelectAll.children[0].style.backgroundColor = "#11658C"
+            regionSelectAll.children[1].textContent = "Deselect all regions"
+            regionSelectAll.children[0].style.backgroundColor = "#11658C"
+
+            sidePanel.querySelectorAll(".sidePanelFilterSliderContainer").forEach(slider => {
+                if (slider.reset) slider.reset()
+            })
+        }
+    }
+
+    // Handle reset button click
+    function handleResetClick(){
+        const resetButton = document.getElementById("sidePanelResetButton")
+        gsap.fromTo(resetButton, 
+            { opacity: 1 }, 
+            { 
+                opacity: 0.7, 
+                duration: 0.15,
+                yoyo: true, 
+                repeat: 1, 
+                overwrite: true 
+            }
+        );
+        resetAllFilters()
+    }
+
     // Used by the two drop down and legends filter update functions, to set corresponding filters
     function checkAndSetFilter(selectAllOption, prevFilter, clickedItem, type){
         var propName = (type=="region") ? "country" : "fuel"
@@ -347,7 +389,7 @@ function PrimaryPanels() {
     // Handle clicks on the seperate country toggles
     function handleRegLegClick(clickedCountry){
         setRegionFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
+            const selectAllOption = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
             const toggled = checkAndSetFilter(selectAllOption, prev, clickedCountry, "region")
             return toggled;
         });
@@ -413,6 +455,29 @@ function PrimaryPanels() {
         }
         toggleDropDown(element)
     }
+
+    // Close dropdowns when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            const sidePanel = sidePanelContainer.current
+            if (!sidePanel || !sidePanel.children.length) return
+            const pageContainer = sidePanel.children[0]
+            const dropdowns = [
+                pageContainer.children[8]?.children[0],
+                pageContainer.children[9]?.children[0],
+            ]
+            dropdowns.forEach(element => {
+                if (!element || !element.children[1]) return
+                const dropdown = element.children[1]
+                if (dropdown.classList.contains("hide")) return
+                if (!element.contains(e.target)) {
+                    toggleDropDown(element)
+                }
+            })
+        }
+        document.addEventListener("click", handleClickOutside)
+        return () => document.removeEventListener("click", handleClickOutside)
+    }, [])
 
     // Get new title
     function getNewDropDownTitle(shownElements, type){
@@ -555,6 +620,19 @@ function PrimaryPanels() {
         const pageContainer = sidePanel.children[0];
         const filterCounterValue = pageContainer.querySelector("#filterCounterValue");
         const filterCounterStatic = pageContainer.querySelector("#filterCounterStatic");
+        if(shown == 0){
+            if (filterCounterValue) filterCounterValue.textContent = "";
+            if (filterCounterStatic){
+                filterCounterStatic.textContent = "No power plants found, reset filters";
+                gsap.fromTo(filterCounterStatic,
+                    {color: "#030303", fontSize: "1.5vmin"},
+                    {color: "#8f0c0c", fontSize: "1.6vmin",
+                        duration: 0.45, yoyo: true, repeat: 1, overwrite: true 
+                    }
+                )
+            }
+            return;
+        }
         if (filterCounterValue) filterCounterValue.textContent = shown;
         if (filterCounterStatic) filterCounterStatic.textContent = `/${total} power plants selected`;
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants]);
@@ -565,11 +643,28 @@ function PrimaryPanels() {
 
         if (!sidePanel) return;
         if (!pageContent) return;
+
+        const signature = JSON.stringify({
+            page: sidePanelPage.id,
+            fuel: fuelFilter.map(f => f.fuel + ":" + f.show),
+            region: regionFilter.map(r => r.country + ":" + r.show),
+            year: yearFilter,
+            generation: generationFilter,
+            hasPages: !!pages,
+            hasPowerPlants: !!powerPlants,
+            hasRegionalData: regionalData.length,
+        })
+        const pagesChanged = pages !== prevPagesRef.current
+        if (prevSidePanelState.current === signature && pages && !pagesChanged) return;
+        prevSidePanelState.current = signature
+        prevPagesRef.current = pages
+
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
             const newPages = createPages(pageContent, powerPlants, regionalData,
                 (values, bounds) => setYearFilter([values, bounds]),
-                (values, bounds) => setGenerationFilter([values, bounds])
+                (values, bounds) => setGenerationFilter([values, bounds]),
+                handleResetClick
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -746,7 +841,7 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerpl
     return shownPowerPlants
 }
 
-function createPages(pageContent, powerPlants, regionalData, onYearChange, onGenerationChange){
+function createPages(pageContent, powerPlants, regionalData, onYearChange, onGenerationChange, onReset){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
     
@@ -783,6 +878,10 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
         pageContainer.appendChild(filterContainer)
     }
 
+    // Wrapper for filter and reset button
+    const filterAndResetWrapper = document.createElement("div")
+    filterAndResetWrapper.id = "sidePanelFilterAndResetWrapper"
+
     // Filter counter
     const filterCounter = document.createElement("span")
     const filterCounterValue = document.createElement("span")
@@ -798,7 +897,19 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
 
     filterCounter.appendChild(filterCounterValue)
     filterCounter.appendChild(filterCounterStatic)
-    pageContainer.appendChild(filterCounter)
+    filterAndResetWrapper.appendChild(filterCounter)
+
+    // Reset button
+    const buttonField = document.createElement("div")
+    const buttonText = document.createElement("span")
+
+    buttonField.id = "sidePanelResetButton"
+    buttonText.textContent = "Reset Filters"
+    buttonField.onclick = onReset
+
+    buttonField.appendChild(buttonText)
+    filterAndResetWrapper.appendChild(buttonField)
+    pageContainer.appendChild(filterAndResetWrapper)
 
     // Instruction containers / Info text
     for(var i = 0; i<pageContent.length; i++){
@@ -904,14 +1015,43 @@ function getSliders(filter, regionalData, onChange){
     textSliderTitle.classList.add("sliderTitle")
     textMax.classList.add("sliderEdgeText")
 
+    textField.appendChild(textMin)
+
     if(filter=="year"){
-        textSliderTitle.textContent = "Year Started"
+        textSliderTitle.textContent = "Commissioning Year"
+        textField.appendChild(textSliderTitle)
     }else{
-        textSliderTitle.textContent = "Electricity Generated per Year"
+        // Wrapper for text and info icon
+        const titleAndIconWrapper = document.createElement("span")
+        titleAndIconWrapper.className = "sliderTitleWrapper"
+
+        // The text displayed below the slider
+        textSliderTitle.textContent = "Annual Generation (GWh)"
+
+        // The icon displayed next to the text
+        const sliderIcon = document.createElement("img")
+        sliderIcon.className = "sliderIcon"
+        sliderIcon.src = assetSources.infoIcon
+
+        // Tool tip when icon is hovered
+        const generationToolTip = document.createElement("div")
+        generationToolTip.className = "sliderTooltipTooltip"
+        const generationToolTipText = document.createElement("span")
+        generationToolTipText.className = "sliderTooltipTooltipText"
+        generationToolTipText.textContent  = "Annual generation in gigawatt hours (GWhs)"
+
+        generationToolTip.appendChild(generationToolTipText)
+
+        sliderIcon.onmouseover = () => generationToolTipText.style.visibility = "visible"
+        sliderIcon.onmouseout = () => generationToolTipText.style.visibility = "hidden"
+
+        titleAndIconWrapper.appendChild(textSliderTitle)
+        titleAndIconWrapper.appendChild(sliderIcon)
+        titleAndIconWrapper.appendChild(generationToolTip)
+        
+        textField.appendChild(titleAndIconWrapper)
     }
 
-    textField.appendChild(textMin)
-    textField.appendChild(textSliderTitle)
     textField.appendChild(textMax)
 
     sliderContainer.appendChild(textField)
@@ -1064,6 +1204,13 @@ function getSliders(filter, regionalData, onChange){
     makeDraggableRange(range)
     updateSlider()
     if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+
+    sliderContainer.reset = () => {
+        valueMin = minVal
+        valueMax = maxVal
+        updateSlider()
+        if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+    }
 
     return sliderContainer
 }
