@@ -193,7 +193,7 @@ function PrimaryPanels() {
     function handleZoomIn(icon){
         gsap.fromTo(icon, 
             { scale: 1 }, 
-            { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, overwrite: true }
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
         );
         mapRef.current?.zoomIn({ duration: 800 });
     }
@@ -202,7 +202,7 @@ function PrimaryPanels() {
     function handleZoomOut(icon){
         gsap.fromTo(icon, 
             { scale: 1 }, 
-            { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, overwrite: true }
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
         );
         mapRef.current?.zoomOut({ duration: 800 });
     }
@@ -236,7 +236,7 @@ function PrimaryPanels() {
 
         gsap.fromTo(element, 
             { scale: 1 }, 
-            { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, overwrite: true }
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
         );
 
         const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
@@ -402,7 +402,7 @@ function PrimaryPanels() {
             { scale: 1 }, 
             { 
                 scale: 1.25, 
-                duration: 0.25,
+                duration: 0.15,
                 yoyo: true, 
                 repeat: 1, 
                 overwrite: true 
@@ -626,8 +626,8 @@ function PrimaryPanels() {
                 filterCounterStatic.textContent = "No power plants found, reset filters";
                 gsap.fromTo(filterCounterStatic,
                     {color: "#030303", fontSize: "1.5vmin"},
-                    {color: "#8f0c0c", fontSize: "1.6vmin",
-                        duration: 0.45, yoyo: true, repeat: 1, overwrite: true 
+                    {color: "#8f0c0c", fontSize: "1.7vmin",
+                        duration: 0.15, yoyo: true, repeat: 1, overwrite: true 
                     }
                 )
             }

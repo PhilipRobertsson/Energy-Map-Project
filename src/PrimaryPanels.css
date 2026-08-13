@@ -15,7 +15,7 @@
     margin: 0;
     cursor: pointer;/*Pointer instead of text input cursor*/
     transition-property: opacity;
-    transition-duration: 0.3s;
+    transition-duration: 0.15s;
 
 }
 .legendColour{ /*The coloured box representing each fuel type*/
