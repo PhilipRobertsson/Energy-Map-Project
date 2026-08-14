@@ -303,8 +303,9 @@ function Map({ children }) {
           gsap.to(contentElement, { rotateX: 0, opacity: 1, duration: 0.3, ease: "power2.out",
             onComplete: ()=>{
               const boundingBox = contentElement.getBoundingClientRect();
-              if(boundingBox.top <= 0){
-                mapInstance.current?.panBy([0, 0], { duration: 1 })
+              const mapWidth = window.screen.width - ((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25) - 50
+              if(boundingBox.top <= 0 || boundingBox.right >= mapWidth){
+                mapInstance.current?.panBy([0, 0], { duration: 1 }) // Work around to reposition pop-ups that are outside the screen
               }
             }
            })
@@ -448,7 +449,7 @@ function Map({ children }) {
               const popUpContentElement = infoElement.parentElement.parentElement;
               const boundingBox = popUpContentElement.getBoundingClientRect();
               if(boundingBox.top <= 0){
-                mapInstance.current?.panBy([0, 0], { duration: 1 })
+                mapInstance.current?.panBy([0, 0], { duration: 1 }) // Work around to reposition pop-ups that are outside the screen
               }
             }
           }
