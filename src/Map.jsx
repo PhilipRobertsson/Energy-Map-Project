@@ -296,11 +296,18 @@ function Map({ children }) {
             .setHTML("<h1>"+ properties.name +"</h1>")
             .addTo(map);
 
-          // Pop up rotate X fade in
+          // Pop up rotate X "fade in"
           const contentElement = popup.getElement().children[1]
           gsap.set(contentElement, { rotateX: -90, opacity: 0, transformOrigin: "bottom center" })
           gsap.set(popup.getElement(), { perspective: 800 })
-          gsap.to(contentElement, { rotateX: 0, opacity: 1, duration: 0.3, ease: "power2.out" })
+          gsap.to(contentElement, { rotateX: 0, opacity: 1, duration: 0.3, ease: "power2.out",
+            onComplete: ()=>{
+              const boundingBox = contentElement.getBoundingClientRect();
+              if(boundingBox.top <= 0){
+                mapInstance.current?.panBy([0, 0], { duration: 1 })
+              }
+            }
+           })
           contentElement.style.width = Math.round(400*scale) + "px"
 
           // Replace text based close button with image based icon instead
@@ -438,6 +445,11 @@ function Map({ children }) {
           { height: "auto", opacity: 1, duration: 0.4, ease: "power2.out",
             onComplete: () => {
               gsap.set(infoElement, { clearProps: "height" })
+              const popUpContentElement = infoElement.parentElement.parentElement;
+              const boundingBox = popUpContentElement.getBoundingClientRect();
+              if(boundingBox.top <= 0){
+                mapInstance.current?.panBy([0, 0], { duration: 1 })
+              }
             }
           }
         )
