@@ -661,7 +661,7 @@ function PrimaryPanels() {
 
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
-            const newPages = createPages(pageContent, powerPlants, regionalData,
+            const newPages = createPages(pageContent, powerPlants, regionalData, fuelFilter,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 handleResetClick
@@ -841,7 +841,7 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerpl
     return shownPowerPlants
 }
 
-function createPages(pageContent, powerPlants, regionalData, onYearChange, onGenerationChange, onReset){
+function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange, onGenerationChange, onReset){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
     
@@ -924,8 +924,9 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
     const barChartWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
     const barChartHeight = Math.floor(window.screen.height * 0.20)
 
-    
-
+    if(fuels){
+        console.log(fuels)
+    }
     pageContainer.appendChild(barChartContainer)
 
     // Instruction containers / Info text

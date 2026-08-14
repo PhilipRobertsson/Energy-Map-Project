@@ -42,12 +42,14 @@ def getColourAndID(fuelName):
         case _:
             return ["#E4E4E4", None]
 
-def createJSON(path, list, genFuel):
-    # The generation columns present in the data frame
+def createJSON(path, list, genFuel, capFuel):
+    # The generation and capacity columns present in the data frames
     generationCols = [c for c in genFuel.columns if c != 'primary_fuel']
+    capacityCols = [c for c in capFuel.columns if c != 'primary_fuel']
 
     # Sum generation data for each primary fuel
-    grouped = genFuel.groupby('primary_fuel')[generationCols].sum()
+    genGrouped = genFuel.groupby('primary_fuel')[generationCols].sum()
+    capGrouped = capFuel.groupby('primary_fuel')[capacityCols].sum()
 
     otherFuels = ["Petcoke", "Wave and Tidal", "Tidal", "Geothermal", "Cogeneration", "Storage", "Biomass", "Waste"]
 
@@ -58,24 +60,38 @@ def createJSON(path, list, genFuel):
         return None if value == 0.0 else value
 
     # Build a lookup of fuel -> summed generation, replacing NaN/0 with None
-    sumsByFuel = {}
-    for fuel in grouped.index:
-        sumsByFuel[fuel] = {
-            col: cleanSum(grouped.loc[fuel, col])
+    genSumsByFuel = {}
+    capSumsByFuel = {}
+    for fuel in genGrouped.index:
+        genSumsByFuel[fuel] = {
+            col: cleanSum(genGrouped.loc[fuel, col])
             for col in generationCols
+        }
+    for fuel in capGrouped.index:
+        capSumsByFuel[fuel] = {
+            col: cleanSum(capGrouped.loc[fuel,col])
+            for col in capacityCols
         }
 
     # Aggregate the "Other" category from its constituent fuels
-    otherSums = {col: 0.0 for col in generationCols}
+    genOtherSums = {col: 0.0 for col in generationCols}
+    capOtherSums = {col: 0.0 for col in capacityCols}
     for fuel in otherFuels:
-        if fuel in sumsByFuel:
+        if fuel in genSumsByFuel:
             for col in generationCols:
-                value = sumsByFuel[fuel][col]
-                otherSums[col] += value if value is not None else 0.0
-    sumsByFuel["Other"] = {col: cleanSum(v) for col, v in otherSums.items()}
+                value = genSumsByFuel[fuel][col]
+                genOtherSums[col] += value if value is not None else 0.0
+        if fuel in capSumsByFuel:
+            for col in capacityCols:
+                value = capSumsByFuel[fuel][col]
+                capOtherSums[col] += value if value is not None else 0.0
+    genSumsByFuel["Other"] = {col: cleanSum(v) for col, v in genOtherSums.items()}
+    capSumsByFuel["Other"] = {col: cleanSum(v) for col, v in capOtherSums.items()}
 
-    def toFieldName(col):
+    def genToFieldName(col):
         return col.replace('estimated_generation_gwh_', 'sum_estimated_generation_').replace('generation_gwh_', 'sum_generation_')
+    def capToFieldName(col):
+        return col.replace('capacity_mw', 'sum_capacity_mw')
 
     entries = []
     for idx, x in enumerate(list):
@@ -84,9 +100,12 @@ def createJSON(path, list, genFuel):
         data['fuel'] = x
         data['colour'] = getColourAndID(x)[0]
         data['show'] = True
-        if data['fuel'] in sumsByFuel:
+        if data['fuel'] in genSumsByFuel:
             for col in generationCols:
-                data[toFieldName(col)] = sumsByFuel[data['fuel']][col]
+                data[genToFieldName(col)] = genSumsByFuel[data['fuel']][col]
+        if data['fuel'] in capSumsByFuel:
+            for col in capacityCols:
+                data[capToFieldName(col)] = capSumsByFuel[data['fuel']][col]
         if data['fuel'] not in ["Petcoke", "Wave and Tidal", "Tidal", "Geothermal", "Cogeneration", "Storage","Biomass", "Waste"]:
             entries.append(data)
 
@@ -105,6 +124,8 @@ if __name__ == '__main__':
                    'generation_gwh_2016','generation_gwh_2017','generation_gwh_2018',
                    'generation_gwh_2019','estimated_generation_gwh_2013', 'estimated_generation_gwh_2014',
                    'estimated_generation_gwh_2015','estimated_generation_gwh_2016','estimated_generation_gwh_2017']]
+    capacityByFuel = df[['primary_fuel', 'capacity_mw']]
+
     primaryFuelsUnqiue = df['primary_fuel'].unique()
     other1Unqiue = df['other_fuel1'].unique()
     other2Unqiue = df['other_fuel2'].unique()
@@ -113,4 +134,4 @@ if __name__ == '__main__':
     allFuels = pd.concat([df['primary_fuel'], df['other_fuel1'], df['other_fuel2'], df['other_fuel3']]).unique()
     allFuels = [x for x in allFuels if str(x) != 'nan']
 
-    fuelJSON = createJSON(savePath, allFuels, generationByFuel)
+    fuelJSON = createJSON(savePath, allFuels, generationByFuel, capacityByFuel)

@@ -15,7 +15,8 @@
     "sum_estimated_generation_2014": null,
     "sum_estimated_generation_2015": null,
     "sum_estimated_generation_2016": null,
-    "sum_estimated_generation_2017": 9653451.97
+    "sum_estimated_generation_2017": 9653451.97,
+    "sum_capacity_mw": 1965540.9996
   },
   {
     "id": 1,
@@ -33,7 +34,8 @@
     "sum_estimated_generation_2014": null,
     "sum_estimated_generation_2015": null,
     "sum_estimated_generation_2016": null,
-    "sum_estimated_generation_2017": 6021909.55
+    "sum_estimated_generation_2017": 6021909.55,
+    "sum_capacity_mw": 1493050.602149
   },
   {
     "id": 2,
@@ -51,7 +53,8 @@
     "sum_estimated_generation_2014": null,
     "sum_estimated_generation_2015": null,
     "sum_estimated_generation_2016": null,
-    "sum_estimated_generation_2017": 500807.68
+    "sum_estimated_generation_2017": 500807.68,
+    "sum_capacity_mw": 261878.709618
   },
   {
     "id": 3,
@@ -69,7 +72,8 @@
     "sum_estimated_generation_2014": null,
     "sum_estimated_generation_2015": null,
     "sum_estimated_generation_2016": null,
-    "sum_estimated_generation_2017": 2902412.32
+    "sum_estimated_generation_2017": 2902412.32,
+    "sum_capacity_mw": 407911.76
   },
   {
     "id": 4,
@@ -87,7 +91,8 @@
     "sum_estimated_generation_2014": 3469641.15,
     "sum_estimated_generation_2015": 3465364.56,
     "sum_estimated_generation_2016": 3522438.84,
-    "sum_estimated_generation_2017": 3541440.61
+    "sum_estimated_generation_2017": 3541440.61,
+    "sum_capacity_mw": 1053159.6198
   },
   {
     "id": 5,
@@ -105,7 +110,8 @@
     "sum_estimated_generation_2014": 252683.32,
     "sum_estimated_generation_2015": 266833.23,
     "sum_estimated_generation_2016": 321001.06,
-    "sum_estimated_generation_2017": 689101.45
+    "sum_estimated_generation_2017": 689101.45,
+    "sum_capacity_mw": 263053.7295
   },
   {
     "id": 6,
@@ -123,7 +129,8 @@
     "sum_estimated_generation_2014": 278516.33,
     "sum_estimated_generation_2015": 289318.65,
     "sum_estimated_generation_2016": 297725.91,
-    "sum_estimated_generation_2017": 347580.34
+    "sum_estimated_generation_2017": 347580.34,
+    "sum_capacity_mw": 188312.32349
   },
   {
     "id": 7,
@@ -141,6 +148,7 @@
     "sum_estimated_generation_2014": null,
     "sum_estimated_generation_2015": null,
     "sum_estimated_generation_2016": null,
-    "sum_estimated_generation_2017": 68269.29
+    "sum_estimated_generation_2017": 68269.29,
+    "sum_capacity_mw": 70454.8431
   }
 ]
