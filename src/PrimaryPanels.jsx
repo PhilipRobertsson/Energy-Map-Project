@@ -43,13 +43,13 @@ const otherFuels =[
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, false, false, false, false, false, false, true, true, true, true, true, false, false, false, false,false,false, true]},
-    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, true, true, true, true, true, false, false, false,false,false, true]},
-    {id: 2, visibleHtmlElements: [false, false, false, true, false, false, false, false, true, true, true, true, true, false, true, false, false,false,false, true]},
+    {id: 0, visibleHtmlElements: [true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false,false,false, true]},
+    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
+    {id: 2, visibleHtmlElements: [false, false, false, true, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
     {id: 3, visibleHtmlElements: [false, false, false, false, true, false, false, false, true, true, true, true, true, false, false, true, false,false,false, true]},
-    {id: 4, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false, false, false, true,false,false, true]},
-    {id: 5, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false,true,false, true]},
-    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false,false,true, true]},
+    {id: 4, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
+    {id: 5, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
+    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false,false,true, true]},
 ];
 
 // static JSON to fetch and states to set
@@ -910,6 +910,23 @@ function createPages(pageContent, powerPlants, regionalData, onYearChange, onGen
     buttonField.appendChild(buttonText)
     filterAndResetWrapper.appendChild(buttonField)
     pageContainer.appendChild(filterAndResetWrapper)
+
+    // Generation by fuel bar chart
+    const barChartContainer = document.createElement("div")
+    barChartContainer.id = "sidePanelBarChart"
+
+    // Pixel dimensions for the side panel
+    const sidePanelWidth = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25);
+    const sidePanelLeftMargin = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.02 : window.screen.width * 0.01);
+    const sidePanelPadding = Math.floor(2*window.screen.width * 0.01);
+
+    // Pixel dimensions for the bar chart container
+    const barChartWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
+    const barChartHeight = Math.floor(window.screen.height * 0.20)
+
+    
+
+    pageContainer.appendChild(barChartContainer)
 
     // Instruction containers / Info text
     for(var i = 0; i<pageContent.length; i++){
