@@ -46,7 +46,7 @@ const allPages = [
     {id: 0, visibleHtmlElements: [true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false,false,false, true]},
     {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
     {id: 2, visibleHtmlElements: [false, false, false, true, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
-    {id: 3, visibleHtmlElements: [false, false, false, false, true, false, false, false, true, true, true, true, true, false, false, true, false,false,false, true]},
+    {id: 3, visibleHtmlElements: [false, false, false, false, true, false, false, false, true, true, true, true, true, false, false, false, true, false,false,false, true]},
     {id: 4, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
     {id: 5, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
     {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false,false,true, true]},
@@ -75,8 +75,7 @@ function PrimaryPanels() {
     const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
-    const prevSidePanelState = useRef(null);
-    const prevPagesRef = useRef(null);
+    const prevPageRef = useRef(null);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -644,21 +643,6 @@ function PrimaryPanels() {
         if (!sidePanel) return;
         if (!pageContent) return;
 
-        const signature = JSON.stringify({
-            page: sidePanelPage.id,
-            fuel: fuelFilter.map(f => f.fuel + ":" + f.show),
-            region: regionFilter.map(r => r.country + ":" + r.show),
-            year: yearFilter,
-            generation: generationFilter,
-            hasPages: !!pages,
-            hasPowerPlants: !!powerPlants,
-            hasRegionalData: regionalData.length,
-        })
-        const pagesChanged = pages !== prevPagesRef.current
-        if (prevSidePanelState.current === signature && pages && !pagesChanged) return;
-        prevSidePanelState.current = signature
-        prevPagesRef.current = pages
-
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
             const newPages = createPages(pageContent, powerPlants, regionalData, fuelFilter,
@@ -672,6 +656,7 @@ function PrimaryPanels() {
         }else{ // The pages exists
 
             // Hide/show loop
+            const pageChanged = prevPageRef.current !== sidePanelPage.id
             for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
                 if(sidePanelPage.visibleHtmlElements[i]){
                     if(pages.children[i].classList[0] == "instructionTitle" ||
@@ -680,10 +665,12 @@ function PrimaryPanels() {
                         pages.children[i].id == "sidePanelSubtitle" ||
                         pages.children[i].id == "InfoTitle"
                     ){
-                        gsap.fromTo(pages.children[i],
-                            {opacity: 0/*, rotateX: 90, transformOrigin: "top" */},
-                            {opacity: 1, /*rotateX: 0, transformOrigin: "top",*/ duration: 1.0, ease: "power2.out"}
-                        )
+                        if (pageChanged){
+                            gsap.fromTo(pages.children[i],
+                                {opacity: 0/*, rotateX: 90, transformOrigin: "top" */},
+                                {opacity: 1, /*rotateX: 0, transformOrigin: "top",*/ duration: 1.0, ease: "power2.out"}
+                            )
+                        }
                     }
                     if(pages.children[i].classList[0] == "sidePanelInstructionsContainer"){
                         pages.children[i].style.display = "block"
@@ -694,6 +681,7 @@ function PrimaryPanels() {
                     pages.children[i].style.display = "none"
                 }
             }
+            prevPageRef.current = sidePanelPage.id
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.children[8].children[0]
@@ -924,9 +912,11 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     const barChartWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
     const barChartHeight = Math.floor(window.screen.height * 0.20)
 
+    // Check if the fuel values are available
     if(fuels){
         console.log(fuels)
     }
+
     pageContainer.appendChild(barChartContainer)
 
     // Instruction containers / Info text
