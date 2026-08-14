@@ -68,31 +68,31 @@
 .sidePanelPageContainer{
     width: 100%;
     height: 95%;
-    margin-left: 1dvw;
+    margin-left: 2dvw;
     padding: 0 1dvw 0 1dvw;
     display: flex;
     flex-direction: column;
 }
 
 #sidePanelMainTitle{
-    display: block;
+    display: flex;
+    align-self: flex-start;
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 4vmax;
-    margin: 0;
-    align-self:center;
+    font-size: 3vmax;
+    margin: 2dvh 0 0 0;
     color: #004B70;
 }
 
 #sidePanelSubtitle{
-    display: block;
+    display: flex;
+    align-self: flex-start;
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.7vmax;
-    margin: -1.5dvh 0 2dvh 0;
-    align-self:center;
+    font-size: 1vmax;
+    margin: -1dvh 0 2dvh 0;
     color: #004B70;
 }
 
@@ -101,8 +101,8 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 8vmin;
-    margin: 0;
+    font-size: 3vmax;;
+    margin: 2dvh 0 0 0;
     align-self:flex-start;
     color: #004B70;
 }
@@ -117,7 +117,7 @@
 #filterCounter{
     display: block;
     align-self: center;
-    width: 50%;
+    width: 55%;
 }
 
 #filterCounter * {
@@ -138,6 +138,7 @@
 
 .sidePanelResetButton{
     background-color: #11658C;
+    z-index: 8;
     border-radius: 1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     padding: 0.75dvh
@@ -160,11 +161,9 @@
 
 #sidePanelBarChart{
     width: 100%;
-    height: 20dvh;
+    height: 35dvh;
     background-color: #f7f7f7;
-    box-shadow: 0px 0px 1vmin 0px rgba(0,0,0,0.25) inset;
-    -webkit-box-shadow: 0px 0px 1vmin 0px rgba(0,0,0,0.25) inset;
-    -moz-box-shadow: 0px 0px 1vmin 0px rgba(0,0,0,0.25) inset;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     border-radius: 1dvh;
     margin-top: 1dvh;
 }
@@ -330,12 +329,12 @@
 }
 
 #navigationBarContainer{
-    align-self: center;
+    align-self: flex-end;
     display: flex;
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
-    width: 20%;
+    width: 10%;
     justify-content: space-around;
     align-items: center;
 }
@@ -484,6 +483,7 @@
     position: relative;
     display: inline-block;
     cursor: pointer;
+    z-index: 10; /* Ensure tooltip is displayed above content */
 }
 
 .sliderTooltipTooltipText{
@@ -495,7 +495,6 @@
     padding: 1dvh;
     border-radius: 0.5dvh;
     position: absolute;
-    z-index: 1; /* Ensure tooltip is displayed above content */
     right: 105%;
     top: 50%;
     transform: translateX(-10%);;

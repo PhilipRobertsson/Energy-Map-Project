@@ -44,12 +44,12 @@ const otherFuels =[
 // The different pages on the instruction page
 const allPages = [
     {id: 0, visibleHtmlElements: [true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false,false,false, true]},
-    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
-    {id: 2, visibleHtmlElements: [false, false, false, true, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
-    {id: 3, visibleHtmlElements: [false, false, false, false, true, false, false, false, true, true, true, true, true, false, false, false, true, false,false,false, true]},
-    {id: 4, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
-    {id: 5, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
-    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false,false,true, true]},
+    {id: 1, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false,false,true, true]},
+    {id: 2, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
+    {id: 3, visibleHtmlElements: [false, false, false, true, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
+    {id: 4, visibleHtmlElements: [false, false, false, false, true, false, false, false, true, true, true, true, true, false, false, false, true, false,false,false, true]},
+    {id: 5, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
+    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
 ];
 
 // static JSON to fetch and states to set
@@ -635,8 +635,8 @@ function PrimaryPanels() {
             if (filterCounterStatic){
                 filterCounterStatic.textContent = "No power plants found, reset filters";
                 gsap.fromTo(filterCounterStatic,
-                    {color: "#030303", fontSize: "1.5vmin"},
-                    {color: "#8f0c0c", fontSize: "1.7vmin",
+                    {color: "#030303", fontSize: "1.4vmin"},
+                    {color: "#8f0c0c", fontSize: "1.6vmin",
                         duration: 0.15, yoyo: true, repeat: 1, overwrite: true 
                     }
                 )
@@ -956,7 +956,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
         if(i==0){
             icon.src = assetSources.sidePanelHome
             icon.classList.add("navigationBarIconLarge")
-        }else if(i==6){
+        }else if(i==1){
             icon.src = assetSources.sidePanelInfo
             icon.classList.add("navigationBarIconLarge")
         }else{
