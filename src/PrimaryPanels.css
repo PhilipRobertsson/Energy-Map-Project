@@ -339,18 +339,42 @@
 }
 
 .navigationBarIconLarge{
-    margin-right: 2dvh;
     height: 3dvh;
     width: auto;
     cursor: pointer; /*Pointer instead of standard cursor*/
 }
 
 .navigationBarIconSmall{
-    margin-right: 1dvh;
-    display: none;
-    height: 1.7dvh;
+    height: 2.5dvh;
     width: auto;
     cursor: pointer; /*Pointer instead of standard cursor*/
+}
+
+.navigationBarIconWrapper{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigationBarIconWrapperLarge{
+    margin-right: 2dvh;
+}
+
+.navigationBarIconWrapperSmall{
+    margin-right: 1dvh;
+    display: none;
+}
+
+.navigationBarIconNumber{
+    position: absolute;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.5vmin;
+    color: #f7f7f7;
+    pointer-events: none;
+    margin: 0;
 }
 
 /*Scroll bar*/

@@ -668,6 +668,7 @@ function PrimaryPanels() {
 
             // Hide/show loop
             const pageChanged = prevPageRef.current !== sidePanelPage.id
+            const previousPageId = prevPageRef.current
             for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
                 if(sidePanelPage.visibleHtmlElements[i]){
                     if(pages.children[i].classList[0] == "instructionTitle" ||
@@ -770,13 +771,38 @@ function PrimaryPanels() {
 
             // Add navigation and colour correct icon
             const navigationBar = pages.lastChild
+            const largeIcons = navigationBar.querySelectorAll(".navigationBarIconWrapperLarge")
+            const smallIcons = navigationBar.querySelectorAll(".navigationBarIconWrapperSmall")
+
+            if (pageChanged) {
+                const isHomePage = sidePanelPage.id == 0
+                const cameFromHome = previousPageId == 0
+
+                if (isHomePage) {
+                    // Slide home/info back to center, fade out instruction icons
+                    largeIcons.forEach(icon => gsap.to(icon, { x: 0, duration: 0.5, ease: "power2.out" }))
+                    smallIcons.forEach((icon,i) => {
+                        icon.children[1].style.opacity = 0
+                        gsap.to(icon, { opacity: 0, width:0, duration: 0.5, ease: "power2.in" , delay: i * 0.05,
+                            onComplete: () => icon.style.display = "none" })
+                    })
+                } else if (cameFromHome) {
+                    // Slide home/info outward, fade in instruction icons
+                    largeIcons[0] && gsap.to(largeIcons[0], { x: "-0.5dvh", duration: 0.5, ease: "power2.out" })
+                    largeIcons[1] && gsap.to(largeIcons[1], { x: "-0.5dvh", duration: 0.5, ease: "power2.out" })
+                    smallIcons.forEach((icon, i) => {
+                        icon.style.display = "block"
+                        gsap.fromTo(icon, { opacity: 0, width:0, x: "-1dvh" },
+                            { opacity: 1,width:'auto', x: 0, duration: 0.5, ease: "power2.out", delay: i * 0.05, 
+                                onComplete: () => icon.children[1].style.opacity = 1
+                            })
+                    })
+                }
+            }
+
             for(let i = 0; i < navigationBar.children.length; i++){
-                const icon = navigationBar.children[i]
-                const instructionIcons = document.querySelectorAll(".navigationBarIconSmall");
-                instructionIcons.forEach(instructionIcon =>{
-                    if(sidePanelPage.id == 0){instructionIcon.style.display = "none"}
-                    else{instructionIcon.style.display = "block"}
-                })
+                const wrapper = navigationBar.children[i]
+                const icon = wrapper.querySelector("img")
                 if(sidePanelPage.id == i){
                     icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
                 }else{
@@ -957,19 +983,33 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     navigationContainer.id = "navigationBarContainer"
 
     for(let i = 0; i<7;i++){
+        const wrapper = document.createElement("div")
+        wrapper.classList.add("navigationBarIconWrapper")
+
         const icon = document.createElement("img")
         if(i==0){
             icon.src = assetSources.sidePanelHome
             icon.classList.add("navigationBarIconLarge")
+            wrapper.classList.add("navigationBarIconWrapperLarge")
+            wrapper.appendChild(icon)
         }else if(i==1){
             icon.src = assetSources.sidePanelInfo
             icon.classList.add("navigationBarIconLarge")
+            wrapper.classList.add("navigationBarIconWrapperLarge")
+            wrapper.appendChild(icon)
         }else{
             icon.src = assetSources.sidePanelInstructions
             icon.classList.add("navigationBarIconSmall")
+            wrapper.classList.add("navigationBarIconWrapperSmall")
+
+            const number = document.createElement("span")
+            number.classList.add("navigationBarIconNumber")
+            number.textContent = i
+            wrapper.appendChild(icon)
+            wrapper.appendChild(number)
         }
         icon.id = "navigationID" + i
-        navigationContainer.appendChild(icon)
+        navigationContainer.appendChild(wrapper)
     }
 
     pageContainer.appendChild(navigationContainer)
