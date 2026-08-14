@@ -334,18 +334,20 @@
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
-    width: 10%;
     justify-content: space-around;
     align-items: center;
 }
 
 .navigationBarIconLarge{
+    margin-right: 2dvh;
     height: 3dvh;
     width: auto;
     cursor: pointer; /*Pointer instead of standard cursor*/
 }
 
 .navigationBarIconSmall{
+    margin-right: 1dvh;
+    display: none;
     height: 1.7dvh;
     width: auto;
     cursor: pointer; /*Pointer instead of standard cursor*/

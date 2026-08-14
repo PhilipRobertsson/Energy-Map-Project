@@ -182,6 +182,7 @@
         "name":"Info",
         "title":"Introduction",
         "secondTitle":"Source of Information",
+        "thirdTitle":"Guide",
         "paragraphs":[
             ["This PhD research project visualizes the distribution and capacity of power plants worldwide. It transforms complex energy data into an interactive map, revealing how our planet stays powered. Explore the hidden infrastructure that sustains modern society across every continent."],
             ["By tapping individual data points, you can access specific details about any plant on the map. Use the built-in filters to compare different energy sources. \n"],

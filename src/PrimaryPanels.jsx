@@ -772,6 +772,11 @@ function PrimaryPanels() {
             const navigationBar = pages.lastChild
             for(let i = 0; i < navigationBar.children.length; i++){
                 const icon = navigationBar.children[i]
+                const instructionIcons = document.querySelectorAll(".navigationBarIconSmall");
+                instructionIcons.forEach(instructionIcon =>{
+                    if(sidePanelPage.id == 0){instructionIcon.style.display = "none"}
+                    else{instructionIcon.style.display = "block"}
+                })
                 if(sidePanelPage.id == i){
                     icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
                 }else{
@@ -1329,6 +1334,13 @@ function getInstructions(pageContent, id){
                     secondParagraph.textContent = p
                     container.append(secondParagraph)
                 })
+            }
+
+            if(content.thirdTitle){
+                const thirdTitle = document.createElement("h2")
+                thirdTitle.classList.add('instructionsTitle')
+                thirdTitle.textContent = content.thirdTitle
+                container.appendChild(thirdTitle)
             }
         }
     })
