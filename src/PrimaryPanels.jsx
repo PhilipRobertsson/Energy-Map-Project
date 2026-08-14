@@ -14,7 +14,7 @@ const fuelFilterDef = {
 // Definition for the side panel
 const sidePanelDef ={
     id: "sidePanel",
-    width: 25 + "dvw", // 25% of screen height
+    width: 30 + "dvw", // 25% of screen height
     height: 100 + "dvh", // 100% of screen height
     position: ["absolute", 0, 0, null, null], // Right hand side, css -> [position, top, right, bottom, left]
 };
@@ -323,9 +323,9 @@ function PrimaryPanels() {
     }
 
     // Handle reset button click
-    function handleResetClick(){
-        const resetButton = document.getElementById("sidePanelResetButton")
-        gsap.fromTo(resetButton, 
+    function handleResetClick(button, option){
+        //const resetButton = document.getElementById("sidePanelResetButton")
+        gsap.fromTo(button, 
             { opacity: 1 }, 
             { 
                 opacity: 0.7, 
@@ -335,7 +335,18 @@ function PrimaryPanels() {
                 overwrite: true 
             }
         );
-        resetAllFilters()
+        switch(option){
+            case "reset":
+                resetAllFilters()
+                break;
+            case "close":
+                const openPopUps = document.querySelectorAll(".maplibregl-popup")
+                openPopUps.forEach(popup => {
+                    gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+                    gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+                })
+                break;
+        }
     }
 
     // Used by the two drop down and legends filter update functions, to set corresponding filters
@@ -887,16 +898,27 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     filterCounter.appendChild(filterCounterStatic)
     filterAndResetWrapper.appendChild(filterCounter)
 
+    // Close pop-ups button
+    const closeButtonField = document.createElement("div")
+    const closeButtonText = document.createElement("span")
+
+    closeButtonField.classList.add("sidePanelResetButton")
+    closeButtonText.textContent = "Close Pop-Ups"
+    closeButtonField.onclick = () => onReset(closeButtonField, "close")
+
+    closeButtonField.appendChild(closeButtonText)
+    filterAndResetWrapper.appendChild(closeButtonField)
+
     // Reset button
-    const buttonField = document.createElement("div")
-    const buttonText = document.createElement("span")
+    const resetButtonField = document.createElement("div")
+    const resetButtonText = document.createElement("span")
 
-    buttonField.id = "sidePanelResetButton"
-    buttonText.textContent = "Reset Filters"
-    buttonField.onclick = onReset
+    resetButtonField.classList.add("sidePanelResetButton")
+    resetButtonText.textContent = "Reset Filters"
+    resetButtonField.onclick = () => onReset(resetButtonField, "reset")
 
-    buttonField.appendChild(buttonText)
-    filterAndResetWrapper.appendChild(buttonField)
+    resetButtonField.appendChild(resetButtonText)
+    filterAndResetWrapper.appendChild(resetButtonField)
     pageContainer.appendChild(filterAndResetWrapper)
 
     // Generation by fuel bar chart
@@ -1026,7 +1048,7 @@ function getSliders(filter, regionalData, onChange){
     textField.appendChild(textMin)
 
     if(filter=="year"){
-        textSliderTitle.textContent = "Commissioning Year"
+        textSliderTitle.textContent = "Year Started"
         textField.appendChild(textSliderTitle)
     }else{
         // Wrapper for text and info icon
