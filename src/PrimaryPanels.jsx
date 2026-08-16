@@ -14,7 +14,7 @@ const fuelFilterDef = {
 // Definition for the side panel
 const sidePanelDef ={
     id: "sidePanel",
-    width: 30 + "dvw", // 25% of screen height
+    width: 30 + "dvw", // 25% of screen width
     height: 100 + "dvh", // 100% of screen height
     position: ["absolute", 0, 0, null, null], // Right hand side, css -> [position, top, right, bottom, left]
 };
@@ -45,11 +45,11 @@ const otherFuels =[
 const allPages = [
     {id: 0, visibleHtmlElements: [true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false,false,false, true]},
     {id: 1, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false,false,true, true]},
-    {id: 2, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
-    {id: 3, visibleHtmlElements: [false, false, false, true, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
-    {id: 4, visibleHtmlElements: [false, false, false, false, true, false, false, false, true, true, true, true, true, false, false, false, true, false,false,false, true]},
-    {id: 5, visibleHtmlElements: [false, false, false, false, false, true, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
-    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, true, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
+    {id: 2, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
+    {id: 3, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
+    {id: 4, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, false, true, false,false,false, true]},
+    {id: 5, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
+    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
 ];
 
 // static JSON to fetch and states to set
@@ -408,15 +408,13 @@ function PrimaryPanels() {
     // Handle navigationClick
     function handleNavigationClick(id, icon){
         setSidePanelPage(allPages[id])
-        gsap.fromTo(icon, 
-            { scale: 1 }, 
-            { 
-                scale: 1.25, 
-                duration: 0.15,
-                yoyo: true, 
-                repeat: 1, 
-                overwrite: true 
-            }
+        if(icon.classList.contains("navigationBarIconSmall")){ // Animate number as well
+            gsap.fromTo(icon.parentElement.children[1], { fontSize: "1.5vmin" },
+            { fontSize: "1.65vmin", duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+        }
+        gsap.fromTo(icon, { scale: 1 }, 
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
         );
         icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
     }
@@ -773,6 +771,7 @@ function PrimaryPanels() {
             const navigationBar = pages.lastChild
             const largeIcons = navigationBar.querySelectorAll(".navigationBarIconWrapperLarge")
             const smallIcons = navigationBar.querySelectorAll(".navigationBarIconWrapperSmall")
+            const smallTitle = navigationBar.querySelectorAll("#sidePanelMainTitleSmall")
 
             if (pageChanged) {
                 const isHomePage = sidePanelPage.id == 0
@@ -780,18 +779,22 @@ function PrimaryPanels() {
 
                 if (isHomePage) {
                     // Slide home/info back to center, fade out instruction icons
+                    gsap.to(smallTitle, {opacity: 0, duration: 0.5, ease: "power2.in"})
                     largeIcons.forEach(icon => gsap.to(icon, { x: 0, duration: 0.5, ease: "power2.out" }))
                     smallIcons.forEach((icon,i) => {
                         icon.children[1].style.opacity = 0
+                        gsap.to(icon.children, {opacity: 0, duration: 0.5, ease: "power2.in", delay: i * 0.05})
                         gsap.to(icon, { opacity: 0, width:0, duration: 0.5, ease: "power2.in" , delay: i * 0.05,
                             onComplete: () => icon.style.display = "none" })
                     })
                 } else if (cameFromHome) {
                     // Slide home/info outward, fade in instruction icons
+                    gsap.fromTo(smallTitle, {opacity: 0}, {opacity: 1, duration: 0.5, ease: "power2.in"})
                     largeIcons[0] && gsap.to(largeIcons[0], { x: "-0.5dvh", duration: 0.5, ease: "power2.out" })
                     largeIcons[1] && gsap.to(largeIcons[1], { x: "-0.5dvh", duration: 0.5, ease: "power2.out" })
                     smallIcons.forEach((icon, i) => {
                         icon.style.display = "block"
+                        gsap.fromTo(icon.children, {opacity: 0}, {opacity: 1, duration: 0.5, ease: "power2.in", delay: i * 0.05})
                         gsap.fromTo(icon, { opacity: 0, width:0, x: "-1dvh" },
                             { opacity: 1,width:'auto', x: 0, duration: 0.5, ease: "power2.out", delay: i * 0.05, 
                                 onComplete: () => icon.children[1].style.opacity = 1
@@ -800,8 +803,9 @@ function PrimaryPanels() {
                 }
             }
 
-            for(let i = 0; i < navigationBar.children.length; i++){
-                const wrapper = navigationBar.children[i]
+            const iconWrappers = navigationBar.querySelectorAll(".navigationBarIconWrapper")
+            for(let i = 0; i < iconWrappers.length; i++){
+                const wrapper = iconWrappers[i]
                 const icon = wrapper.querySelector("img")
                 if(sidePanelPage.id == i){
                     icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
@@ -982,6 +986,16 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     const navigationContainer = document.createElement("div")
     navigationContainer.id = "navigationBarContainer"
 
+    // Smaller main title
+    const mainTitleSmall = document.createElement("span")
+    mainTitleSmall.id = "sidePanelMainTitleSmall"
+    mainTitleSmall.textContent = "Energy Map"
+
+    navigationContainer.appendChild(mainTitleSmall)
+
+    const navigationElements = document.createElement("div")
+    navigationElements.style.display = "flex"
+
     for(let i = 0; i<7;i++){
         const wrapper = document.createElement("div")
         wrapper.classList.add("navigationBarIconWrapper")
@@ -1004,12 +1018,13 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
 
             const number = document.createElement("span")
             number.classList.add("navigationBarIconNumber")
-            number.textContent = i
+            number.textContent = (i-1)
             wrapper.appendChild(icon)
             wrapper.appendChild(number)
         }
         icon.id = "navigationID" + i
-        navigationContainer.appendChild(wrapper)
+        navigationElements.appendChild(wrapper)
+        navigationContainer.appendChild(navigationElements)
     }
 
     pageContainer.appendChild(navigationContainer)
