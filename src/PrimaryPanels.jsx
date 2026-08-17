@@ -1331,71 +1331,62 @@ function getInstructions(pageContent, id){
 
     pageContent.forEach(content =>{
         if(id == content.id){
-            if(content.title){ // If the page contains a title
-                const title = document.createElement("h2")
-                title.classList.add('instructionsTitle')
-                title.textContent = content.title
-                container.appendChild(title)
-            }
-
-            if(content.introText){ // If the page contains an intro text
-                const introText = document.createElement("p")
-                introText.classList.add('instructionsIntro')
-                introText.textContent = content.introText
-                container.appendChild(introText)
-            }
-
-            if(content.stepsTitle){ // If the page contains a steps title
-                const stepsTitle = document.createElement("h3")
-                stepsTitle.classList.add('instructionStepsTitle')
-                stepsTitle.textContent = content.stepsTitle
-                container.appendChild(stepsTitle)
-            }
-
-            if(content.stepsItems){ // If the page contains a list of steps
-                const stepsList = document.createElement("ul")
-                stepsList.classList.add('instructionStepsList')
-                content.stepsItems.forEach(item =>{
-                    let collector = document.createElement("li")
-                    item.forEach(s =>{
-                        collector.appendChild(eval('make'+s[0]+'("'+s[1]+'")'))
-                    })
-                    stepsList.appendChild(collector)
-                })
-                container.append(stepsList)
-            }
-
-            if(content.paragraphs){ // If the page contains paragraphs
-                content.paragraphs.forEach(p =>{
-                    const paragraph = document.createElement("p")
-                    paragraph.classList.add('instructionsIntro')
-                    paragraph.textContent = p
-                    container.append(paragraph)
-                })
-            }
-
-            if(content.secondTitle){ // If the page contains a second title
-                const secondTitle = document.createElement("h2")
-                secondTitle.classList.add('instructionsTitle')
-                secondTitle.textContent = content.secondTitle
-                container.appendChild(secondTitle)
-            }
-
-            if(content.secondParagraphs){ // If the page contains a second set of paragraphs
-                content.secondParagraphs.forEach(p =>{
-                    const secondParagraph = document.createElement("p")
-                    secondParagraph.classList.add('instructionsIntro')
-                    secondParagraph.textContent = p
-                    container.append(secondParagraph)
+            if(content.titles){
+                content.titles.forEach((t,i) =>{
+                    const title = document.createElement("h2")
+                    title.classList.add("instructionsTitle")
+                    title.textContent = t
+                    container.append(title)
+                    if(content.bodies && content.bodies[i]){
+                        content.bodies[i].forEach(p =>{
+                            let paragraph = document.createElement("p")
+                            paragraph.classList.add('instructionsIntro')
+                            paragraph.textContent = p
+                            container.append(paragraph)
+                        })
+                    }
+                    if(content.lists && content.lists[i]){
+                        if(content.lists[i].length){
+                            const stepsList = document.createElement("ul")
+                            stepsList.classList.add('instructionStepsList')
+                            // In the case that it is the infor page list
+                            if(content.id == 0){
+                                stepsList.classList.add('infoStepsList')
+                            }
+                            content.lists[i].forEach((item, itemIndex) =>{
+                                let collector = document.createElement("li")
+                                let textWrapper = document.createElement("div")
+                                if(content.id == 0){
+                                    const iconWrapper = document.createElement("span")
+                                    iconWrapper.classList.add("infoStepIconWrapper")
+                                    const icon = document.createElement("img")
+                                    icon.src = assetSources.sidePanelInstructions
+                                    icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
+                                    icon.classList.add("infoStepIcon")
+                                    const number = document.createElement("span")
+                                    number.classList.add("infoStepNumber")
+                                    number.textContent = itemIndex + 1
+                                    iconWrapper.appendChild(icon)
+                                    iconWrapper.appendChild(number)
+                                    collector.classList.add("infoStepItem")
+                                    collector.appendChild(iconWrapper)
+                                }
+                                item.forEach(s =>{
+                                    if(content.id == 0){
+                                        textWrapper.appendChild(eval('make'+s[0]+'("'+s[1]+'")'))
+                                        collector.appendChild(textWrapper)
+                                    }else{
+                                        collector.appendChild(eval('make'+s[0]+'("'+s[1]+'")'))
+                                    }
+                                })
+                                stepsList.appendChild(collector)
+                            })
+                            container.append(stepsList)
+                        }
+                    }
                 })
             }
 
-            if(content.thirdTitle){
-                const thirdTitle = document.createElement("h2")
-                thirdTitle.classList.add('instructionsTitle')
-                thirdTitle.textContent = content.thirdTitle
-                container.appendChild(thirdTitle)
-            }
         }
     })
     return container

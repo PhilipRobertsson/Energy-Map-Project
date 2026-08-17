@@ -2,82 +2,127 @@
     {
         "id":0,
         "name":"Info",
-        "title":"Introduction",
-        "secondTitle":"Source of Information",
-        "thirdTitle":"Guide",
-        "paragraphs":[
-            ["This PhD research project visualizes the distribution and capacity of power plants worldwide. It transforms complex energy data into an interactive map, revealing how our planet stays powered. Explore the hidden infrastructure that sustains modern society across every continent."],
-            ["By tapping individual data points, you can access specific details about any plant on the map. Use the built-in filters to compare different energy sources. \n"],
-            ["The Story Mode will walk you through the tool’s features while highlighting key trends in global energy. Discover the balance of power that shapes our international communities today. \n"]
+        "titles":[
+            "Introduction",
+            "Source of Information",
+            "Guide"
         ],
-        "secondParagraphs":[
-            ["https://www.wri.org/research/global-database-power-plants"]
+        "bodies":[
+            [
+                "This PhD research project visualizes the distribution and capacity of power plants worldwide. It transforms complex energy data into an interactive map, revealing how our planet stays powered. Explore the hidden infrastructure that sustains modern society across every continent.",
+                "By tapping individual data points, you can access specific details about any plant on the map. Use the built-in filters to compare different energy sources. \n",
+                "The Story Mode will walk you through the tool’s features while highlighting key trends in global energy. Discover the balance of power that shapes our international communities today. \n"
+            ],
+            [
+                "https://www.wri.org/research/global-database-power-plants"
+            ]
+        ],
+        "lists":[
+            [],[],
+            [
+                [
+                    ["Title", "Explore: "],
+                    ["Standard", "Use the filter to view the energy landscape of each region."]
+                ],
+                [
+                    ["Title", "Zoom In: "],
+                    ["Standard", "Navigate to local area to discover which energy sources power your daily life."]
+                ],
+                [
+                    ["Title", "Analyze: "],
+                    ["Standard", "Tap on a power plant to open detailed info cards."]
+                ],
+                [
+                    ["Title", "Discover: "],
+                    ["Standard", "Explore deeper insights, such as why Sweden and Denmark rely on different primary energy sources."]
+                ]
+            ]
         ]
     },
     {
         "id":1,
         "name":"Energy Map - Filters",
-        "title":"Filter your map view",
-        "stepsItems":[
+        "titles":[
+            "Filter your map view"
+        ],
+        "lists":[
             [
-                ["Title", "Choose a place: "],
-                ["Standard", "Tap the top drop-down list to select "],
-                ["Highlight", "regions"],
-                ["Standard", "."]
-            ],
-            [
-                ["Title", "Select a time range: "],
-                ["Standard", "Drag the handles on the "],
-                ["Highlight", "year started "],
-                ["Standard", "slider to select a specific time period."]
-            ],
-            [
-                ["Title", "Select plants by size: "],
-                ["Standard", "Drag the "],
-                ["Highlight", "annual generation "],
-                ["Standard", "slider to filter out smaller and larger stations."]
-            ],
-            [
-                ["Title", "Choose a power source: "],
-                ["Standard", "Use the checkbox next to the diagram to explore the "],
-                ["Highlight", "power source of different regions"],
-                ["Standard", "."]
+                [
+                    ["Title", "Choose a place: "],
+                    ["Standard", "Tap the top drop-down list to select "],
+                    ["Highlight", "regions"],
+                    ["Standard", "."]
+                ],
+                [
+                    ["Title", "Select a time range: "],
+                    ["Standard", "Drag the handles on the "],
+                    ["Highlight", "year started "],
+                    ["Standard", "slider to select a specific time period."]
+                ],
+                [
+                    ["Title", "Select plants by size: "],
+                    ["Standard", "Drag the "],
+                    ["Highlight", "annual generation "],
+                    ["Standard", "slider to filter out smaller and larger stations."]
+                ],
+                [
+                    ["Title", "Choose a power source: "],
+                    ["Standard", "Use the checkbox next to the diagram to explore the "],
+                    ["Highlight", "power source of different regions"],
+                    ["Standard", "."]
+                ]
             ]
         ]
     },
     {
         "id":2,
         "name":"Energy Map - Legends",
-        "title":"Read the Map",
-        "stepsItems":[
+        "titles":[
+            "Read the Map"
+        ],
+        "lists":[
             [
-                ["Title", "Circle size (capacity): "],
-                ["Standard", "Colored circles show power plants, with larger circles representing major stations and smaller dots indicating minor ones."]
-            ],
-            [
-                ["Title", "Circle colour (energy source): "],
-                ["Standard", "Each color stands for a different type of energy."]
+                [
+                    ["Title", "Circle size (capacity): "],
+                    ["Standard", "Colored circles show power plants, with larger circles representing major stations and smaller dots indicating minor ones."]
+                ],
+                [
+                    ["Title", "Circle colour (energy source): "],
+                    ["Standard", "Each color stands for a different type of energy."]
+                ]
             ]
         ]
     },
     {
         "id":3,
         "name":"Energy Map - Data Cards",
-        "title":"Read more about the power plants",
-        "stepsItems":[
+        "titles":[
+            "Read more about the power plants"
+        ],
+        "lists":[
             [
-                ["Title", "Tap a circle "],
-                ["Standard", "to view its opening year, capacity and actual output."]
-            ],
-            [
-                ["Title", "Use the arrow next to the region "],
-                ["Standard", "to view its overall capacity and energy sources."]
+                [
+                    ["Title", "Tap a circle "],
+                    ["Standard", "to view its opening year, capacity and actual output."]
+                ],
+                [
+                    ["Title", "Use the arrow next to the region "],
+                    ["Standard", "to view its overall capacity and energy sources."]
+                ]
             ]
         ]
     },
     {
         "id":4,
         "name":"Energy Map - Sweden Overview",
-        "title":"Why Sweden and Denmark Use Different Energy Sources"
+        "titles":[
+            "Why Sweden and Denmark Use Different Energy Sources"
+        ],
+        "bodies":[
+            [
+                "Use the region dropdown to compare both countries and see how their landscapes shape energy. \n",
+                "Sweden relies on mountains and rivers for hydropower, while Denmark focuses on flat, windy coasts for wind power.\n"
+            ]
+        ]
     }
 ]

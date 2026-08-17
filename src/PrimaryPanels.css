@@ -338,6 +338,44 @@
     color: #004B70;
 }
 
+.infoStepsList{
+    list-style: none;
+    padding-left: 0;
+}
+
+.infoStepIconWrapper{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1ch;
+    vertical-align: middle;
+}
+
+.infoStepIcon{
+    height: 2.5dvh;
+    width: auto;
+}
+
+.infoStepNumber{
+    position: absolute;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.5vmin;
+    color: #f7f7f7;
+    pointer-events: none;
+}
+.infoStepItem{
+    margin: 0px 0px 1dvh;
+    display: flex;
+    flex-direction: row;
+}
+
+.infoStepItem strong{
+    margin-right: 0.1dvw;
+}
+
 #navigationBarContainer{
     align-self: flex-end;
     display: flex;
