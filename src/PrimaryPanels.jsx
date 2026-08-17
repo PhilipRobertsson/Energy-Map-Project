@@ -43,13 +43,12 @@ const otherFuels =[
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false,false,false, true]},
-    {id: 1, visibleHtmlElements: [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false,false,true, true]},
-    {id: 2, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, true, false, false, false,false,false, true]},
-    {id: 3, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, true, false, false,false,false, true]},
-    {id: 4, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, false, true, false,false,false, true]},
-    {id: 5, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false,false, false, false, true,false,false, true]},
-    {id: 6, visibleHtmlElements: [false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, false, false, false,true,false, true]},
+    {id: 0, visibleHtmlElements: [true, true, false, true, true, true, true, true, true, false, false, false,false,false, true]}, /*Home page*/
+    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, false, true, false, false,false,false, true]}, /*Info page*/
+    {id: 2, visibleHtmlElements: [false, false, false, true, true, true, true, true, true, false, true, false,false,false, true]}, /*Instructions page 1*/
+    {id: 3, visibleHtmlElements: [false, false, false, true, true, true, true, true, true, false, false, true,false,false, true]}, /*Instructions page 2*/
+    {id: 4, visibleHtmlElements: [false, false, false, true, true, true, true, true, true, false, false, false,true,false, true]}, /*Instructions page 3*/
+    {id: 5, visibleHtmlElements: [false, false, false, true, true, true, true, true,true, false, false, false,false,true, true]}, /*Instructions page 4*/
 ];
 
 // static JSON to fetch and states to set
@@ -308,8 +307,8 @@ function PrimaryPanels() {
 
         const sidePanel = sidePanelContainer.current
         if (sidePanel && sidePanel.children.length) {
-            const fuelSelectAll = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]
-            const regionSelectAll = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]
+            const fuelSelectAll = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]
+            const regionSelectAll = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]
 
             fuelSelectAll.children[1].textContent = "Deselect all fuels"
             fuelSelectAll.children[0].style.backgroundColor = "#11658C"
@@ -390,7 +389,7 @@ function PrimaryPanels() {
             })
         }
         setFuelFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[9].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
+            const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
            const toggled = checkAndSetFilter(selectAllOption, prev, clickedFuel, "fuel")
             return toggled;
         });
@@ -399,7 +398,7 @@ function PrimaryPanels() {
     // Handle clicks on the seperate country toggles
     function handleRegLegClick(clickedCountry){
         setRegionFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[8].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
+            const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
             const toggled = checkAndSetFilter(selectAllOption, prev, clickedCountry, "region")
             return toggled;
         });
@@ -525,8 +524,8 @@ function PrimaryPanels() {
         });
 
         if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
-        const fueLegSidePanel = sidePanel.children[0].children[9].querySelectorAll(".filterLegend"); // Find all legends
-        const regLegSidePanel = sidePanel.children[0].children[8].querySelectorAll(".filterLegend");
+        const fueLegSidePanel = sidePanel.children[0].children[4].querySelectorAll(".filterLegend"); // Find all legends
+        const regLegSidePanel = sidePanel.children[0].children[3].querySelectorAll(".filterLegend");
         const bars = document.querySelectorAll(".barchartContainer");
 
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
@@ -667,18 +666,17 @@ function PrimaryPanels() {
             // Hide/show loop
             const pageChanged = prevPageRef.current !== sidePanelPage.id
             const previousPageId = prevPageRef.current
-            for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
+             for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
                 if(sidePanelPage.visibleHtmlElements[i]){
-                    if(pages.children[i].classList[0] == "instructionTitle" ||
-                        pages.children[i].classList[0] == "sidePanelInstructionsContainer" ||
+                    if(pages.children[i].classList[0] == "sidePanelInstructionsContainer" ||
                         pages.children[i].id == "sidePanelMainTitle" ||
                         pages.children[i].id == "sidePanelSubtitle" ||
                         pages.children[i].id == "InfoTitle"
                     ){
                         if (pageChanged){
                             gsap.fromTo(pages.children[i],
-                                {opacity: 0/*, rotateX: 90, transformOrigin: "top" */},
-                                {opacity: 1, /*rotateX: 0, transformOrigin: "top",*/ duration: 1.0, ease: "power2.out"}
+                                {opacity: 0/*, rotateX: 90, transformOrigin: "top"*/},
+                                {opacity: 1, /*rotateX: 0, transformOrigin: "top"*/ duration: 1.0, ease: "power2.out"}
                             )
                         }
                     }
@@ -694,8 +692,8 @@ function PrimaryPanels() {
             prevPageRef.current = sidePanelPage.id
 
             // Add eventlisteners to rollups
-            const sidePanelRegionFilter = pages.children[8].children[0]
-            const sidePanelFuelFilter = pages.children[9].children[0]
+            const sidePanelRegionFilter = pages.children[3].children[0]
+            const sidePanelFuelFilter = pages.children[4].children[0]
 
             const sidePanelRegionHeader = sidePanelRegionFilter.children[0]
             const sidePanelFuelHeader = sidePanelFuelFilter.children[0]
@@ -890,14 +888,11 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     pageContainer.appendChild(sidePanelMainTitle)
     pageContainer.appendChild(sidePanelSubtitle)
 
-    // Instruction page titles
-    pageContent.forEach(content =>{
-        let titleInstructions = (content.id == 5)? document.createElement("h1") : document.createElement("h2")
-        if(content.id == 5) {titleInstructions.id = "InfoTitle"}
-        else{titleInstructions.classList.add('instructionTitle')}
-        titleInstructions.textContent = content.name
-        pageContainer.appendChild(titleInstructions)
-    })
+    // Info title
+    const infoTitle = document.createElement("h1")
+    infoTitle.id = "InfoTitle"
+    infoTitle.textContent = "Info"
+    pageContainer.appendChild(infoTitle)
 
     // Filter drop downs and sliders
     for(var i = 0; i < 4; i++){
@@ -996,7 +991,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     const navigationElements = document.createElement("div")
     navigationElements.style.display = "flex"
 
-    for(let i = 0; i<7;i++){
+    for(let i = 0; i<6;i++){
         const wrapper = document.createElement("div")
         wrapper.classList.add("navigationBarIconWrapper")
 
