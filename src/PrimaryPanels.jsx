@@ -423,7 +423,7 @@ function PrimaryPanels() {
         const dropdown = element.children[1]
         const rollupIcon = element.children[0].children[1]
         const isHidden = dropdown.classList.contains("hide")
-
+        console.log(element)
         if (isHidden) {
             gsap.fromTo(dropdown,
                 { height: 0, opacity: 0 },
@@ -470,8 +470,8 @@ function PrimaryPanels() {
             if (!sidePanel || !sidePanel.children.length) return
             const pageContainer = sidePanel.children[0]
             const dropdowns = [
-                pageContainer.children[8]?.children[0],
-                pageContainer.children[9]?.children[0],
+                pageContainer.children[3]?.children[0],
+                pageContainer.children[4]?.children[0],
             ]
             dropdowns.forEach(element => {
                 if (!element || !element.children[1]) return
@@ -627,6 +627,7 @@ function PrimaryPanels() {
         const pageContainer = sidePanel.children[0];
         const filterCounterValue = pageContainer.querySelector("#filterCounterValue");
         const filterCounterStatic = pageContainer.querySelector("#filterCounterStatic");
+
         if(shown == 0){
             if (filterCounterValue) filterCounterValue.textContent = "";
             if (filterCounterStatic){
@@ -680,10 +681,13 @@ function PrimaryPanels() {
                             )
                         }
                     }
-                    if(pages.children[i].classList[0] == "sidePanelInstructionsContainer"){
-                        pages.children[i].style.display = "block"
+                    const element = pages.children[i]
+                    if(element.classList[0] == "sidePanelFilterContainer" || element.id == "sidePanelBarChart" ||
+                         element.id == "navigationBarContainer" || element.id == "sidePanelFilterAndResetWrapper"
+                    ){
+                        element.style.display = "flex"
                     }else{
-                        pages.children[i].style.display = "flex"
+                        element.style.display = "block"
                     }
                 }else{
                     pages.children[i].style.display = "none"
@@ -907,6 +911,26 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
         pageContainer.appendChild(filterContainer)
     }
 
+    // Generation by fuel bar chart
+    const barChartContainer = document.createElement("div")
+    barChartContainer.id = "sidePanelBarChart"
+
+     // Pixel dimensions for the side panel
+    const sidePanelWidth = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25);
+    const sidePanelLeftMargin = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.02 : window.screen.width * 0.01);
+    const sidePanelPadding = Math.floor(2*window.screen.width * 0.01);
+
+    // Pixel dimensions for the bar chart container
+    const barChartWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
+    const barChartHeight = Math.floor(window.screen.height * 0.20)
+
+    // Check if the fuel values are available
+    if(fuels){
+        console.log(fuels)
+    }
+
+    pageContainer.appendChild(barChartContainer)
+
     // Wrapper for filter and reset button
     const filterAndResetWrapper = document.createElement("div")
     filterAndResetWrapper.id = "sidePanelFilterAndResetWrapper"
@@ -950,26 +974,6 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     resetButtonField.appendChild(resetButtonText)
     filterAndResetWrapper.appendChild(resetButtonField)
     pageContainer.appendChild(filterAndResetWrapper)
-
-    // Generation by fuel bar chart
-    const barChartContainer = document.createElement("div")
-    barChartContainer.id = "sidePanelBarChart"
-
-    // Pixel dimensions for the side panel
-    const sidePanelWidth = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25);
-    const sidePanelLeftMargin = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.02 : window.screen.width * 0.01);
-    const sidePanelPadding = Math.floor(2*window.screen.width * 0.01);
-
-    // Pixel dimensions for the bar chart container
-    const barChartWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
-    const barChartHeight = Math.floor(window.screen.height * 0.20)
-
-    // Check if the fuel values are available
-    if(fuels){
-        console.log(fuels)
-    }
-
-    pageContainer.appendChild(barChartContainer)
 
     // Instruction containers / Info text
     for(var i = 0; i<pageContent.length; i++){
