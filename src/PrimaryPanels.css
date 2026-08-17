@@ -171,7 +171,7 @@
 
 #sidePanelBarChart{
     width: 100%;
-    height: 25dvh;
+    height: 30dvh;
     background-color: #f7f7f7;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     border-radius: 1dvh;
@@ -192,12 +192,16 @@
 .sidePanelFilterContainer{
     display: flex;
     background-color: #f7f7f7;
-    margin-top: 2dvh;
+    margin-top: 1dvh;
     width: 100%;
     min-height: 4.5dvh;
     align-self: center;
     border-radius: 1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+}
+
+#firstFilterContainer{
+    margin-top: 2dvh;
 }
 
 .sidePanelDropDownHeader{

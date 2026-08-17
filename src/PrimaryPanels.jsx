@@ -903,7 +903,10 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
         let filterContainer = document.createElement("div")
         filterContainer.classList.add('sidePanelFilterContainer')
         switch (i) {
-            case 0: filterContainer.appendChild(getDropDown("region")); break;
+            case 0: 
+            filterContainer.id = "firstFilterContainer"
+            filterContainer.appendChild(getDropDown("region"));
+             break;
             case 1: filterContainer.appendChild(getDropDown("fuel")); break;
             case 2: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
             case 3: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
