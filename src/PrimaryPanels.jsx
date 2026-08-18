@@ -61,7 +61,7 @@ const _firstYearOfEstimatedGenerationData = 2013;
 const _latestYearOfEstimatedGenerationData = 2017;
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount } = useContext(MapContext);
+    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
     const [fuelFilter, setFuelFilter] = useState([]);
@@ -102,6 +102,25 @@ function PrimaryPanels() {
         filterContainer.current = document.createElement("div");
         sidePanelContainer.current = document.createElement("div");
     }, []);
+
+    // Check if anything updates, resets timer
+    useEffect(() =>{
+        resetTimer()
+    }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent])
+
+    // Check the timer, if it reaches zero, reset everything
+    useEffect(() =>{
+        if(timeRef <= 0){
+            resetAllFilters()
+            mapRef.current?.flyTo({
+                center: [9.902056, 49.843],
+                zoom: 3.2,
+                speed: 0.8,
+                curve: 1.4
+            });
+            handleNavigationClick(0, document.getElementById("navigationID0"))
+        }
+    }, [timeRef])
 
     // Add information and buttons to filter panel (only on load)
     useEffect(() =>{
@@ -196,84 +215,6 @@ function PrimaryPanels() {
         }
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants])
 
-    // Handle zoom in click
-    function handleZoomIn(icon){
-        gsap.fromTo(icon, 
-            { scale: 1 }, 
-            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
-        );
-        mapRef.current?.zoomIn({ duration: 800 });
-    }
-
-    // Handle zoom out click
-    function handleZoomOut(icon){
-        gsap.fromTo(icon, 
-            { scale: 1 }, 
-            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
-        );
-        mapRef.current?.zoomOut({ duration: 800 });
-    }
-
-    function getBounds(coordinates){ // coordinates -> long [0], lat [1]
-        const lngs = coordinates.map(coord => coord[0]);
-        const lats = coordinates.map(coord => coord[1]);
-
-        // Find the extremes
-        const minLat = Math.min(...lats);
-        const maxLat = Math.max(...lats);
-        const minLng = Math.min(...lngs);
-        const maxLng = Math.max(...lngs);
-
-        return {
-            southWest: [minLng, minLat],
-            northEast: [maxLng, maxLat]
-        };
-    }
-
-    // Handle zoom selection click
-    function handleZoomSelection(element){
-        const fullScreen = () =>{
-            mapRef.current?.flyTo({
-                center: [23.333333, 15.5],
-                zoom: 1.8,
-                speed: 0.8,
-                curve: 1.4
-            });
-        }
-
-        gsap.fromTo(element, 
-            { scale: 1 }, 
-            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
-        );
-
-        const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
-
-        if(element.classList.contains("selection") && powerPlants.length != pps.length){
-            element.src = assetSources.zoomFullScreen
-            zoomSelectionState.current.isSelection = false
-
-            const coordinates = []
-            pps.forEach((p) =>{
-                coordinates.push(p.geometry.coordinates)
-            })
-            
-            if(coordinates.length && coordinates.length != powerPlants.features.length){
-                const bounds = getBounds(coordinates)
-                mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
-                    padding: 50,
-                    maxZoom: 15
-                });
-            }else{
-                fullScreen()
-            }
-        }else{
-            element.src = assetSources.zoomSelection
-            zoomSelectionState.current.isSelection = true
-            fullScreen()
-        }
-        element.classList.toggle("selection");
-    }
-
     // Check the context filter for any updates
     useEffect(()=>{
         if(!fuelFilter.length) return
@@ -307,184 +248,6 @@ function PrimaryPanels() {
         prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
     }, [barChartFilter])
 
-    // Resets all filters (fuelFilter, regionFilter, yearFilter, generationFilter)
-    function resetAllFilters(){
-        setFuelFilter(prev => prev.map(f => ({ ...f, show: true })))
-        setRegionFilter(prev => prev.map(r => ({ ...r, show: true })))
-        setYearFilter([])
-        setGenerationFilter([])
-
-        const sidePanel = sidePanelContainer.current
-        if (sidePanel && sidePanel.children.length) {
-            const fuelSelectAll = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]
-            const regionSelectAll = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]
-
-            fuelSelectAll.children[1].textContent = "Deselect all fuels"
-            fuelSelectAll.children[0].style.backgroundColor = "#11658C"
-            regionSelectAll.children[1].textContent = "Deselect all regions"
-            regionSelectAll.children[0].style.backgroundColor = "#11658C"
-
-            sidePanel.querySelectorAll(".sidePanelFilterSliderContainer").forEach(slider => {
-                if (slider.reset) slider.reset()
-            })
-        }
-    }
-
-    // Handle reset button click
-    function handleResetClick(button, option){
-        //const resetButton = document.getElementById("sidePanelResetButton")
-        gsap.fromTo(button, 
-            { opacity: 1 }, 
-            { 
-                opacity: 0.7, 
-                duration: 0.15,
-                yoyo: true, 
-                repeat: 1, 
-                overwrite: true 
-            }
-        );
-        switch(option){
-            case "reset":
-                resetAllFilters()
-                break;
-            case "close":
-                const openPopUps = document.querySelectorAll(".maplibregl-popup")
-                openPopUps.forEach(popup => {
-                    gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
-                    gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
-                })
-                break;
-        }
-    }
-
-    // Used by the two drop down and legends filter update functions, to set corresponding filters
-    function checkAndSetFilter(selectAllOption, prevFilter, clickedItem, type){
-        var propName = (type=="region") ? "country" : "fuel"
-        if(prevFilter.every(i => i.show)){
-            selectAllOption.children[1].textContent = "Select all " + type + "s"
-            selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
-            if(clickedItem == "all"){
-                return prevFilter.map(i => ({ ...i, show: false}));
-            }
-            return prevFilter.map(i => ({ ...i, show: eval("i."+propName) === clickedItem})); // If true, deselect everything but the clicked option
-        }
-
-        const toggled = prevFilter.map(i =>
-            eval("i."+propName) === clickedItem ? { ...i, show: !i.show } : i // Deselect or select the clicked option
-            
-        );
-        if(clickedItem == "all"){
-            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
-            selectAllOption.children[0].style.backgroundColor = "#11658C"
-            return prevFilter.map(i => ({ ...i, show: true}));
-        }
-
-        if (toggled.every(i => !i.show)) { // Are all options hidden?
-            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
-            selectAllOption.children[0].style.backgroundColor = "#11658C"
-            return prevFilter.map(i => ({ ...i, show: true })); // If true, select everything 
-        }
-        return toggled
-    }
-
-    // Handle clicks on the seperate legends
-    function handleFueLegClick(clickedFuel){
-        if (clickedFuel === "all") {
-            setBarChartFilter(null)
-        } else {
-            setBarChartFilter(prev => {
-                if (!prev) return prev
-                return prev.filter(f => f !== clickedFuel)
-            })
-        }
-        setFuelFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
-           const toggled = checkAndSetFilter(selectAllOption, prev, clickedFuel, "fuel")
-            return toggled;
-        });
-    }
-
-    // Handle clicks on the seperate country toggles
-    function handleRegLegClick(clickedCountry){
-        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
-        const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
-        const zoomTo = toggled.filter(r => r.show)
-        setRegionFilter(toggled)
-
-        const pps = getShownPowerPlants(powerPlants, toggled, fuelFilter, yearFilter, generationFilter)
-
-        const coordinates = []
-        pps.forEach((p) =>{
-            coordinates.push(p.geometry.coordinates)
-        })
-
-        if(coordinates.length && coordinates.length != powerPlants.features.length){
-            const bounds = getBounds(coordinates)
-            mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
-                padding: 75,
-                maxZoom: 15
-            });
-        }
-    }
-
-    // Handle navigationClick
-    function handleNavigationClick(id, icon){
-        setSidePanelPage(allPages[id])
-        if(icon.classList.contains("navigationBarIconSmall")){ // Animate number as well
-            gsap.fromTo(icon.parentElement.children[1], { fontSize: "1.5vmin" },
-            { fontSize: "1.65vmin", duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
-        );
-        }
-        gsap.fromTo(icon, { scale: 1 }, 
-            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
-        );
-        icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
-    }
-
-    // Used by the below function
-    function toggleDropDown(element){
-        const dropdown = element.children[1]
-        const rollupIcon = element.children[0].children[1]
-        const isHidden = dropdown.classList.contains("hide")
-        if (isHidden) {
-            gsap.fromTo(dropdown,
-                { height: 0, opacity: 0 },
-                { height: "20dvh", opacity: 1, duration: 0.4, ease: "power4.out",
-                  onComplete: () => gsap.set(dropdown, { clearProps: "height" }) }
-            )
-            gsap.to(rollupIcon,
-                {rotationX: 180, duration: 0.6, ease: "power4.out"}
-            )
-            element.parentElement.style['border-radius'] = "1dvh 1dvh 0 0";
-            element.parentElement.style['z-index'] = "100"
-            dropdown.classList.toggle("hide");
-        } else {
-            gsap.to(dropdown,
-                { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
-                    onComplete: () => {
-                        element.parentElement.style['border-radius'] = "1dvh";
-                        element.parentElement.style['z-index'] = "unset"
-                        dropdown.classList.toggle("hide");
-                    }
-                }
-            )
-            gsap.to(rollupIcon,
-                {rotationX: 0, duration: 0.6, ease: "power4.out"}
-            )
-        }
-    }
-
-    // Handle rollupClick
-    function handleRollupClick(element, otherElements){
-        // Any other dropdowns open?
-        for(var i = 0; i < otherElements.length; i++){
-            if(!otherElements[i].children[1].classList.contains("hide")){
-                toggleDropDown(otherElements[i])
-            }
-        }
-        toggleDropDown(element)
-    }
-
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -507,30 +270,6 @@ function PrimaryPanels() {
         document.addEventListener("click", handleClickOutside)
         return () => document.removeEventListener("click", handleClickOutside)
     }, [])
-
-    // Get new title
-    function getNewDropDownTitle(shownElements, type){
-        var newTitle = ""
-        for(let i = 0; i<shownElements.length; i++){
-            if(i==0 && shownElements.length <= 2){
-                newTitle += type=="fuel"? shownElements[i].fuel + " " : shownElements[i].country_long + " "
-            }else if(i < (shownElements.length-1)){
-                newTitle += type=="fuel"? shownElements[i].fuel + ", " : shownElements[i].country_long + ", "
-            }else{
-                newTitle += type=="fuel"? "and " + shownElements[i].fuel : "and " + shownElements[i].country_long
-            }
-        }
-         if(newTitle.length >= 32){
-            var splitTitle = newTitle.split(", ")
-            splitTitle[splitTitle.length - 1] = splitTitle.at(-1).slice(3)
-            newTitle = ""
-            for(let i = 0; i<2; i++){
-                newTitle += splitTitle[i] + ", "
-            }
-            newTitle += " and " + (splitTitle.length - 2) + " more"
-        }
-        return newTitle
-    }
 
     // Update legend opacity, drop down titles, and bar chart strokes when filter changes
     useEffect(() => {
@@ -845,6 +584,287 @@ function PrimaryPanels() {
         }
         
     }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent])
+
+    // Get the bounding box for a set of power plant coordinates
+    function getBounds(coordinates){ // coordinates -> long [0], lat [1]
+        const lngs = coordinates.map(coord => coord[0]);
+        const lats = coordinates.map(coord => coord[1]);
+
+        // Find the extremes
+        const minLat = Math.min(...lats);
+        const maxLat = Math.max(...lats);
+        const minLng = Math.min(...lngs);
+        const maxLng = Math.max(...lngs);
+
+        return {
+            southWest: [minLng, minLat],
+            northEast: [maxLng, maxLat]
+        };
+    }
+
+    // Handle zoom in click
+    function handleZoomIn(icon){
+        gsap.fromTo(icon, 
+            { scale: 1 }, 
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+        mapRef.current?.zoomIn({ duration: 800 });
+    }
+
+    // Handle zoom out click
+    function handleZoomOut(icon){
+        gsap.fromTo(icon, 
+            { scale: 1 }, 
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+        mapRef.current?.zoomOut({ duration: 800 });
+    }
+
+    // Handle zoom selection click
+    function handleZoomSelection(element){
+        const fullScreen = () =>{
+            mapRef.current?.flyTo({
+                center: [23.333333, 15.5],
+                zoom: 1.8,
+                speed: 0.8,
+                curve: 1.4
+            });
+        }
+
+        gsap.fromTo(element, 
+            { scale: 1 }, 
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+
+        const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
+
+        if(element.classList.contains("selection") && powerPlants.length != pps.length){
+            element.src = assetSources.zoomFullScreen
+            zoomSelectionState.current.isSelection = false
+
+            const coordinates = []
+            pps.forEach((p) =>{
+                coordinates.push(p.geometry.coordinates)
+            })
+            
+            if(coordinates.length && coordinates.length != powerPlants.features.length){
+                const bounds = getBounds(coordinates)
+                mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
+                    padding: 50,
+                    maxZoom: 15
+                });
+            }else{
+                fullScreen()
+            }
+        }else{
+            element.src = assetSources.zoomSelection
+            zoomSelectionState.current.isSelection = true
+            fullScreen()
+        }
+        element.classList.toggle("selection");
+    }
+
+    // Handle reset button click
+    function handleResetClick(button, option){
+        //const resetButton = document.getElementById("sidePanelResetButton")
+        gsap.fromTo(button, 
+            { opacity: 1 }, 
+            { 
+                opacity: 0.7, 
+                duration: 0.15,
+                yoyo: true, 
+                repeat: 1, 
+                overwrite: true 
+            }
+        );
+        switch(option){
+            case "reset":
+                resetAllFilters()
+                break;
+            case "close":
+                const openPopUps = document.querySelectorAll(".maplibregl-popup")
+                openPopUps.forEach(popup => {
+                    gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+                    gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+                })
+                break;
+        }
+    }
+
+    // Handle clicks on the seperate legends
+    function handleFueLegClick(clickedFuel){
+        if (clickedFuel === "all") {
+            setBarChartFilter(null)
+        } else {
+            setBarChartFilter(prev => {
+                if (!prev) return prev
+                return prev.filter(f => f !== clickedFuel)
+            })
+        }
+        setFuelFilter(prev => { // prev, previous filter
+            const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
+           const toggled = checkAndSetFilter(selectAllOption, prev, clickedFuel, "fuel")
+            return toggled;
+        });
+    }
+
+    // Handle clicks on the seperate country toggles
+    function handleRegLegClick(clickedCountry){
+        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
+        const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
+        const zoomTo = toggled.filter(r => r.show)
+        setRegionFilter(toggled)
+
+        const pps = getShownPowerPlants(powerPlants, toggled, fuelFilter, yearFilter, generationFilter)
+
+        const coordinates = []
+        pps.forEach((p) =>{
+            coordinates.push(p.geometry.coordinates)
+        })
+
+        if(coordinates.length && coordinates.length != powerPlants.features.length){
+            const bounds = getBounds(coordinates)
+            mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
+                padding: 75,
+                maxZoom: 15
+            });
+        }
+    }
+
+    // Handle navigationClick
+    function handleNavigationClick(id, icon){
+        setSidePanelPage(allPages[id])
+        if(icon.classList.contains("navigationBarIconSmall")){ // Animate number as well
+            gsap.fromTo(icon.parentElement.children[1], { fontSize: "1.5vmin" },
+            { fontSize: "1.65vmin", duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+        }
+        gsap.fromTo(icon, { scale: 1 }, 
+            { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+        icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
+    }
+
+    // Handle rollupClick
+    function handleRollupClick(element, otherElements){
+        // Any other dropdowns open?
+        for(var i = 0; i < otherElements.length; i++){
+            if(!otherElements[i].children[1].classList.contains("hide")){
+                toggleDropDown(otherElements[i])
+            }
+        }
+        toggleDropDown(element)
+    }
+
+    // Get new title
+    function getNewDropDownTitle(shownElements, type){
+        var newTitle = ""
+        for(let i = 0; i<shownElements.length; i++){
+            if(i==0 && shownElements.length <= 2){
+                newTitle += type=="fuel"? shownElements[i].fuel + " " : shownElements[i].country_long + " "
+            }else if(i < (shownElements.length-1)){
+                newTitle += type=="fuel"? shownElements[i].fuel + ", " : shownElements[i].country_long + ", "
+            }else{
+                newTitle += type=="fuel"? "and " + shownElements[i].fuel : "and " + shownElements[i].country_long
+            }
+        }
+         if(newTitle.length >= 32){
+            var splitTitle = newTitle.split(", ")
+            splitTitle[splitTitle.length - 1] = splitTitle.at(-1).slice(3)
+            newTitle = ""
+            for(let i = 0; i<2; i++){
+                newTitle += splitTitle[i] + ", "
+            }
+            newTitle += " and " + (splitTitle.length - 2) + " more"
+        }
+        return newTitle
+    }
+
+    // Resets all filters (fuelFilter, regionFilter, yearFilter, generationFilter)
+    function resetAllFilters(){
+        setFuelFilter(prev => prev.map(f => ({ ...f, show: true })))
+        setRegionFilter(prev => prev.map(r => ({ ...r, show: true })))
+        setYearFilter([])
+        setGenerationFilter([])
+
+        const sidePanel = sidePanelContainer.current
+        if (sidePanel && sidePanel.children.length) {
+            const fuelSelectAll = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]
+            const regionSelectAll = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]
+
+            fuelSelectAll.children[1].textContent = "Deselect all fuels"
+            fuelSelectAll.children[0].style.backgroundColor = "#11658C"
+            regionSelectAll.children[1].textContent = "Deselect all regions"
+            regionSelectAll.children[0].style.backgroundColor = "#11658C"
+
+            sidePanel.querySelectorAll(".sidePanelFilterSliderContainer").forEach(slider => {
+                if (slider.reset) slider.reset()
+            })
+        }
+    }
+
+    // Used by the two drop down and legends filter update functions, to set corresponding filters
+    function checkAndSetFilter(selectAllOption, prevFilter, clickedItem, type){
+        var propName = (type=="region") ? "country" : "fuel"
+        if(prevFilter.every(i => i.show)){
+            selectAllOption.children[1].textContent = "Select all " + type + "s"
+            selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
+            if(clickedItem == "all"){
+                return prevFilter.map(i => ({ ...i, show: false}));
+            }
+            return prevFilter.map(i => ({ ...i, show: eval("i."+propName) === clickedItem})); // If true, deselect everything but the clicked option
+        }
+
+        const toggled = prevFilter.map(i =>
+            eval("i."+propName) === clickedItem ? { ...i, show: !i.show } : i // Deselect or select the clicked option
+            
+        );
+        if(clickedItem == "all"){
+            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
+            selectAllOption.children[0].style.backgroundColor = "#11658C"
+            return prevFilter.map(i => ({ ...i, show: true}));
+        }
+
+        if (toggled.every(i => !i.show)) { // Are all options hidden?
+            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
+            selectAllOption.children[0].style.backgroundColor = "#11658C"
+            return prevFilter.map(i => ({ ...i, show: true })); // If true, select everything 
+        }
+        return toggled
+    }
+
+    // Used by handleRollupClick
+    function toggleDropDown(element){
+        const dropdown = element.children[1]
+        const rollupIcon = element.children[0].children[1]
+        const isHidden = dropdown.classList.contains("hide")
+        if (isHidden) {
+            gsap.fromTo(dropdown,
+                { height: 0, opacity: 0 },
+                { height: "20dvh", opacity: 1, duration: 0.4, ease: "power4.out",
+                  onComplete: () => gsap.set(dropdown, { clearProps: "height" }) }
+            )
+            gsap.to(rollupIcon,
+                {rotationX: 180, duration: 0.6, ease: "power4.out"}
+            )
+            element.parentElement.style['border-radius'] = "1dvh 1dvh 0 0";
+            element.parentElement.style['z-index'] = "100"
+            dropdown.classList.toggle("hide");
+        } else {
+            gsap.to(dropdown,
+                { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
+                    onComplete: () => {
+                        element.parentElement.style['border-radius'] = "1dvh";
+                        element.parentElement.style['z-index'] = "unset"
+                        dropdown.classList.toggle("hide");
+                    }
+                }
+            )
+            gsap.to(rollupIcon,
+                {rotationX: 0, duration: 0.6, ease: "power4.out"}
+            )
+        }
+    }
 
     return(<>
         <div id={fuelFilterDef.id} ref={filterContainer} style={{

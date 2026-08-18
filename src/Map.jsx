@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { createContext, useState, useEffect, useRef, use } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as d3 from "d3";
@@ -200,6 +200,11 @@ const _latestYearOfGenerationData = 2019;
 const _firstYearOfEstimatedGenerationData = 2013;
 const _latestYearOfEstimatedGenerationData = 2017;
 
+// Variables for the timer
+// Convert to seconds: 60, Desired reset time in minutes: 5 (default), Convert to miliseconds: 1000
+const TIME_IN_MILISECONDS_TO_EXHIBITION_RESET = 60*5*1000;
+const INTERVAL_IN_MILISECONDS = 1000;
+
 function Map({ children }) {
   const [data, setData] = useState(null);
   const [filter, setFilter] = useState(null);
@@ -208,7 +213,10 @@ function Map({ children }) {
   const [regionalData, setRegionalData] = useState(null);
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
+  const [time, setTime] = useState(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET);
+  const [referenceTime, setReferenceTime] = useState(Date.now());
 
+  // Load needed data from public folder
   useEffect(() => {
     fetch("./fuelCatagories.json") // Go through this file and ensure the colours have more contrast between one another
       .then((response) => response.json())
@@ -233,6 +241,7 @@ function Map({ children }) {
       });
   }, []);
 
+  // Create map instance
   useEffect(() => {
     if (mapInstance.current) return;
 
@@ -265,6 +274,7 @@ function Map({ children }) {
     };
   }, []);
 
+  // Pop-up functionality
   useEffect(() => {
     if (!data?.features?.length) return;
 
@@ -436,6 +446,19 @@ function Map({ children }) {
     }
   }, [data, regionalData, colourData]);
 
+  // Timer update
+  useEffect(() =>{
+    const countDownUntilZero = () => {
+        const now = Date.now();
+        const interval = now - referenceTime;
+        setReferenceTime(now);
+        setTime(prevTime => Math.max(0, prevTime - interval));
+    }
+    const timeoutId = setTimeout(countDownUntilZero, INTERVAL_IN_MILISECONDS);
+    //console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
+    return () => clearTimeout(timeoutId);
+  }, [time]);
+
   // Handle rollup in click
   function handleRollupClick(currentSource, element, infoElement){
     const isHidden = infoElement.classList.contains("hide")
@@ -494,8 +517,16 @@ function Map({ children }) {
     element.parentElement.children[2].children[1].children[0].style.visibility = "hidden"
   }
 
+  // Reset the timer
+  function resetTimer(){
+    setReferenceTime(Date.now())
+    setTime(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET)
+  }
+
   return (
-    <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data, barChartFilter: filter, setBarChartFilter: setFilter, popupCount }}>
+    <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data,
+                                                    barChartFilter: filter, setBarChartFilter: setFilter,
+                                                    popupCount, timeRef: time, resetTimer }}>
       <div ref={mapContainer} style={{ width: "76dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>
