@@ -28,6 +28,7 @@
     border: 0.16dvh solid #DEEAED;
     border-radius: 0.26dvh;
 }
+
 .legendName{ /*The name for each fuel type*/
     padding: 0;
     margin: 0;
@@ -40,7 +41,7 @@
 
 .legendCheck{
     width: 1.8dvh;
-    height: 1.8dvh;
+    height: auto;
     margin-left: unset;
 }
 
@@ -593,8 +594,18 @@
 }
 
 .selectAllDropdown > div {
-    border: 0.1vmin solid #11658C;
+    border: 0.4vmin solid #004B70;
     border-radius: 50%;
+}
+
+.selectAllCheck {
+    width: 1.2dvh;
+    height: auto;
+    margin-left: unset;
+}
+
+.legendCheckBox{
+    border: 0.4vmin solid #004B70;
 }
 
 /*Specific styling for tablet-sized devices*/

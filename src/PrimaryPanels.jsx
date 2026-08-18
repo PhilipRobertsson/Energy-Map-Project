@@ -31,6 +31,7 @@ const assetSources ={
     sidePanelRollupOpen: "./sidePanel/sidePanelRollupOpen.svg",
     sidePanelRollupClose: "./sidePanel/sidePanelRollupClose.svg",
     sidePanelCheckMark: "./sidePanel/sidePanelCheckMark.svg",
+    sidePanelSelectAllCircle: "./sidePanel/sidePanelSelectAllCircle.svg",
     infoIcon: "./popup/popupInfo.svg"
 };
 
@@ -474,12 +475,17 @@ function PrimaryPanels() {
 
                     let selectAllCheckBox = document.createElement("div")
                     selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
-                    selectAllCheckBox.style.backgroundColor = "#11658C"
+                    selectAllCheckBox.style.backgroundColor = "rgba(0,0,0,0.0)"
+
+                    let selectAllCircle = document.createElement("img")
+                    selectAllCircle.classList.add("selectAllCheck")
+                    selectAllCircle.src = assetSources.sidePanelSelectAllCircle
 
                     let selectAllName = document.createElement("p")
                     selectAllName.classList.add("legendName", "sidePanelFilterName")
                     selectAllName.textContent = "Deselect all " + type + "s"
 
+                    selectAllCheckBox.appendChild(selectAllCircle)
                     selectAllField.appendChild(selectAllCheckBox)
                     selectAllField.appendChild(selectAllName) // Append the text to the legend element
                     dropDownE.appendChild(selectAllField) // Append the legend to the filter container
@@ -497,7 +503,8 @@ function PrimaryPanels() {
 
                         if(type == "region"){
                             /*Use checkmark*/
-                            colour.style.backgroundColor = "#11658C"
+                            colour.style.backgroundColor = "rgba(0,0,0,0.0)"
+                            colour.classList.add("legendCheckBox")
 
                             const checkMark = document.createElement("img")
                             checkMark.classList.add("legendCheck")
@@ -808,7 +815,7 @@ function PrimaryPanels() {
         var propName = (type=="region") ? "country" : "fuel"
         if(prevFilter.every(i => i.show)){
             selectAllOption.children[1].textContent = "Select all " + type + "s"
-            selectAllOption.children[0].style.backgroundColor = "#F2FBFF"
+            selectAllOption.children[0].children[0].style.opacity = "0"
             if(clickedItem == "all"){
                 return prevFilter.map(i => ({ ...i, show: false}));
             }
@@ -821,13 +828,13 @@ function PrimaryPanels() {
         );
         if(clickedItem == "all"){
             selectAllOption.children[1].textContent = "Deselect all " + type + "s"
-            selectAllOption.children[0].style.backgroundColor = "#11658C"
+            selectAllOption.children[0].children[0].style.opacity = "1"
             return prevFilter.map(i => ({ ...i, show: true}));
         }
 
         if (toggled.every(i => !i.show)) { // Are all options hidden?
             selectAllOption.children[1].textContent = "Deselect all " + type + "s"
-            selectAllOption.children[0].style.backgroundColor = "#11658C"
+            selectAllOption.children[0].children[0].style.opacity = "1"
             return prevFilter.map(i => ({ ...i, show: true })); // If true, select everything 
         }
         return toggled
