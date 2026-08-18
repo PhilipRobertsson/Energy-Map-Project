@@ -1213,7 +1213,11 @@ function getSliders(filter, regionalData, onChange){
     let valueMin = minMax.minVal
     let valueMax = minMax.maxVal
 
-    textMin.textContent = (minVal<10000)? minVal : ((minVal / 100) / 10.0).toFixed(1) + " k"
+    if(minVal == 0){
+        textMin.textContent = "0 / no data"
+    }else{
+        textMin.textContent = (minVal<10000)? minVal : ((minVal / 100) / 10.0).toFixed(1) + " k"
+    }
     textMax.textContent = (maxVal<10000)? maxVal : ((maxVal / 100) / 10.0).toFixed(1) + " k"
 
     const updateSlider = () => {
