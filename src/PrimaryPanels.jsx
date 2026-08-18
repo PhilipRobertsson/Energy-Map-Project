@@ -421,7 +421,8 @@ function PrimaryPanels() {
             const newPages = createPages(pageContent, powerPlants, regionalData, fuelFilter,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
-                handleResetClick
+                handleResetClick,
+                handleIndexClick
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -507,7 +508,8 @@ function PrimaryPanels() {
 
             // Fills the provided drop down with the corresponding filter contents
             const fillDropDowns = (dropDownE,type,filter) =>{
-                if(dropDownE.children.length == 0){
+                const legendContainer = dropDownE.querySelector(".sidePanelLegendContainer")
+                if(legendContainer.children.length == 0){
                     let selectAllField = document.createElement("div")
                     selectAllField.classList.add("filterLegend", "selectAllDropdown")
 
@@ -526,7 +528,7 @@ function PrimaryPanels() {
                     selectAllCheckBox.appendChild(selectAllCircle)
                     selectAllField.appendChild(selectAllCheckBox)
                     selectAllField.appendChild(selectAllName) // Append the text to the legend element
-                    dropDownE.appendChild(selectAllField) // Append the legend to the filter container
+                    legendContainer.appendChild(selectAllField) // Append the legend to the filter container
 
                     for(let i = 0; i < filter.length; i++){
                         const item = filter[i] // Used for easier access
@@ -564,7 +566,7 @@ function PrimaryPanels() {
 
                         legend.appendChild(colour)
                         legend.appendChild(name) // Append the text to the legend element
-                        dropDownE.appendChild(legend) // Append the legend to the filter container
+                        legendContainer.appendChild(legend) // Append the legend to the filter container
                     }
                 }
             }
@@ -733,6 +735,34 @@ function PrimaryPanels() {
                     gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
                 })
                 break;
+        }
+    }
+
+    // Handle clicks on index elements
+    function handleIndexClick(element, index){
+        gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)" }, 
+            { backgroundColor: "#004B70",  duration: 0.15, yoyo: true,  repeat: 1,  overwrite: true }
+        );
+        gsap.fromTo(element.firstElementChild, { color: "#004B70" }, 
+            { color: "#F2FBFF", duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
+        
+        const alphabetArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        let matchingRegions = regionFilterRef.current.filter(r => r.country_long[0] == index)
+        while(!matchingRegions.length){
+            let newIndex = alphabetArray.findIndex(c => c == index) + 1
+            matchingRegions = regionFilterRef.current.filter(r => r.country_long[0] == alphabetArray[newIndex])
+        }
+        
+        const legendContainer = element.parentElement.parentElement.children[1]
+        const regionToScroll = matchingRegions[0]
+        
+        element.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
+
+        for(var i = 0; i < legendContainer.children.length; i++){
+            if(legendContainer.children[i].children[1].textContent == regionToScroll.country_long){
+                legendContainer.children[i].scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
+            }
         }
     }
 
@@ -931,7 +961,7 @@ function PrimaryPanels() {
         if (isHidden) {
             gsap.fromTo(dropdown,
                 { height: 0, opacity: 0 },
-                { height: "20dvh", opacity: 1, duration: 0.4, ease: "power4.out",
+                { height: "28dvh", opacity: 1, duration: 0.4, ease: "power4.out",
                   onComplete: () => gsap.set(dropdown, { clearProps: "height" }) }
             )
             gsap.to(rollupIcon,
@@ -1048,7 +1078,7 @@ function getSliderBounds(filter, regionalData){
     return { minVal, maxVal }
 }
 
-function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange, onGenerationChange, onReset){
+function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange, onGenerationChange, onReset, onIndexClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
     
@@ -1076,9 +1106,9 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
         switch (i) {
             case 0: 
             filterContainer.id = "firstFilterContainer"
-            filterContainer.appendChild(getDropDown("region"));
+            filterContainer.appendChild(getDropDown("region", onIndexClick));
              break;
-            case 1: filterContainer.appendChild(getDropDown("fuel")); break;
+            case 1: filterContainer.appendChild(getDropDown("fuel", onIndexClick)); break;
             case 2: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
             case 3: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
         }
@@ -1206,7 +1236,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
 }
 
 // Creates the drop downs found in the side panel
-function getDropDown(filter){
+function getDropDown(filter, onIndexClick){
     const dropDown = document.createElement("div")
     dropDown.classList.add("sidePanelFilterDropDown")
 
@@ -1223,11 +1253,33 @@ function getDropDown(filter){
     const dropDownField = document.createElement("div");
     dropDownField.classList.add("sidePanelDropDownField", "hide");
 
+    const legendContainer = document.createElement("div");
+    legendContainer.classList.add("sidePanelLegendContainer")
+
     if(filter == "region"){
         title.textContent = "All Regions"
+        const alphabetIndexContainer = document.createElement("div");
+        alphabetIndexContainer.classList.add("dropDownIndexContainer");
+
+        const alphabetArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        alphabetArray.forEach(c =>{
+            const index = document.createElement("div");
+            index.classList.add("dropDownIndex");
+
+            const indexChar = document.createElement("span");
+            indexChar.classList.add("dropDownIndexChar");
+            indexChar.textContent = c;
+
+            index.appendChild(indexChar)
+            index.onclick = () => onIndexClick(index, c)
+            alphabetIndexContainer.appendChild(index)
+        })
+
+        dropDownField.appendChild(alphabetIndexContainer)
     }else{ // fuel
         title.textContent = "All Power Sources"
     }
+    dropDownField.appendChild(legendContainer)
 
     header.appendChild(title)
     header.appendChild(rollupIcon)
