@@ -75,6 +75,12 @@ function PrimaryPanels() {
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
     const prevPageRef = useRef(null);
+    const regionFilterRef = useRef([]);
+
+    // Keep ref in sync with regionFilter state
+    useEffect(() => {
+        regionFilterRef.current = regionFilter
+    }, [regionFilter]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -170,20 +176,23 @@ function PrimaryPanels() {
     useEffect(() => {
         const filter = filterContainer.current
         if (!filter || !fuelFilter.length || !powerPlants) return
-        const zoomSelection = filter.querySelector(".controlIcon.selection") || filter.querySelectorAll(".controlIcon")[2]
+        const zoomSelection = filter.querySelectorAll(".controlIcon")[2]
         if (!zoomSelection) return
         const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
-        if (zoomSelectionState.current.isSelection ||
-             powerPlants.features.length != pps.length) {
-          if (!zoomSelection.classList.contains("selection")) {
-            zoomSelection.classList.add("selection")
-            zoomSelection.src = assetSources.zoomSelection
-          }
+        if (powerPlants.features.length != pps.length) {
+            // Filtered → show "full screen" icon
+            if (zoomSelection.classList.contains("selection")) {
+                zoomSelection.classList.remove("selection")
+                zoomSelection.src = assetSources.zoomFullScreen
+                zoomSelectionState.current.isSelection = false
+            }
         } else {
-          if (zoomSelection.classList.contains("selection")) {
-            zoomSelection.classList.remove("selection")
-            zoomSelection.src = assetSources.zoomFullScreen
-          }
+            // All shown → show "zoom selection" icon
+            if (!zoomSelection.classList.contains("selection")) {
+                zoomSelection.classList.add("selection")
+                zoomSelection.src = assetSources.zoomSelection
+                zoomSelectionState.current.isSelection = true
+            }
         }
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants])
 
@@ -397,11 +406,25 @@ function PrimaryPanels() {
 
     // Handle clicks on the seperate country toggles
     function handleRegLegClick(clickedCountry){
-        setRegionFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
-            const toggled = checkAndSetFilter(selectAllOption, prev, clickedCountry, "region")
-            return toggled;
-        });
+        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
+        const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
+        const zoomTo = toggled.filter(r => r.show)
+        setRegionFilter(toggled)
+
+        const pps = getShownPowerPlants(powerPlants, toggled, fuelFilter, yearFilter, generationFilter)
+
+        const coordinates = []
+        pps.forEach((p) =>{
+            coordinates.push(p.geometry.coordinates)
+        })
+
+        if(coordinates.length && coordinates.length != powerPlants.features.length){
+            const bounds = getBounds(coordinates)
+            mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
+                padding: 75,
+                maxZoom: 15
+            });
+        }
     }
 
     // Handle navigationClick
@@ -423,7 +446,6 @@ function PrimaryPanels() {
         const dropdown = element.children[1]
         const rollupIcon = element.children[0].children[1]
         const isHidden = dropdown.classList.contains("hide")
-        console.log(element)
         if (isHidden) {
             gsap.fromTo(dropdown,
                 { height: 0, opacity: 0 },
