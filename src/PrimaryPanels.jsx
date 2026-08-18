@@ -77,11 +77,13 @@ function PrimaryPanels() {
     const prevBarChartFilter = useRef([]);
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
+    const fuelFilterRef = useRef([]);
 
-    // Keep ref in sync with regionFilter state
+    // Keep refs in sync with filter states
     useEffect(() => {
         regionFilterRef.current = regionFilter
-    }, [regionFilter]);
+        fuelFilterRef.current = fuelFilter
+    }, [regionFilter, fuelFilter]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -429,7 +431,7 @@ function PrimaryPanels() {
             // Hide/show loop
             const pageChanged = prevPageRef.current !== sidePanelPage.id
             const previousPageId = prevPageRef.current
-             for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
+            for(var i = 0; i < sidePanelPage.visibleHtmlElements.length; i++){
                 if(sidePanelPage.visibleHtmlElements[i]){
                     if(pages.children[i].classList[0] == "sidePanelInstructionsContainer" ||
                         pages.children[i].id == "sidePanelMainTitle" ||
@@ -456,6 +458,42 @@ function PrimaryPanels() {
                 }
             }
             prevPageRef.current = sidePanelPage.id
+
+            // Filter settings on page change, for storytelling purposes
+            if(pageChanged){
+                switch(sidePanelPage.id){
+                    case 2: // First instructions page
+                        setRegionFilterTo(["SWE", "NOR"])
+                        setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
+                        setGenerationFilterTo(0, 38000)
+                        break;
+                    case 3: // Second instructions page
+                        setRegionFilterTo(["SWE"])
+                        setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
+                        setGenerationFilterTo(0, 38000)
+                        break;
+                    case 4: // Third instruction page
+                        setRegionFilterTo(["SWE"])
+                        setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
+                        setGenerationFilterTo(0, 38000)
+                        break;
+                    case 5: // Fourth instructions page
+                        setRegionFilterTo(["SWE", "DNK"])
+                        setFuelFilterTo(["Hydro", "Wind"])
+                        setGenerationFilterTo(0, 38000)
+                        break;
+                    default:
+                        if(sidePanel.children.length){ // Is needed to ensure the select all options exists
+                            resetAllFilters()
+                            mapRef.current?.flyTo({
+                                center: [9.902056, 49.843],
+                                zoom: 3.2,
+                                speed: 0.8,
+                                curve: 1.4
+                            });
+                        }
+                }
+            }
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.children[3].children[0]
@@ -716,19 +754,13 @@ function PrimaryPanels() {
     }
 
     // Handle clicks on the seperate country toggles
-    function handleRegLegClick(clickedCountry){
-        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
-        const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
-        const zoomTo = toggled.filter(r => r.show)
-        setRegionFilter(toggled)
-
-        const pps = getShownPowerPlants(powerPlants, toggled, fuelFilter, yearFilter, generationFilter)
-
+    // Zoom the map to fit the currently shown regions
+    function zoomToRegionFilter(rFilter){
+        const pps = getShownPowerPlants(powerPlants, rFilter, fuelFilter, yearFilter, generationFilter)
         const coordinates = []
         pps.forEach((p) =>{
             coordinates.push(p.geometry.coordinates)
         })
-
         if(coordinates.length && coordinates.length != powerPlants.features.length){
             const bounds = getBounds(coordinates)
             mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
@@ -736,6 +768,60 @@ function PrimaryPanels() {
                 maxZoom: 15
             });
         }
+    }
+
+    // Set the region filter to a specific list of countries and zoom to them
+    function setRegionFilterTo(countries){
+        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0];
+        const toggled = regionFilterRef.current.map(r => ({ ...r, show: countries.includes(r.country) }))
+        setRegionFilter(toggled)
+
+        if(toggled.every(r => r.show)){
+            selectAllOption.children[1].textContent = "Deselect all regions"
+            selectAllOption.children[0].children[0].style.opacity = "1"
+        }else{
+            selectAllOption.children[1].textContent = "Select all regions"
+            selectAllOption.children[0].children[0].style.opacity = "0"
+        }
+        zoomToRegionFilter(toggled)
+    }
+
+    // Set the fuel filter to a specific list of fuels
+    function setFuelFilterTo(fuels){
+        const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0];
+        const toggled = fuelFilterRef.current.map(f => ({ ...f, show: fuels.includes(f.fuel) }))
+        setFuelFilter(toggled)
+
+        if(toggled.every(f => f.show)){
+            selectAllOption.children[1].textContent = "Deselect all fuels"
+            selectAllOption.children[0].children[0].style.opacity = "1"
+        }else{
+            selectAllOption.children[1].textContent = "Select all fuels"
+            selectAllOption.children[0].children[0].style.opacity = "0"
+        }
+    }
+
+    // Set the year filter to a specific range
+    function setYearFilterTo(minYear, maxYear){
+        const { minVal, maxVal } = getSliderBounds("year", regionalData)
+        setYearFilter([[minYear, maxYear], [minVal, maxVal]])
+        const sliders = sidePanelContainer.current?.querySelectorAll(".sidePanelFilterSliderContainer")
+        if (sliders && sliders[0] && sliders[0].set) sliders[0].set(minYear, maxYear)
+    }
+
+    // Set the generation filter to a specific range
+    function setGenerationFilterTo(minGen, maxGen){
+        const { minVal, maxVal } = getSliderBounds("generation", regionalData)
+        setGenerationFilter([[minGen, maxGen], [minVal, maxVal]])
+        const sliders = sidePanelContainer.current?.querySelectorAll(".sidePanelFilterSliderContainer")
+        if (sliders && sliders[1] && sliders[1].set) sliders[1].set(minGen, maxGen)
+    }
+
+    function handleRegLegClick(clickedCountry){
+        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
+        const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
+        setRegionFilter(toggled)
+        zoomToRegionFilter(toggled)
     }
 
     // Handle navigationClick
@@ -789,20 +875,17 @@ function PrimaryPanels() {
 
     // Resets all filters (fuelFilter, regionFilter, yearFilter, generationFilter)
     function resetAllFilters(){
-        setFuelFilter(prev => prev.map(f => ({ ...f, show: true })))
+        setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
         setRegionFilter(prev => prev.map(r => ({ ...r, show: true })))
         setYearFilter([])
         setGenerationFilter([])
 
         const sidePanel = sidePanelContainer.current
         if (sidePanel && sidePanel.children.length) {
-            const fuelSelectAll = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]
             const regionSelectAll = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]
 
-            fuelSelectAll.children[1].textContent = "Deselect all fuels"
-            fuelSelectAll.children[0].style.backgroundColor = "#11658C"
             regionSelectAll.children[1].textContent = "Deselect all regions"
-            regionSelectAll.children[0].style.backgroundColor = "#11658C"
+            regionSelectAll.children[0].children[0].style.opacity = "1"
 
             sidePanel.querySelectorAll(".sidePanelFilterSliderContainer").forEach(slider => {
                 if (slider.reset) slider.reset()
@@ -924,6 +1007,45 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerpl
         shownPowerPlants.push(f)
     }
     return shownPowerPlants
+}
+
+function getSliderBounds(filter, regionalData){
+    let minVal = 0, maxVal = 100
+    if (regionalData.length) {
+        if (filter === "year") {
+            const minYears = regionalData.map(y => y.oldest_power_plant).filter(y => y != null)
+            const maxYears = regionalData.map(y => y.newest_power_plant).filter(y => y != null)
+            if (minYears.length && maxYears.length) { minVal = Math.min(...minYears); maxVal = Math.floor(Math.max(...maxYears)) }
+        } else {
+            var largest = Number.NEGATIVE_INFINITY;
+            var smallest = Number.POSITIVE_INFINITY;
+
+            const minGeneration = regionalData.map(y => y.regional_min_output)
+            const maxGeneration = regionalData.map(y => y.regional_max_output)
+
+            minGeneration.forEach((c) =>{
+                let values = Object.values(c).filter(g => g != null)
+                let min = 0;
+                if(values.length){
+                    min = Math.min(...values)
+                    if(min < smallest){ smallest = min }
+                }
+            })
+
+            maxGeneration.forEach((c) =>{
+                let values = Object.values(c).filter(g => g != null)
+                let max = 0;
+                if(values.length){
+                    max = Math.max(...values)
+                    if(max > largest){ largest = max }
+                }
+            })
+
+            minVal = Math.floor(smallest)
+            maxVal = Math.floor(largest)
+        }
+    }
+    return { minVal, maxVal }
 }
 
 function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange, onGenerationChange, onReset){
@@ -1197,44 +1319,7 @@ function getSliders(filter, regionalData, onChange){
 
     sliderContainer.appendChild(textField)
 
-    const minMax = (() => {
-        let minVal = 0, maxVal = 100
-        if (regionalData.length) {
-            if (filter === "year") {
-                const minYears = regionalData.map(y => y.oldest_power_plant).filter(y => y != null)
-                const maxYears = regionalData.map(y=> y.newest_power_plant).filter(y => y != null)
-                if (minYears.length && maxYears.length) { minVal = Math.min(...minYears); maxVal = Math.floor(Math.max(...maxYears)) }
-            } else {
-                var largest = Number.NEGATIVE_INFINITY;
-                var smallest = Number.POSITIVE_INFINITY;
-
-                const minGeneration = regionalData.map(y => y.regional_min_output)
-                const maxGeneration = regionalData.map(y => y.regional_max_output)
-
-                minGeneration.forEach((c) =>{
-                    let values = Object.values(c).filter(g => g != null)
-                    let min = 0;
-                    if(values.length){
-                        min = Math.min(...values)
-                        if(min < smallest){ smallest = min }
-                    }
-                })
-
-                maxGeneration.forEach((c) =>{
-                    let values = Object.values(c).filter(g => g != null)
-                    let max = 0;
-                    if(values.length){
-                        max = Math.max(...values)
-                        if(max > largest){ largest = max }
-                    }
-                })
-
-                minVal = Math.floor(smallest)
-                maxVal = Math.floor(largest)
-            }
-        }
-        return { minVal, maxVal }
-    })()
+    const minMax = getSliderBounds(filter, regionalData)
     const minVal = minMax.minVal
     const maxVal = minMax.maxVal
     let valueMin = minMax.minVal
@@ -1243,17 +1328,17 @@ function getSliders(filter, regionalData, onChange){
     if(minVal == 0){
         textMin.textContent = "0 / no data"
     }else{
-        textMin.textContent = (minVal<10000)? minVal : ((minVal / 100) / 10.0).toFixed(1) + " k"
+        textMin.textContent = (minVal<10000)? minVal : ((minVal / 100) / 10.0).toFixed(0) + " k"
     }
-    textMax.textContent = (maxVal<10000)? maxVal : ((maxVal / 100) / 10.0).toFixed(1) + " k"
+    textMax.textContent = (maxVal<10000)? maxVal : ((maxVal / 100) / 10.0).toFixed(0) + " k"
 
     const updateSlider = () => {
         const span = maxVal - minVal
         const percentageMin = ((valueMin - minVal) / span) * 100
         const percentageMax = ((valueMax - minVal) / span) * 100
         thumbMin.style.left = percentageMin + "%"
-        thumbMinText.textContent = (valueMin<10000)? valueMin : ((valueMin / 100) / 10.0).toFixed(1) + " k"
-        thumbMaxText.textContent = (valueMax<10000)? valueMax : ((valueMax / 100) / 10.0).toFixed(1) + " k"
+        thumbMinText.textContent = (valueMin<10000)? valueMin : ((valueMin / 100) / 10.0).toFixed(0) + " k"
+        thumbMaxText.textContent = (valueMax<10000)? valueMax : ((valueMax / 100) / 10.0).toFixed(0) + " k"
         thumbMax.style.left = percentageMax + "%"
         range.style.left = percentageMin + "%"
         range.style.width = (percentageMax - percentageMin) + "%"
@@ -1357,6 +1442,13 @@ function getSliders(filter, regionalData, onChange){
         if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
     }
 
+    sliderContainer.set = (min, max) => {
+        valueMin = Math.max(minVal, Math.min(min, maxVal))
+        valueMax = Math.max(minVal, Math.min(max, maxVal))
+        updateSlider()
+        if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+    }
+
     return sliderContainer
 }
 
@@ -1405,7 +1497,7 @@ function getInstructions(pageContent, id){
                         if(content.lists[i].length){
                             const stepsList = document.createElement("ul")
                             stepsList.classList.add('instructionStepsList')
-                            // In the case that it is the infor page list
+                            // In the case that it is the info page list
                             if(content.id == 0){
                                 stepsList.classList.add('infoStepsList')
                             }
