@@ -25,8 +25,8 @@
     width: 2.1dvh;
     height: 2.1dvh;
     margin: 0.16dvh 0 0.16dvh 0;
-    border: 0.16dvh solid #DEEAED;
-    border-radius: 0.26dvh;
+    border: 0.4vmin solid #DEEAED;
+    border-radius: 0.6vmin;
 }
 
 .legendName{ /*The name for each fuel type*/
@@ -261,6 +261,7 @@
     width: 2.5dvh;
     height: 2.5dvh;
     margin-left: 1dvh;
+    border: 0.4vmin solid #F2FBFF;
 }
 
 .sidePanelFilterName{
@@ -606,6 +607,7 @@
 
 .legendCheckBox{
     border: 0.4vmin solid #004B70;
+    border-radius: 0.7vmin;
 }
 
 /*Specific styling for tablet-sized devices*/
