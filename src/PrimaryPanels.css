@@ -170,13 +170,79 @@
     user-select: none; /* Standard */
 }
 
-#sidePanelBarChart{
+#sidePanelLinePlot{
     width: 100%;
     height: 30dvh;
     background-color: #f7f7f7;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     border-radius: 1dvh;
     margin-top: 1dvh;
+}
+
+#linePlotHeader{
+    height: 18%;
+    display: flex;
+    flex-direction: row;
+    margin: 1dvh 1dvw 1dvh 1dvw;
+    /*Added to remove selection from texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+#linePlotTitleWrapper{
+    width: 95%;
+}
+
+#linePlotTitle{
+    font-size: 1.8vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
+#dataToggleWrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0.32dvh;
+}
+
+#dataToggleTitle{
+    margin-right: 0.16dvw;
+    font-size: 1.6vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+#dataToggleButtonContainer{
+    display: flex;
+    border: 0.2vmin solid #AAD3DE;
+    border-radius: 0.6vmin;
+}
+
+.dataToggleButton{
+    padding: 0.32dvh;
+    font-size: 1.4vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#linePlotTextCollector{
+    font-family: "Lato", sans-serif;
+    font-size: 1.6vmin;
+    font-style: normal;
+}
+
+#linePlotExBoldText{
+    font-weight: 600;
+}
+
+#linePlotExStandardText{
+    font-weight: 400;
 }
 
 .instructionTitle{

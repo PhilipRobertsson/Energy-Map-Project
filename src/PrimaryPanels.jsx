@@ -62,7 +62,7 @@ const _firstYearOfEstimatedGenerationData = 2013;
 const _latestYearOfEstimatedGenerationData = 2017;
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
+    const { mapRef, powerPlants, linePlotFilter, setlinePlotFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
     const [fuelFilter, setFuelFilter] = useState([]);
@@ -74,7 +74,7 @@ function PrimaryPanels() {
     const [pages, setPages] = useState(null);
     const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
-    const prevBarChartFilter = useRef([]);
+    const prevlinePlotFilter = useRef([]);
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
     const fuelFilterRef = useRef([]);
@@ -221,8 +221,8 @@ function PrimaryPanels() {
     // Check the context filter for any updates
     useEffect(()=>{
         if(!fuelFilter.length) return
-        const currentBCF = barChartFilter
-        const prevBCF = [...prevBarChartFilter.current]
+        const currentBCF = linePlotFilter
+        const prevBCF = [...prevlinePlotFilter.current]
         setFuelFilter(prev => {
             if (!currentBCF || !currentBCF.length) {
                 const result = prev.map(f =>
@@ -248,8 +248,8 @@ function PrimaryPanels() {
             }
             return result
         })
-        prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
-    }, [barChartFilter])
+        prevlinePlotFilter.current = currentBCF ? [...currentBCF] : []
+    }, [linePlotFilter])
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -290,7 +290,7 @@ function PrimaryPanels() {
         if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
         const fueLegSidePanel = sidePanel.children[0].children[4].querySelectorAll(".filterLegend"); // Find all legends
         const regLegSidePanel = sidePanel.children[0].children[3].querySelectorAll(".filterLegend");
-        const bars = document.querySelectorAll(".barchartContainer");
+        const bars = document.querySelectorAll(".linePlotContainer");
 
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
         const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
@@ -422,7 +422,8 @@ function PrimaryPanels() {
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 handleResetClick,
-                handleIndexClick
+                handleIndexClick,
+                handleLinePlotToggle
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -447,7 +448,7 @@ function PrimaryPanels() {
                         }
                     }
                     const element = pages.children[i]
-                    if(element.classList[0] == "sidePanelFilterContainer" || element.id == "sidePanelBarChart" ||
+                    if(element.classList[0] == "sidePanelFilterContainer" || element.id == "sidePanelLinePlot" ||
                          element.id == "navigationBarContainer" || element.id == "sidePanelFilterAndResetWrapper"
                     ){
                         element.style.display = "flex"
@@ -769,9 +770,9 @@ function PrimaryPanels() {
     // Handle clicks on the seperate legends
     function handleFueLegClick(clickedFuel){
         if (clickedFuel === "all") {
-            setBarChartFilter(null)
+            setlinePlotFilter(null)
         } else {
-            setBarChartFilter(prev => {
+            setlinePlotFilter(prev => {
                 if (!prev) return prev
                 return prev.filter(f => f !== clickedFuel)
             })
@@ -877,6 +878,22 @@ function PrimaryPanels() {
             }
         }
         toggleDropDown(element)
+    }
+
+    // Handle toggle click in line plot
+    function handleLinePlotToggle(element){
+        if(element.style.backgroundColor == "rgb(170, 211, 222)") return;
+        const otherButton = (element == element.parentElement.children[0])? element.parentElement.children[1] : element.parentElement.children[0]
+        gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)" }, 
+            { backgroundColor: "#AAD3DE",  duration: 0.15, onComplete: () =>{
+                element.style.backgroundColor = "#AAD3DE"
+            } } 
+        );
+        gsap.fromTo(otherButton, { backgroundColor: "#AAD3DE" }, 
+            { backgroundColor: "rgba(0,0,0,0.0)",  duration: 0.15, onComplete: () =>{
+                otherButton.style.backgroundColor = "rgba(0,0,0,0.0)"
+            } } 
+        );
     }
 
     // Get new title
@@ -1078,7 +1095,8 @@ function getSliderBounds(filter, regionalData){
     return { minVal, maxVal }
 }
 
-function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange, onGenerationChange, onReset, onIndexClick){
+function createPages(pageContent, powerPlants, regionalData, fuels,
+                                  onYearChange, onGenerationChange, onReset, onIndexClick, onToggleClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
     
@@ -1116,8 +1134,8 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     }
 
     // Generation by fuel bar chart
-    const barChartContainer = document.createElement("div")
-    barChartContainer.id = "sidePanelBarChart"
+    const linePlotContainer = document.createElement("div")
+    linePlotContainer.id = "sidePanelLinePlot"
 
      // Pixel dimensions for the side panel
     const sidePanelWidth = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25);
@@ -1125,15 +1143,82 @@ function createPages(pageContent, powerPlants, regionalData, fuels, onYearChange
     const sidePanelPadding = Math.floor(2*window.screen.width * 0.01);
 
     // Pixel dimensions for the bar chart container
-    const barChartWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
-    const barChartHeight = Math.floor(window.screen.height * 0.20)
+    const linePlotWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
+    const linePlotHeight = Math.floor(window.screen.height * 0.20)
 
     // Check if the fuel values are available
     if(fuels){
         console.log(fuels)
     }
 
-    pageContainer.appendChild(barChartContainer)
+    const linePlotHeader = document.createElement("div");
+    linePlotHeader.id = "linePlotHeader"
+
+    // Title and data toggle wrapper
+    const titleAndDataWrapper = document.createElement("div");
+    titleAndDataWrapper.id = "linePlotTitleWrapper"
+
+    const linePlotTitle = document.createElement("span");
+    linePlotTitle.id = "linePlotTitle";
+    linePlotTitle.textContent = "Electricity Generation Trends"
+
+    const toggleWrapper = document.createElement("div");
+    toggleWrapper.id = "dataToggleWrapper";
+
+    const toggleTitle = document.createElement("span");
+    toggleTitle.id = "dataToggleTitle";
+    toggleTitle.textContent = "Show: ";
+
+    const toggleButtons = document.createElement("div");
+    toggleButtons.id = "dataToggleButtonContainer"
+
+    const buttonText = (text) =>{
+        let textElement = document.createElement("span");
+        textElement.classList.add("dataToggleButtonText")
+        textElement.textContent = text
+        return textElement
+    }
+
+    const capacityButton = document.createElement("div");
+    capacityButton.classList.add("dataToggleButton")
+    capacityButton.style.backgroundColor = "rgba(0,0,0,0.0)";
+    capacityButton.onclick = () => onToggleClick(capacityButton)
+    capacityButton.appendChild(buttonText("Capacity"))
+
+    const outputButton = document.createElement("div");
+    outputButton.classList.add("dataToggleButton")
+    outputButton.style.backgroundColor = "#AAD3DE";
+    outputButton.onclick = () => onToggleClick(outputButton)
+    outputButton.appendChild(buttonText("Output"))
+
+    toggleButtons.appendChild(capacityButton)
+    toggleButtons.appendChild(outputButton)
+
+    toggleWrapper.appendChild(toggleTitle)
+    toggleWrapper.appendChild(toggleButtons)
+
+    titleAndDataWrapper.appendChild(linePlotTitle)
+    titleAndDataWrapper.appendChild(toggleWrapper)
+    linePlotHeader.appendChild(titleAndDataWrapper)
+
+    // Explanation text
+    const linePlotTextCollector = document.createElement("div");
+    linePlotTextCollector.id = "linePlotTextCollector"
+
+    const linePlotExBold = document.createElement("span");
+    linePlotExBold.id = "linePlotExBoldText"
+    linePlotExBold.textContent = "Electronic generation per year"
+
+    const linePlotExStandard = document.createElement("span");
+    linePlotExStandard.id = "linePlotExStandardText"
+    linePlotExStandard.textContent = "(GWh)"
+
+    linePlotTextCollector.appendChild(linePlotExBold)
+    linePlotTextCollector.appendChild(linePlotExStandard)
+    linePlotHeader.appendChild(linePlotTextCollector)
+
+    linePlotContainer.appendChild(linePlotHeader)
+    pageContainer.appendChild(linePlotContainer)
 
     // Wrapper for filter and reset button
     const filterAndResetWrapper = document.createElement("div")
