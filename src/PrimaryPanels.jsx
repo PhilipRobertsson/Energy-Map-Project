@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useContext, createElement } from 'react'
 import { gsap } from "gsap";
+import * as d3 from "d3";
 
 import { MapContext } from './Map.jsx'
 
@@ -1133,24 +1134,11 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
         pageContainer.appendChild(filterContainer)
     }
 
-    // Generation by fuel bar chart
+    // Generation by fuel line plot
     const linePlotContainer = document.createElement("div")
     linePlotContainer.id = "sidePanelLinePlot"
 
-     // Pixel dimensions for the side panel
-    const sidePanelWidth = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25);
-    const sidePanelLeftMargin = Math.floor((window.screen.height <= 1024)? window.screen.width * 0.02 : window.screen.width * 0.01);
-    const sidePanelPadding = Math.floor(2*window.screen.width * 0.01);
-
-    // Pixel dimensions for the bar chart container
-    const linePlotWidth = (sidePanelWidth - sidePanelLeftMargin - sidePanelPadding)
-    const linePlotHeight = Math.floor(window.screen.height * 0.20)
-
-    // Check if the fuel values are available
-    if(fuels){
-        console.log(fuels)
-    }
-
+    // Header for line plot
     const linePlotHeader = document.createElement("div");
     linePlotHeader.id = "linePlotHeader"
 
@@ -1218,6 +1206,22 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     linePlotHeader.appendChild(linePlotTextCollector)
 
     linePlotContainer.appendChild(linePlotHeader)
+
+    // Body of line plot (the graph and filter buttons)
+    const linePlotBody = document.createElement("div");
+    linePlotBody.id = "linePlotBody";
+
+    // SVG for actual line plot
+    const linePlotSVG = document.createElement("svg");
+    linePlotSVG.id = "linePlotSVG";
+
+    // Check if the fuel values are available
+    if(fuels){
+        drawLinePlot(linePlotSVG, fuels)
+    }
+
+    linePlotBody.appendChild(linePlotSVG)
+    linePlotContainer.appendChild(linePlotBody)
     pageContainer.appendChild(linePlotContainer)
 
     // Wrapper for filter and reset button
@@ -1675,4 +1679,128 @@ function getInstructions(pageContent, id){
         }
     })
     return container
+}
+
+function drawLinePlot(svgE, data){
+
+    // Pixel dimensions for the side panel
+    const sidePanelWidth = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.30 : window.innerWidth * 0.25);
+    const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.02 : window.innerWidth * 0.01);
+    const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
+
+    // Pixel dimensions for the bar chart container
+    const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
+    const linePlotHeight = Math.floor((window.innerHeight * 0.30) * 0.72)
+
+    var margin = {top: 0, right: 45, bottom: 25, left: 15},
+    width = linePlotWidth - margin.left - margin.right,
+    height = linePlotHeight - margin.top - margin.bottom;
+
+    var svg = d3.select(svgE)
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+    var sumstat = d3.index(data, (d) => d.fuel)
+
+    // Create x-axis
+    var x = d3.scaleLinear()
+    .domain([_firstYearOfGenerationData, _latestYearOfGenerationData])
+    .range([ 0, width ])
+
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(_latestYearOfGenerationData-_firstYearOfGenerationData).tickFormat(d3.format("d")))
+        .selectAll(".tick text")
+            .style("font-size", "1vmin")
+            .style("font-family", "'Lato', sans-serif");
+
+    const maxValue = (d) =>{
+        var max = Number.NEGATIVE_INFINITY
+        for(let i = _firstYearOfGenerationData; i <= _latestYearOfGenerationData; i++){
+            let reported = eval("d.sum_generation_"+i)
+            if(reported >= max){max = reported}
+            /* if(i <= _latestYearOfEstimatedGenerationData){
+                let estimated = eval("d.sum_estimated_generation_"+i)
+                if(estimated >= max){max = estimated}
+            } */
+        }
+        return max
+    }
+
+    // Create y-axis
+    var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) { return maxValue(d) })])
+        .range([ height, 0 ]);
+
+    svg.append("g")
+        .attr("transform", "translate("+ width + ", 0)")
+        .call(d3.axisRight(y).tickFormat(d => d === 0 ? 0 : d3.format('.2s')(d)))
+        .call(g => g.select(".domain").remove())
+        .selectAll(".tick text")
+            .style("font-size", "1vmin")
+            .style("font-family", "'Lato', sans-serif");
+
+    // Append the grid lines group
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("stroke-width", 0.5) 
+        .style("stroke-dasharray", ("3, 3"))
+        .call(d3.axisLeft(y)
+            .tickSize(-width)  // Stretches lines across the width of the chart
+            .tickFormat("")    // Removes text labels from the grid lines
+        )
+        .call(g => g.select(".domain").remove());
+    
+    svg.append("g")
+    .attr("class", "grid")
+    .attr("transform", `translate(0, ${height})`)
+    .attr("stroke-width", 0.5) 
+    .style("stroke-dasharray", ("3, 3"))
+    .call(d3.axisTop(x)
+        .ticks(_latestYearOfGenerationData-_firstYearOfGenerationData)
+        .tickSize(height) // Stretches lines up across the height of the chart
+        .tickFormat("")    // Removes text labels
+    )
+    .call(g => g.select(".domain").remove());
+
+    svg.selectAll(".line")
+      .data(Array.from(sumstat.values()))
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return d.colour })
+        .attr("stroke-width", 2.5)
+        .attr("d", function(d){
+          const points = []
+          for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
+            points.push({ year: year, value: d["sum_generation_" + year] })
+          }
+          return d3.line()
+            .x(function(p) { return x(p.year); })
+            .y(function(p) { return p.value == null ? null : y(p.value); })
+            (points)
+        })
+
+    /* svg.selectAll(".line")
+      .data(Array.from(sumstat.values()))
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return d.colour })
+        .attr("stroke-width", 1.5)
+        .style("stroke-dasharray", ("2, 2"))
+        .attr("d", function(d){
+          const points = []
+          for(let year = _firstYearOfEstimatedGenerationData; year <= _latestYearOfEstimatedGenerationData; year++){
+            points.push({ year: year, value: d["sum_estimated_generation_" + year] })
+          }
+          return d3.line()
+            .x(function(p) { return x(p.year); })
+            .y(function(p) { return p.value == null ? y(0) : y(p.value); })
+            (points)
+        }) */
+    
 }

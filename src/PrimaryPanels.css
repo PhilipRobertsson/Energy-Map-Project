@@ -173,6 +173,8 @@
 #sidePanelLinePlot{
     width: 100%;
     height: 30dvh;
+    display: flex;
+    flex-direction: column;
     background-color: #f7f7f7;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     border-radius: 1dvh;
@@ -243,6 +245,17 @@
 
 #linePlotExStandardText{
     font-weight: 400;
+}
+
+#linePlotBody{
+    display: flex;
+    flex-direction: row;
+    margin: 0 1dvw 1dvh 1dvw;
+    /*Added to remove selection from texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 .instructionTitle{
