@@ -895,6 +895,33 @@ function PrimaryPanels() {
                 otherButton.style.backgroundColor = "rgba(0,0,0,0.0)"
             } } 
         );
+
+        const linePlot = document.getElementById("linePlotSVG")
+        const barChart = document.getElementById("barChartSVG")
+
+        if(linePlot.classList.contains("hide")){
+            gsap.fromTo(linePlot, { opacity: 0 }, 
+                { opacity: 1,  duration: 0.15, onComplete: () =>{
+                    linePlot.classList.toggle("hide")
+                } } 
+            );
+            gsap.fromTo(barChart, { opacity: 1 }, 
+                { opacity: 0,  duration: 0.15, onComplete: () =>{
+                    barChart.classList.toggle("hide")
+                } } 
+            );
+        }else{
+            gsap.fromTo(linePlot, { opacity: 1 }, 
+                { opacity: 0,  duration: 0.15, onComplete: () =>{
+                    linePlot.classList.toggle("hide")
+                } } 
+            );
+            gsap.fromTo(barChart, { opacity: 0 }, 
+                { opacity: 1,  duration: 0.15, onComplete: () =>{
+                    barChart.classList.toggle("hide")
+                } } 
+            );
+        }
     }
 
     // Get new title
@@ -1212,15 +1239,24 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     linePlotBody.id = "linePlotBody";
 
     // SVG for actual line plot
-    const linePlotSVG = document.createElement("svg");
-    linePlotSVG.id = "linePlotSVG";
+    const dataVisualization = document.createElement("svg");
 
     // Check if the fuel values are available
     if(fuels){
-        drawLinePlot(linePlotSVG, fuels)
+        // Pixel dimensions for the side panel
+        const sidePanelWidth = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.30 : window.innerWidth * 0.25);
+        const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.02 : window.innerWidth * 0.01);
+        const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
+
+        // Pixel dimensions for the bar chart container
+        const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
+        const linePlotHeight = Math.floor((window.innerHeight * 0.30) * 0.72)
+
+        drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, fuels, true)
+        drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, fuels, false)
     }
 
-    linePlotBody.appendChild(linePlotSVG)
+    linePlotBody.appendChild(dataVisualization)
     linePlotContainer.appendChild(linePlotBody)
     pageContainer.appendChild(linePlotContainer)
 
@@ -1681,18 +1717,9 @@ function getInstructions(pageContent, id){
     return container
 }
 
-function drawLinePlot(svgE, data){
+function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
 
-    // Pixel dimensions for the side panel
-    const sidePanelWidth = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.30 : window.innerWidth * 0.25);
-    const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.02 : window.innerWidth * 0.01);
-    const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
-
-    // Pixel dimensions for the bar chart container
-    const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
-    const linePlotHeight = Math.floor((window.innerHeight * 0.30) * 0.72)
-
-    var margin = {top: 0, right: 45, bottom: 25, left: 15},
+    var margin = {top: 0, right: 45, bottom: 50, left: 15},
     width = linePlotWidth - margin.left - margin.right,
     height = linePlotHeight - margin.top - margin.bottom;
 
@@ -1700,6 +1727,8 @@ function drawLinePlot(svgE, data){
         .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
+            .attr("class", showPlot? null : "hide")
+            .attr("id", "linePlotSVG")
         .append("g")
             .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
@@ -1707,13 +1736,17 @@ function drawLinePlot(svgE, data){
 
     // Create x-axis
     var x = d3.scaleLinear()
-    .domain([_firstYearOfGenerationData, _latestYearOfGenerationData])
+    .domain([_firstYearOfGenerationData-0.2, _latestYearOfGenerationData])
     .range([ 0, width ])
 
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x).ticks(_latestYearOfGenerationData-_firstYearOfGenerationData).tickFormat(d3.format("d")))
-        .selectAll(".tick text")
+        .call(g => g.select(".domain").remove())
+        .call(g => g.selectAll(".tick").selectAll("line").remove())
+        .selectAll("text")
+            .attr("transform", "translate(-5,0)rotate(-45)")
+            .style("text-anchor", "end")
             .style("font-size", "1vmin")
             .style("font-family", "'Lato', sans-serif");
 
@@ -1784,6 +1817,7 @@ function drawLinePlot(svgE, data){
             (points)
         })
 
+    // Second set of lines for estimated data
     /* svg.selectAll(".line")
       .data(Array.from(sumstat.values()))
       .enter()
@@ -1803,4 +1837,85 @@ function drawLinePlot(svgE, data){
             (points)
         }) */
     
+}
+
+function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
+    var margin = {top: 0, right: 45, bottom: 50, left: 20},
+    width = barChartWidth - margin.left - margin.right,
+    height = barChartHeight - margin.top - margin.bottom;
+
+    var svg = d3.select(svgE)
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("class", showPlot? null : "hide")
+            .attr("id", "barChartSVG")
+        .append("g")
+            .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+    var sumstat = d3.index(data, (d) => d.fuel)
+
+    console.log(sumstat)
+    // Create x-axis
+
+    var x = d3.scaleBand()
+        .range([ 0, width ])
+        .domain(sumstat.keys())
+        .padding(0.2);
+
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .call(g => g.select(".domain").remove())
+        .call(g => g.selectAll(".tick").selectAll("line").remove())
+        .selectAll("text")
+            .attr("transform", "translate(-5,0)rotate(-45)")
+            .style("text-anchor", "end")
+            .style("font-size", "1vmin")
+            .style("font-family", "'Lato', sans-serif");
+
+    var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) { return d.sum_capacity_mw })])
+        .range([ height, 0]);
+
+    svg.append("g")
+        .attr("transform", "translate("+ width + ", 0)")
+        .call(d3.axisRight(y).tickFormat(d => d === 0 ? 0 : d3.format('.2s')(d)))
+        .call(g => g.select(".domain").remove())
+        .selectAll(".tick text")
+            .style("font-size", "1vmin")
+            .style("font-family", "'Lato', sans-serif");
+
+    // Append the grid lines group
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("stroke-width", 0.5) 
+        .style("stroke-dasharray", ("3, 3"))
+        .call(d3.axisLeft(y)
+            .tickSize(-width)  // Stretches lines across the width of the chart
+            .tickFormat("")    // Removes text labels from the grid lines
+        )
+        .call(g => g.select(".domain").remove());
+    
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(0, ${height})`)
+        .attr("stroke-width", 0.5) 
+        .style("stroke-dasharray", ("3, 3"))
+        .call(d3.axisTop(x)
+            .ticks(sumstat.length)
+            .tickSize(height) // Stretches lines up across the height of the chart
+            .tickFormat("")    // Removes text labels
+        )
+        .call(g => g.select(".domain").remove());
+
+    svg.selectAll("mybar")
+        .data(Array.from(sumstat.values()))
+        .enter()
+        .append("rect")
+            .attr("x", function(d) { return x(d.fuel); })
+            .attr("y", function(d) { return y(d.sum_capacity_mw); })
+            .attr("width", x.bandwidth())
+            .attr("height", function(d) { return height - y(d.sum_capacity_mw); })
+            .attr("fill", function(d) {return d.colour})
 }
