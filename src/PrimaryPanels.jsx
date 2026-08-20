@@ -45,12 +45,12 @@ const otherFuels =[
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, false, true, true, true, true, true, true, false, false, false,false,false, true]}, /*Home page*/
-    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, false, true, false, false,false,false, true]}, /*Info page*/
-    {id: 2, visibleHtmlElements: [false, false, false, true, true, true, true, true, true, false, true, false,false,false, true]}, /*Instructions page 1*/
-    {id: 3, visibleHtmlElements: [false, false, false, true, true, true, true, true, true, false, false, true,false,false, true]}, /*Instructions page 2*/
-    {id: 4, visibleHtmlElements: [false, false, false, true, true, true, true, true, true, false, false, false,true,false, true]}, /*Instructions page 3*/
-    {id: 5, visibleHtmlElements: [false, false, false, true, true, true, true, true,true, false, false, false,false,true, true]}, /*Instructions page 4*/
+    {id: 0, visibleHtmlElements: [true, true, false, true, true, true, true, true, false, false, false,false,false, true]}, /*Home page*/
+    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, false, false,false,false, true]}, /*Info page*/
+    {id: 2, visibleHtmlElements: [false, false, false, true, true, true, true, true, false, true, false,false,false, true]}, /*Instructions page 1*/
+    {id: 3, visibleHtmlElements: [false, false, false, true, true, true, true, true, false, false, true,false,false, true]}, /*Instructions page 2*/
+    {id: 4, visibleHtmlElements: [false, false, false, true, true, true, true, true, false, false, false,true,false, true]}, /*Instructions page 3*/
+    {id: 5, visibleHtmlElements: [false, false, false, true, true, true, true,true, false, false, false,false,true, true]}, /*Instructions page 4*/
 ];
 
 // static JSON to fetch and states to set
@@ -63,7 +63,7 @@ const _firstYearOfEstimatedGenerationData = 2013;
 const _latestYearOfEstimatedGenerationData = 2017;
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, linePlotFilter, setlinePlotFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
+    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
     const [fuelFilter, setFuelFilter] = useState([]);
@@ -75,7 +75,7 @@ function PrimaryPanels() {
     const [pages, setPages] = useState(null);
     const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
-    const prevlinePlotFilter = useRef([]);
+    const prevBarChartFilter = useRef([]);
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
     const fuelFilterRef = useRef([]);
@@ -222,8 +222,8 @@ function PrimaryPanels() {
     // Check the context filter for any updates
     useEffect(()=>{
         if(!fuelFilter.length) return
-        const currentBCF = linePlotFilter
-        const prevBCF = [...prevlinePlotFilter.current]
+        const currentBCF = barChartFilter
+        const prevBCF = [...prevBarChartFilter.current]
         setFuelFilter(prev => {
             if (!currentBCF || !currentBCF.length) {
                 const result = prev.map(f =>
@@ -249,8 +249,8 @@ function PrimaryPanels() {
             }
             return result
         })
-        prevlinePlotFilter.current = currentBCF ? [...currentBCF] : []
-    }, [linePlotFilter])
+        prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
+    }, [barChartFilter])
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -259,8 +259,8 @@ function PrimaryPanels() {
             if (!sidePanel || !sidePanel.children.length) return
             const pageContainer = sidePanel.children[0]
             const dropdowns = [
-                pageContainer.children[3]?.children[0],
-                pageContainer.children[4]?.children[0],
+                pageContainer.children[3]?.children[0]
+                //pageContainer.children[4]?.children[0],
             ]
             dropdowns.forEach(element => {
                 if (!element || !element.children[1]) return
@@ -289,12 +289,12 @@ function PrimaryPanels() {
         });
 
         if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
-        const fueLegSidePanel = sidePanel.children[0].children[4].querySelectorAll(".filterLegend"); // Find all legends
+        //const fueLegSidePanel = sidePanel.children[0].children[4].querySelectorAll(".filterLegend"); // Find all legends
         const regLegSidePanel = sidePanel.children[0].children[3].querySelectorAll(".filterLegend");
-        const bars = document.querySelectorAll(".linePlotContainer");
+        const bars = document.querySelectorAll(".barchartContainer");
 
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
-        const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
+        //const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
 
         const shownRegions = regionFilter.filter((region) => region.show)
         const shownFuels = fuelFilter.filter((fuel) => fuel.show)
@@ -312,14 +312,14 @@ function PrimaryPanels() {
         }
 
         handleDropDownTitle(regionFilterDropDownTitle,regLegSidePanel, "region", shownRegions)
-        handleDropDownTitle(fuelFilterDropDownTitle,fueLegSidePanel, "fuel", shownFuels)
-
+        //handleDropDownTitle(fuelFilterDropDownTitle,fueLegSidePanel, "fuel", shownFuels)
+        
         if(bars.length){
             for(var i = 0; i < bars.length; i++){
                 let children = Array.from(bars[i].children)
                 children.forEach(c =>{
                     let cName = c.classList.value
-                    if(cName.includes("bar_") && shownFuels.some(f => f.fuel == cName.slice(4)) && shownFuels.length < (fueLegSidePanel.length - 1)){
+                    if(cName.includes("bar_") && shownFuels.some(f => f.fuel == cName.slice(4)) && shownFuels.length < fuelFilter.length){
                         c.style.stroke = "#11658C"
                         c.style.strokeWidth = "0.2dvh"
                     }else{
@@ -330,17 +330,43 @@ function PrimaryPanels() {
             }
         }
 
-        fuelFilter.forEach((fuel, i) => {
+        /* fuelFilter.forEach((fuel, i) => {
             if (fueLegSidePanel[i+1]) { // If legend exists, +1 to skip select all option
                 fueLegSidePanel[i+1].style.opacity = fuel.show ? "1" : "0.3"; // Set oppacity based on filter settings
             }
-        });
+        }); */
         regionFilter.forEach((region, i)=>{
             if(regLegSidePanel[i+1]){
                 regLegSidePanel[i+1].style.opacity = region.show ? "1" : "0.3";
                 regLegSidePanel[i+1].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
             }
         })
+
+        // Update the line plot fuel filter entries and select all option
+        const linePlotFuelContainer = sidePanel.querySelector("#fuelFilterContainer")
+        if (linePlotFuelContainer) {
+            const linePlotEntries = linePlotFuelContainer.querySelectorAll(".fuelFilterEntry")
+            fuelFilter.forEach((fuel, i) => {
+                const entry = linePlotEntries[i+1] // +1 to skip the select all entry
+                if (entry) {
+                    entry.style.opacity = fuel.show ? "1" : "0.3";
+                    const checkMark = entry.querySelector(".fuelFilterCheckMark")
+                    if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
+                }
+            })
+
+            const selectAllName = linePlotFuelContainer.querySelector("#fuelFilterSelectAllName")
+            const selectAllCheck = linePlotFuelContainer.querySelector("#fuelFilterSelectAllCheck")
+            if (selectAllName && selectAllCheck) {
+                if (fuelFilter.every(f => f.show)) {
+                    selectAllName.textContent = "Deselect All"
+                    selectAllCheck.style.opacity = "1"
+                } else {
+                    selectAllName.textContent = "Select All"
+                    selectAllCheck.style.opacity = "0"
+                }
+            }
+        }
     }, [fuelFilter,regionFilter,popupCount]);
 
     // Update map layer filter
@@ -424,7 +450,8 @@ function PrimaryPanels() {
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 handleResetClick,
                 handleIndexClick,
-                handleLinePlotToggle
+                handleLinePlotToggle,
+                handleFueLegClick
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -500,13 +527,13 @@ function PrimaryPanels() {
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.children[3].children[0]
-            const sidePanelFuelFilter = pages.children[4].children[0]
+            //const sidePanelFuelFilter = pages.children[4].children[0]
 
             const sidePanelRegionHeader = sidePanelRegionFilter.children[0]
-            const sidePanelFuelHeader = sidePanelFuelFilter.children[0]
+            //const sidePanelFuelHeader = sidePanelFuelFilter.children[0]
 
-            sidePanelRegionHeader.onclick = () => handleRollupClick(sidePanelRegionFilter, [sidePanelFuelFilter])
-            sidePanelFuelHeader.onclick = () => handleRollupClick(sidePanelFuelFilter, [sidePanelRegionFilter])
+            sidePanelRegionHeader.onclick = () => handleRollupClick(sidePanelRegionFilter/*, [sidePanelFuelFilter]*/)
+            //sidePanelFuelHeader.onclick = () => handleRollupClick(sidePanelFuelFilter, [sidePanelRegionFilter])
 
             // Fills the provided drop down with the corresponding filter contents
             const fillDropDowns = (dropDownE,type,filter) =>{
@@ -574,10 +601,10 @@ function PrimaryPanels() {
             }
             // Fill drop down windows
             const regionDropDown = sidePanelRegionFilter.children[1]
-            const fuelDropDown = sidePanelFuelFilter.children[1]
+            //const fuelDropDown = sidePanelFuelFilter.children[1]
 
             fillDropDowns(regionDropDown, "region", regionFilter)
-            fillDropDowns(fuelDropDown, "fuel", fuelFilter)
+            //fillDropDowns(fuelDropDown, "fuel", fuelFilter)
 
             // Add navigation and colour correct icon
             const navigationBar = pages.lastChild
@@ -771,16 +798,16 @@ function PrimaryPanels() {
     // Handle clicks on the seperate legends
     function handleFueLegClick(clickedFuel){
         if (clickedFuel === "all") {
-            setlinePlotFilter(null)
+            setBarChartFilter(null)
         } else {
-            setlinePlotFilter(prev => {
+            setBarChartFilter(prev => {
                 if (!prev) return prev
                 return prev.filter(f => f !== clickedFuel)
             })
         }
         setFuelFilter(prev => { // prev, previous filter
-            const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
-           const toggled = checkAndSetFilter(selectAllOption, prev, clickedFuel, "fuel")
+            //const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
+            const toggled = checkAndSetFilter(null, prev, clickedFuel, "fuel")
             return toggled;
         });
     }
@@ -820,17 +847,17 @@ function PrimaryPanels() {
 
     // Set the fuel filter to a specific list of fuels
     function setFuelFilterTo(fuels){
-        const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0];
+        //const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0];
         const toggled = fuelFilterRef.current.map(f => ({ ...f, show: fuels.includes(f.fuel) }))
         setFuelFilter(toggled)
 
-        if(toggled.every(f => f.show)){
+        /* if(toggled.every(f => f.show)){
             selectAllOption.children[1].textContent = "Deselect all fuels"
             selectAllOption.children[0].children[0].style.opacity = "1"
         }else{
             selectAllOption.children[1].textContent = "Select all fuels"
             selectAllOption.children[0].children[0].style.opacity = "0"
-        }
+        } */
     }
 
     // Set the year filter to a specific range
@@ -871,13 +898,13 @@ function PrimaryPanels() {
     }
 
     // Handle rollupClick
-    function handleRollupClick(element, otherElements){
+    function handleRollupClick(element /*, otherElements*/){
         // Any other dropdowns open?
-        for(var i = 0; i < otherElements.length; i++){
+        /* for(var i = 0; i < otherElements.length; i++){
             if(!otherElements[i].children[1].classList.contains("hide")){
                 toggleDropDown(otherElements[i])
             }
-        }
+        } */
         toggleDropDown(element)
     }
 
@@ -899,10 +926,18 @@ function PrimaryPanels() {
         const linePlot = document.getElementById("linePlotSVG")
         const barChart = document.getElementById("barChartSVG")
 
+        const boldText = document.getElementById("linePlotExBoldText")
+        const standardText = document.getElementById("linePlotExStandardText")
+
+        const capacityValues = document.querySelectorAll(".ffCapacity")
+        const generationValues = document.querySelectorAll(".ffGeneration")
+
         if(linePlot.classList.contains("hide")){
             gsap.fromTo(linePlot, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     linePlot.classList.toggle("hide")
+                    boldText.textContent = "Electric generation per year "
+                    standardText.textContent = "(GWh)"
                 } } 
             );
             gsap.fromTo(barChart, { opacity: 1 }, 
@@ -910,6 +945,12 @@ function PrimaryPanels() {
                     barChart.classList.toggle("hide")
                 } } 
             );
+            for(let i = 0; i < generationValues.length; i++){ // Capacity values and generation values have the same lenghts
+                gsap.fromTo(generationValues[i], { opacity: 0 }, { opacity: 1,  duration: 0.15, 
+                    onComplete: () =>{ generationValues[i].classList.toggle("hide")} });
+                gsap.fromTo(capacityValues[i], { opacity: 1 }, { opacity: 0,  duration: 0.15,
+                    onComplete: () =>{capacityValues[i].classList.toggle("hide")} });
+            }
         }else{
             gsap.fromTo(linePlot, { opacity: 1 }, 
                 { opacity: 0,  duration: 0.15, onComplete: () =>{
@@ -919,9 +960,21 @@ function PrimaryPanels() {
             gsap.fromTo(barChart, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     barChart.classList.toggle("hide")
+                    boldText.textContent = "Power plant capacity per fuel "
+                    standardText.textContent = "(MW)"
                 } } 
             );
+            for(let i = 0; i < capacityValues.length; i++){ // Capacity values and generation values have the same lenghts
+                gsap.fromTo(capacityValues[i], { opacity: 0 }, { opacity: 1,  duration: 0.15, 
+                    onComplete: () =>{ capacityValues[i].classList.toggle("hide")} });
+                gsap.fromTo(generationValues[i], { opacity: 1 }, { opacity: 0,  duration: 0.15,
+                    onComplete: () =>{generationValues[i].classList.toggle("hide")} });
+            }
         }
+        gsap.fromTo([boldText,standardText], 
+            { opacity: 1 }, 
+            { opacity: 0, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
+        );
     }
 
     // Get new title
@@ -972,8 +1025,10 @@ function PrimaryPanels() {
     function checkAndSetFilter(selectAllOption, prevFilter, clickedItem, type){
         var propName = (type=="region") ? "country" : "fuel"
         if(prevFilter.every(i => i.show)){
-            selectAllOption.children[1].textContent = "Select all " + type + "s"
-            selectAllOption.children[0].children[0].style.opacity = "0"
+            if(selectAllOption){
+                selectAllOption.children[1].textContent = "Select all " + type + "s"
+                selectAllOption.children[0].children[0].style.opacity = "0"
+            }
             if(clickedItem == "all"){
                 return prevFilter.map(i => ({ ...i, show: false}));
             }
@@ -985,14 +1040,18 @@ function PrimaryPanels() {
             
         );
         if(clickedItem == "all"){
-            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
-            selectAllOption.children[0].children[0].style.opacity = "1"
+            if(selectAllOption){
+                selectAllOption.children[1].textContent = "Deselect all " + type + "s"
+                selectAllOption.children[0].children[0].style.opacity = "1"
+            }
             return prevFilter.map(i => ({ ...i, show: true}));
         }
 
         if (toggled.every(i => !i.show)) { // Are all options hidden?
-            selectAllOption.children[1].textContent = "Deselect all " + type + "s"
-            selectAllOption.children[0].children[0].style.opacity = "1"
+            if(selectAllOption){
+                selectAllOption.children[1].textContent = "Deselect all " + type + "s"
+                selectAllOption.children[0].children[0].style.opacity = "1"
+            }
             return prevFilter.map(i => ({ ...i, show: true })); // If true, select everything 
         }
         return toggled
@@ -1124,7 +1183,7 @@ function getSliderBounds(filter, regionalData){
 }
 
 function createPages(pageContent, powerPlants, regionalData, fuels,
-                                  onYearChange, onGenerationChange, onReset, onIndexClick, onToggleClick){
+                                  onYearChange, onGenerationChange, onReset, onIndexClick, onToggleClick, onLegendClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
     
@@ -1146,7 +1205,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     pageContainer.appendChild(infoTitle)
 
     // Filter drop downs and sliders
-    for(var i = 0; i < 4; i++){
+    for(var i = 0; i < 3; i++){
         let filterContainer = document.createElement("div")
         filterContainer.classList.add('sidePanelFilterContainer')
         switch (i) {
@@ -1154,9 +1213,9 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
             filterContainer.id = "firstFilterContainer"
             filterContainer.appendChild(getDropDown("region", onIndexClick));
              break;
-            case 1: filterContainer.appendChild(getDropDown("fuel", onIndexClick)); break;
-            case 2: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
-            case 3: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
+            //case 1: filterContainer.appendChild(getDropDown("fuel", onIndexClick)); break;
+            case 1: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
+            case 2: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
         }
         pageContainer.appendChild(filterContainer)
     }
@@ -1222,7 +1281,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
     const linePlotExBold = document.createElement("span");
     linePlotExBold.id = "linePlotExBoldText"
-    linePlotExBold.textContent = "Electronic generation per year"
+    linePlotExBold.textContent = "Electric generation per year "
 
     const linePlotExStandard = document.createElement("span");
     linePlotExStandard.id = "linePlotExStandardText"
@@ -1241,6 +1300,10 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     // SVG for actual line plot
     const dataVisualization = document.createElement("svg");
 
+    // Container for fuelFilter
+    const fuelFilterContainer = document.createElement("div");
+    fuelFilterContainer.id = "fuelFilterContainer"
+
     // Check if the fuel values are available
     if(fuels){
         // Pixel dimensions for the side panel
@@ -1254,9 +1317,103 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
         drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, fuels, true)
         drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, fuels, false)
+
+        // Select all option
+        const selectAllEntry = document.createElement("div");
+        selectAllEntry.classList.add("fuelFilterEntry");
+        selectAllEntry.style.justifyContent = "flex-end";
+
+        const selectAllName = document.createElement("span");
+        selectAllName.id = "fuelFilterSelectAllName"
+        selectAllName.textContent = "Deselect All"
+
+        const selectAllCheckBox = document.createElement("div")
+        selectAllCheckBox.id = "fuelFilterSelectAllCircle"
+        selectAllCheckBox.style.backgroundColor = "rgba(0,0,0,0.0)"
+
+        const selectAllCheck = document.createElement("img")
+        selectAllCheck.id = "fuelFilterSelectAllCheck"
+        selectAllCheck.src = assetSources.sidePanelSelectAllCircle
+
+        selectAllCheckBox.onclick = () => onLegendClick("all")
+        selectAllCheckBox.appendChild(selectAllCheck)
+        selectAllEntry.appendChild(selectAllName)
+        selectAllEntry.appendChild(selectAllCheckBox)
+        fuelFilterContainer.appendChild(selectAllEntry)
+
+        // Fuel filter entries
+        fuels.forEach(f =>{
+            const filterEntry = document.createElement("div");
+            filterEntry.classList.add("fuelFilterEntry");
+
+            const leftDiv = document.createElement("div");
+            leftDiv.style.display = "flex";
+            leftDiv.style.alignItems = "center"
+
+            const filterColour = document.createElement("div");
+            filterColour.classList.add("fuelFilterLegendColour");
+            filterColour.style.backgroundColor = f.colour;
+
+            const filterName = document.createElement("span");
+            filterName.textContent = f.fuel
+
+            leftDiv.appendChild(filterColour)
+            leftDiv.appendChild(filterName)
+
+            const formatPowerOf10 = (num) => {
+                if (num === 0) return `0`.trim();
+  
+                // Define metric prefixes mapping to powers of 10
+                const prefixes = [
+                    { value: 1e6,  symbol: 'M' }, // Mega
+                    { value: 1e3,  symbol: 'k' }, // kilo
+                    { value: 1,    symbol: ''  }, 
+                ];
+
+                // Find the closest matching tier
+                const tier = prefixes.find(p => num >= p.value) || prefixes[prefixes.length - 1];
+  
+                // Round to 1 decimal place relative to the tier
+                const rounded = Math.round((num / tier.value) * 10) / 10;
+  
+                return `${rounded} ${tier.symbol}`.trim();
+            }
+
+            const rightDiv = document.createElement("div");
+            rightDiv.style.display = "flex";
+            rightDiv.style.alignItems = "center"
+
+            const filterCapacity = document.createElement("span");
+            filterCapacity.classList.add("fuelFilterValue", "hide", "ffCapacity");
+            filterCapacity.textContent = formatPowerOf10(f.sum_capacity_mw);
+
+            const filterGeneration = document.createElement("span");
+            filterGeneration.classList.add("fuelFilterValue", "ffGeneration");
+            filterGeneration.textContent = formatPowerOf10(f.sum_generation_2019);
+
+            const checkBox = document.createElement("div");
+            checkBox.style.backgroundColor = "rgba(0,0,0,0.0)"
+            checkBox.classList.add("fuelFilterCheckBox")
+
+            const checkMark = document.createElement("img")
+            checkMark.classList.add("fuelFilterCheckMark")
+            checkMark.src = assetSources.sidePanelCheckMark
+
+            checkBox.onclick = () => onLegendClick(f.fuel)
+            checkBox.appendChild(checkMark)
+
+            rightDiv.appendChild(filterCapacity)
+            rightDiv.appendChild(filterGeneration)
+            rightDiv.appendChild(checkBox)
+
+            filterEntry.appendChild(leftDiv)
+            filterEntry.appendChild(rightDiv)
+            fuelFilterContainer.appendChild(filterEntry)
+        })
     }
 
     linePlotBody.appendChild(dataVisualization)
+    linePlotBody.appendChild(fuelFilterContainer)
     linePlotContainer.appendChild(linePlotBody)
     pageContainer.appendChild(linePlotContainer)
 
@@ -1719,7 +1876,7 @@ function getInstructions(pageContent, id){
 
 function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
 
-    var margin = {top: 0, right: 45, bottom: 50, left: 15},
+    var margin = {top: 5, right: 45, bottom: 50, left: 15},
     width = linePlotWidth - margin.left - margin.right,
     height = linePlotHeight - margin.top - margin.bottom;
 
@@ -1840,7 +1997,7 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
 }
 
 function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
-    var margin = {top: 0, right: 45, bottom: 50, left: 20},
+    var margin = {top: 5, right: 45, bottom: 50, left: 20},
     width = barChartWidth - margin.left - margin.right,
     height = barChartHeight - margin.top - margin.bottom;
 
@@ -1855,9 +2012,7 @@ function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
 
     var sumstat = d3.index(data, (d) => d.fuel)
 
-    console.log(sumstat)
     // Create x-axis
-
     var x = d3.scaleBand()
         .range([ 0, width ])
         .domain(sumstat.keys())

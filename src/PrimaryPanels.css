@@ -194,7 +194,7 @@
 }
 
 #linePlotTitleWrapper{
-    width: 95%;
+    width: 75%;
 }
 
 #linePlotTitle{
@@ -234,6 +234,7 @@
 }
 
 #linePlotTextCollector{
+    width: 45%;
     font-family: "Lato", sans-serif;
     font-size: 1.6vmin;
     font-style: normal;
@@ -256,6 +257,73 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
+}
+
+#fuelFilterContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 0.8dvw;
+    width: 45%;
+    height: 90%;
+    font-family: "Lato", sans-serif;
+    font-size: 1.5vmin;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.fuelFilterEntry{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fuelFilterLegendColour{
+    width: 1dvw;
+    height: 0.5dvh;
+    margin-right: 0.32dvw;
+}
+
+.fuelFilterValue{
+    font-weight: 400;
+    margin-right: 0.32dvw;
+}
+
+.fuelFilterCheckBox{
+    border: 0.25vmin solid #004B70;
+    border-radius: 0.7vmin;
+    height: 1.5vmin;
+    width: 1.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.fuelFilterCheckMark{
+    width: 1.2dvh;
+    height: auto;
+    margin-left: unset;
+}
+
+#fuelFilterSelectAllName{
+    font-weight: 400;
+    margin-right: 0.32dvw;
+}
+
+#fuelFilterSelectAllCircle{
+    background-color: rgba(0, 0, 0, 0);
+    border: 0.25vmin solid #004B70;
+    border-radius: 50%;
+    height: 1.5vmin;
+    width: 1.5vmin;
+}
+
+#fuelFilterSelectAllCheck{
+    width: 0.8dvh;
+    height: auto;
+    transform: translate(0.35dvh, -0.35dvh);
+    margin-left: unset;
 }
 
 .instructionTitle{
