@@ -825,7 +825,7 @@ function PrimaryPanels() {
             matchingRegions = regionFilterRef.current.filter(r => r.country_long[0] == alphabetArray[newIndex])
         }
         
-        const legendContainer = element.parentElement.parentElement.children[1]
+        const legendContainer = element.parentElement.parentElement.children[0]
         const regionToScroll = matchingRegions[0]
         
         element.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
@@ -1580,10 +1580,11 @@ function getDropDown(filter, onIndexClick){
     const legendContainer = document.createElement("div");
     legendContainer.classList.add("sidePanelLegendContainer")
 
+    const alphabetIndexContainer = document.createElement("div");
+    alphabetIndexContainer.classList.add("dropDownIndexContainer");
+
     if(filter == "region"){
         title.textContent = "All Regions"
-        const alphabetIndexContainer = document.createElement("div");
-        alphabetIndexContainer.classList.add("dropDownIndexContainer");
 
         const alphabetArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
         alphabetArray.forEach(c =>{
@@ -1599,11 +1600,12 @@ function getDropDown(filter, onIndexClick){
             alphabetIndexContainer.appendChild(index)
         })
 
-        dropDownField.appendChild(alphabetIndexContainer)
     }else{ // fuel
         title.textContent = "All Power Sources"
     }
+
     dropDownField.appendChild(legendContainer)
+    dropDownField.appendChild(alphabetIndexContainer)
 
     header.appendChild(title)
     header.appendChild(rollupIcon)

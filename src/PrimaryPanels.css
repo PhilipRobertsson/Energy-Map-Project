@@ -394,7 +394,7 @@
     top: 4.5dvh;
     left: 0px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: flex-start;
     height: 28dvh;
     width: 100%;
@@ -407,20 +407,20 @@
     overflow-y: scroll;
     flex: 1 1 auto;
     min-height: 0;
+    margin-right: 0.5dvw;
 }
 
 .dropDownIndexContainer{
     display: flex;
-    width: 96%;
-    flex-direction: row;
-    margin: 0 1dvh 0.32dvh 1dvh;
-    padding-bottom: 0.32dvh;
+    flex-direction: column;
     overflow-x: scroll;
     flex-shrink: 0;
+    margin-right: 0.5dvw;
 }
 
 .dropDownIndexContainer::-webkit-scrollbar{
-    height: 0.3dvw;
+    width: 0.3dvw;
+    display: none;
 }
 .dropDownIndexContainer::-webkit-scrollbar-thumb {
   background: #11658C;
@@ -430,11 +430,11 @@
 .dropDownIndex{
     display: flex;
     justify-content: center;
-    width: 1.4vmin;
-    border: 0.4vmin solid #004B70;
-    border-radius: 0.7vmin;
-    margin: 0 0.16dvh 0 0.16dvh;
-    padding: 0.5dvh;
+    width: 1.2vmin;
+    /*border: 0.4vmin solid #004B70;*/
+    /*border-radius: 0.7vmin;*/
+    margin: 0 0.1dvh 0 0.1dvh;
+    padding: 0.16dvh;
     flex-shrink: 0;
 }
 .dropDownIndexChar{
@@ -632,7 +632,7 @@
 
 /*Scroll bar*/
 ::-webkit-scrollbar {
-  width: 0.5dvw;
+  width: 0.3dvw;
 }
 
 /* Track */
