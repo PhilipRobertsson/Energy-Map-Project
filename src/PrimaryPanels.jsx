@@ -15,7 +15,7 @@ const fuelFilterDef = {
 // Definition for the side panel
 const sidePanelDef ={
     id: "sidePanel",
-    width: 30 + "dvw", // 25% of screen width
+    width: 30 + "dvw", // 30% of screen width
     height: 100 + "dvh", // 100% of screen height
     position: ["absolute", 0, 0, null, null], // Right hand side, css -> [position, top, right, bottom, left]
 };
@@ -79,6 +79,7 @@ function PrimaryPanels() {
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
     const fuelFilterRef = useRef([]);
+    const sidePanelOpenRef = useRef(true);
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
         height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
@@ -649,7 +650,7 @@ function PrimaryPanels() {
             //fillDropDowns(fuelDropDown, "fuel", fuelFilter)
 
             // Add navigation and colour correct icon
-            const navigationBar = pages.lastChild
+            const navigationBar = pages.querySelector("#navigationBarContainer")
             const largeIcons = navigationBar.querySelectorAll(".navigationBarIconWrapperLarge")
             const smallIcons = navigationBar.querySelectorAll(".navigationBarIconWrapperSmall")
             const smallTitle = navigationBar.querySelectorAll("#sidePanelMainTitleSmall")
@@ -939,6 +940,23 @@ function PrimaryPanels() {
         icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
     }
 
+    // Handle side panel open /close
+    function handleSidePanelToggle(){
+        const sidePanel = sidePanelContainer.current
+        const toggleButton = document.querySelector("#sidePanelToggleContainer")
+        if (!sidePanel) return
+
+        if (sidePanelOpenRef.current) {
+            sidePanel.style.display = "none"
+            toggleButton.style.right = "0dvw"
+            sidePanelOpenRef.current = false
+        } else {
+            sidePanel.style.display = "flex"
+            toggleButton.style.right = "28dvw"
+            sidePanelOpenRef.current = true
+        }
+    }
+
     // Handle rollupClick
     function handleRollupClick(element /*, otherElements*/){
         // Any other dropdowns open?
@@ -1149,6 +1167,9 @@ function PrimaryPanels() {
             bottom: sidePanelDef.position[3],
             left: sidePanelDef.position[4],
         }} />
+        <div id="sidePanelToggleContainer" onClick={handleSidePanelToggle}>
+            <img src={assetSources.sidePanelInfo} id="sidePanelToggleIcon"></img>
+        </div>
     </>)
 }
 

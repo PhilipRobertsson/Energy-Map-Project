@@ -527,7 +527,7 @@ function Map({ children }) {
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data,
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer }}>
-      <div ref={mapContainer} style={{ width: "76dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
+      <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>
         <img src={assetSources.alertIcon}></img>

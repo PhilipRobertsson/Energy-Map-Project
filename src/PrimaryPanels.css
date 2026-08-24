@@ -84,6 +84,11 @@
     font-size: 3vmax;
     margin: 2dvh 0 0 0;
     color: #004B70;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 #sidePanelMainTitleSmall{
@@ -93,6 +98,11 @@
     font-style: normal;
     font-size: 1.2vmax;
     color: #004B70;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 #sidePanelSubtitle{
@@ -104,6 +114,11 @@
     font-size: 1vmax;
     margin: -1dvh 0 0 0;
     color: #004B70;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 #InfoTitle{
@@ -115,6 +130,11 @@
     margin: 2dvh 0 0 0;
     align-self:flex-start;
     color: #004B70;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 #sidePanelFilterAndResetWrapper{
@@ -628,6 +648,19 @@
     color: #f7f7f7;
     pointer-events: none;
     margin: 0;
+}
+
+#sidePanelToggleContainer{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 6dvh;
+    height: 6dvh;
+    right: 28dvw;
+    bottom: 0;
+    border-radius: 0.7vmin;
+    background-color: rgba(239, 239, 239, 0.92);
 }
 
 /*Scroll bar*/
