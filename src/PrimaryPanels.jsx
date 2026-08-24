@@ -33,7 +33,9 @@ const assetSources ={
     sidePanelRollupClose: "./sidePanel/sidePanelRollupClose.svg",
     sidePanelCheckMark: "./sidePanel/sidePanelCheckMark.svg",
     sidePanelSelectAllCircle: "./sidePanel/sidePanelSelectAllCircle.svg",
-    infoIcon: "./popup/popupInfo.svg"
+    infoIcon: "./popup/popupInfo.svg",
+    jinyiPaperQR: "./qrCodes/jinyiPaper.png",
+    energyDataQR: "./qrCodes/energyData.png"
 };
 
 // Used to filter out fuels which either are too uncommon or unimportant for the visualization
@@ -1903,13 +1905,52 @@ function getInstructions(pageContent, id){
                     const title = document.createElement("h2")
                     title.classList.add("instructionsTitle")
                     title.textContent = t
-                    container.append(title)
+                    if(t != "Research paper" && t !="Source of Information"){
+                        console.log(title)
+                        console.log(container)
+                        container.appendChild(title)
+                    }
                     if(content.bodies && content.bodies[i]){
                         content.bodies[i].forEach(p =>{
+                            let qrImage = document.createElement("img")
+                            qrImage.classList.add("instructionsQRImage")
+
+                            let imgLinkWrapper = document.createElement("div");
+                            imgLinkWrapper.classList.add("instructionsImgLinkWrapper")
+
                             let paragraph = document.createElement("p")
                             paragraph.classList.add('instructionsIntro')
                             paragraph.textContent = p
-                            container.append(paragraph)
+
+                            let titleAndParagraphWrapper = document.createElement("div");
+                            titleAndParagraphWrapper.classList.add("instructionsTitleAndParagraphWrapper")
+
+                            if(t == "Research paper"){ // Special case
+                                titleAndParagraphWrapper.appendChild(title)
+                                titleAndParagraphWrapper.appendChild(paragraph)
+                                qrImage.src = assetSources.jinyiPaperQR
+                                qrImage.style.marginRight = "0.5dvw"
+                                titleAndParagraphWrapper.style.textAlign = "start"
+                                imgLinkWrapper.style.justifyContent = "flex-start"
+                                imgLinkWrapper.appendChild(qrImage)
+                                imgLinkWrapper.appendChild(titleAndParagraphWrapper)
+                            }
+                            if(t == "Source of Information"){ // Special case
+                                titleAndParagraphWrapper.appendChild(title)
+                                titleAndParagraphWrapper.appendChild(paragraph)
+                                qrImage.src = assetSources.energyDataQR
+                                qrImage.style.marginLeft = "0.5dvw"
+                                titleAndParagraphWrapper.style.textAlign = "end"
+                                imgLinkWrapper.style.justifyContent = "flex-end"
+                                imgLinkWrapper.appendChild(titleAndParagraphWrapper)
+                                imgLinkWrapper.appendChild(qrImage)
+                            }
+
+                            if(t != "Research paper" && t !="Source of Information"){
+                                container.appendChild(paragraph)
+                            }else{
+                                container.appendChild(imgLinkWrapper)
+                            }
                         })
                     }
                     if(content.lists && content.lists[i]){
