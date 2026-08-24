@@ -606,6 +606,7 @@
     position: fixed;
     flex-direction: row;
     bottom: 3dvh;
+    right: 0;
     align-items: center;
 }
 

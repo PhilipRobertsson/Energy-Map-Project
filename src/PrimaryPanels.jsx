@@ -946,14 +946,31 @@ function PrimaryPanels() {
         const toggleButton = document.querySelector("#sidePanelToggleContainer")
         if (!sidePanel) return
 
+
+
         if (sidePanelOpenRef.current) {
-            sidePanel.style.display = "none"
-            toggleButton.style.right = "0dvw"
-            sidePanelOpenRef.current = false
+            gsap.fromTo(sidePanel,
+                {rotateY:0},
+                {rotateY:90, transformOrigin:"right 50%", duration: 0.15, ease: "power2.out",
+                     onComplete: () => {
+                        sidePanelOpenRef.current = false
+                     }
+                })
+            gsap.fromTo(toggleButton, {right:"28dvw"}, {right:"0dvw", duration: 0.15, ease: "power2.out"})
         } else {
-            sidePanel.style.display = "flex"
-            toggleButton.style.right = "28dvw"
-            sidePanelOpenRef.current = true
+            gsap.fromTo(sidePanel,
+                {rotateY:90},
+                {rotateY:0, transformOrigin:"right 50%", duration: 0.15, ease: "power2.in", 
+                    onComplete: () => {
+                        sidePanel.style.display = "flex"
+                        sidePanel.style.translate = "unset"
+                        sidePanel.style.rotate = "unset"
+                        sidePanel.style.scale = "unset"
+                        sidePanel.style.transform = "unset"
+                        sidePanelOpenRef.current = true
+                     }
+                })
+            gsap.fromTo(toggleButton, {right:"0dvw"}, {right:"28dvw", duration: 0.15, ease: "power2.in"})
         }
     }
 
