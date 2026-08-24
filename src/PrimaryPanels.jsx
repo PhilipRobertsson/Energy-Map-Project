@@ -949,19 +949,22 @@ function PrimaryPanels() {
 
 
         if (sidePanelOpenRef.current) {
-            gsap.fromTo(sidePanel,
-                {rotateY:0},
-                {rotateY:90, transformOrigin:"right 50%", duration: 0.15, ease: "power2.out",
-                     onComplete: () => {
-                        sidePanelOpenRef.current = false
-                     }
-                })
+            gsap.fromTo(sidePanel.children,{opacity: 1}, {opacity:0, duration: 0.1, ease: "power2.out", onComplete: ()=>{
+                gsap.fromTo(sidePanel,
+                    {rotateY:0},
+                    {rotateY:90, transformOrigin:"right 50%", duration: 0.15, ease: "power2.out",
+                        onComplete: () => {
+                            sidePanelOpenRef.current = false
+                        }
+                    })
+            }})
             gsap.fromTo(toggleButton, {right:"28dvw"}, {right:"0dvw", duration: 0.15, ease: "power2.out"})
         } else {
             gsap.fromTo(sidePanel,
                 {rotateY:90},
                 {rotateY:0, transformOrigin:"right 50%", duration: 0.15, ease: "power2.in", 
                     onComplete: () => {
+                        gsap.fromTo(sidePanel.children,{opacity: 0}, {opacity:1, duration: 0.1, ease: "power2.in"})
                         sidePanel.style.display = "flex"
                         sidePanel.style.translate = "unset"
                         sidePanel.style.rotate = "unset"
