@@ -559,7 +559,7 @@ function PrimaryPanels() {
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
                             resetAllFilters()
                             mapRef.current?.flyTo({
-                                center: [9.902056, 49.843],
+                                center: [35.902056, 49.843],
                                 zoom: 3.2,
                                 speed: 0.8,
                                 curve: 1.4

@@ -251,7 +251,7 @@ function Map({ children }) {
         mapInstance.current = new maplibregl.Map({
           container: mapContainer.current,
           style: data, //mapStyle,
-          center: [9.902056, 49.843],
+          center: [35.902056, 49.843],
           zoom: 3.2,
         });
 
