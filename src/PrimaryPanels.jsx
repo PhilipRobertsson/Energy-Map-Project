@@ -79,6 +79,10 @@ function PrimaryPanels() {
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
     const fuelFilterRef = useRef([]);
+    const [screenSize, setScreenSize] = useState({
+        width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+    });
 
     // Keep refs in sync with filter states
     useEffect(() => {
@@ -125,6 +129,44 @@ function PrimaryPanels() {
             handleNavigationClick(0, document.getElementById("navigationID0"))
         }
     }, [timeRef])
+
+    // Check if screen size changes, redraw plots
+    useEffect(() => {
+        const redrawPlots = (width, height) => {
+            const linePlotSVG = document.getElementById("linePlotSVG")
+            const barChartSVG = document.getElementById("barChartSVG")
+            if (!linePlotSVG && !barChartSVG) return
+
+            const sidePanelWidth = Math.floor(width * 0.25)
+            const sidePanelLeftMargin = Math.floor(width * 0.01)
+            const sidePanelPadding = Math.floor(2 * width * 0.01)
+            const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
+            const plotHeight = Math.floor((height * 0.35) * 0.72)
+
+            const dataVisualization = (linePlotSVG || barChartSVG).parentElement
+            const linePlotHidden = linePlotSVG ? linePlotSVG.classList.contains("hide") : true
+            const barChartHidden = barChartSVG ? barChartSVG.classList.contains("hide") : true
+
+            linePlotSVG?.remove()
+            barChartSVG?.remove()
+
+            const fuels = fuelFilterRef.current
+            if (fuels.length) {
+                drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
+                drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
+            }
+        }
+
+        const handleResize = () => {
+            const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+            const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            setScreenSize({ width, height })
+            redrawPlots(width, height)
+        }
+        handleResize()
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
 
     // Add information and buttons to filter panel (only on load)
     useEffect(() =>{
@@ -1307,13 +1349,13 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     // Check if the fuel values are available
     if(fuels){
         // Pixel dimensions for the side panel
-        const sidePanelWidth = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.30 : window.innerWidth * 0.25);
-        const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? window.innerWidth * 0.02 : window.innerWidth * 0.01);
+        const sidePanelWidth =  window.innerWidth * 0.25;
+        const sidePanelLeftMargin = window.innerWidth * 0.01;
         const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
 
         // Pixel dimensions for the bar chart container
         const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
-        const linePlotHeight = Math.floor((window.innerHeight * 0.30) * 0.72)
+        const linePlotHeight = Math.floor((window.innerHeight * 0.35) * 0.72)
 
         drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, fuels, true)
         drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, fuels, false)
@@ -1365,7 +1407,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
   
                 // Define metric prefixes mapping to powers of 10
                 const prefixes = [
-                    { value: 1e6,  symbol: 'M' }, // Mega
+                    //{ value: 1e6,  symbol: 'M' }, // Mega
                     { value: 1e3,  symbol: 'k' }, // kilo
                     { value: 1,    symbol: ''  }, 
                 ];
@@ -1374,7 +1416,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
                 const tier = prefixes.find(p => num >= p.value) || prefixes[prefixes.length - 1];
   
                 // Round to 1 decimal place relative to the tier
-                const rounded = Math.round((num / tier.value) * 10) / 10;
+                const rounded = Math.round((num / tier.value));
   
                 return `${rounded} ${tier.symbol}`.trim();
             }
@@ -1875,8 +1917,8 @@ function getInstructions(pageContent, id){
 }
 
 function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
-
-    var margin = {top: 5, right: 45, bottom: 50, left: 15},
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    var margin = {top: Math.floor(3*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)},
     width = linePlotWidth - margin.left - margin.right,
     height = linePlotHeight - margin.top - margin.bottom;
 
@@ -1993,11 +2035,11 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
             .y(function(p) { return p.value == null ? y(0) : y(p.value); })
             (points)
         }) */
-    
 }
 
 function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
-    var margin = {top: 5, right: 45, bottom: 50, left: 20},
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)},
     width = barChartWidth - margin.left - margin.right,
     height = barChartHeight - margin.top - margin.bottom;
 

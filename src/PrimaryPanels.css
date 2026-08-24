@@ -172,7 +172,7 @@
 
 #sidePanelLinePlot{
     width: 100%;
-    height: 30dvh;
+    height: 35dvh;
     display: flex;
     flex-direction: column;
     background-color: #f7f7f7;
@@ -221,12 +221,12 @@
 
 #dataToggleButtonContainer{
     display: flex;
-    border: 0.2vmin solid #AAD3DE;
-    border-radius: 0.6vmin;
+    border: 0.25vmin solid #AAD3DE;
+    border-radius: 0.7vmin;
 }
 
 .dataToggleButton{
-    padding: 0.32dvh;
+    padding: 0.4dvh;
     font-size: 1.4vmin;
     font-family: "Lato", sans-serif;
     font-weight: 400;
@@ -297,12 +297,12 @@
     width: 1.5vmin;
     display: flex;
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
 }
 
 .fuelFilterCheckMark{
     width: 1.2dvh;
-    height: auto;
+    height: 1.2dvh;
     margin-left: unset;
 }
 
