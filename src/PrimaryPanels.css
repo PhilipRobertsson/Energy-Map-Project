@@ -126,7 +126,7 @@
     font-family: "DM Serif Display", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 3vmax;;
+    font-size: 3vmax;
     margin: 2dvh 0 0 0;
     align-self:flex-start;
     color: #004B70;
@@ -337,12 +337,14 @@
     border-radius: 50%;
     height: 1.5vmin;
     width: 1.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #fuelFilterSelectAllCheck{
     width: 0.8dvh;
     height: auto;
-    transform: translate(0.35dvh, -0.35dvh);
     margin-left: unset;
 }
 
@@ -858,12 +860,13 @@
 
 /*Specific styling for tablet-sized devices*/
 @media (max-height: 1024px){
-    #sidePanel{width: 30dvw !important;}
     .sidePanelPageContainer{margin-left: 2dvw;}
-    #sidePanelMainTitle{font-size: 4.5vmax;}
-    #sidePanelSubtitle{font-size: 1.9vmax;}
-    #InfoTitle{font-size: 4.5vmax;}
+    #sidePanelMainTitle{font-size: 3.2vmax;}
+    #sidePanelSubtitle{font-size: 1.5vmax;}
+    #InfoTitle{font-size: 3.2vmax;}
     .instructionTitle{font-size: 1.2vmax;}
+    .instructionsTitleAndParagraphWrapper *{font-size: 1vmin; line-height: 1.5vmin;}
+    .instructionsQRImage{width: 6dvh; height: 6dvh;}
     .instructionsTitle{font-size: 2vmin;}
     .instructionsIntro{font-size: 1.5vmin; margin: 0.5dvh 0 0 0;}
     .instructionStepsTitle{font-size: 1.5vmin; margin: 0.5dvh 0 0 0;}
@@ -871,6 +874,10 @@
     .instructionStepsItemTitle{font-size: 1.5vmin;}
     .instructionStepsItemStandard{font-size: 1.5vmin;}
     .instructionStepsItemHighlight{font-size: 1.5vmin;}
-    #navigationBarContainer{width: 25%;}
-    #sidePanelResetButton{padding: 0.5dvh}
+    #navigationBarContainer{width: 27%;}
+    #sidePanelFilterAndResetWrapper{flex-direction: row;}
+    #filterCounter{font-size: 1vmin;}
+    .sidePanelResetButton{padding: 0.5dvh; margin: 0 0.5dvw 0 0.5dvw;}
+    #fuelFilterContainer{padding-left: 0.4dvw; font-size: 1.2vmin;}
+    #fuelFilterSelectAllCheck{width: 0.7dvh;}
 }

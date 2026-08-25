@@ -140,10 +140,10 @@ function PrimaryPanels() {
             const barChartSVG = document.getElementById("barChartSVG")
             if (!linePlotSVG && !barChartSVG) return
 
-            const sidePanelWidth = Math.floor(width * 0.25)
-            const sidePanelLeftMargin = Math.floor(width * 0.01)
+            const sidePanelWidth = Math.floor(width * 0.30)
+            const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? width* 0.02 : width * 0.01)
             const sidePanelPadding = Math.floor(2 * width * 0.01)
-            const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
+            const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
             const plotHeight = Math.floor((height * 0.35) * 0.72)
 
             const dataVisualization = (linePlotSVG || barChartSVG).parentElement
@@ -1392,12 +1392,12 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     // Check if the fuel values are available
     if(fuels){
         // Pixel dimensions for the side panel
-        const sidePanelWidth =  window.innerWidth * 0.25;
-        const sidePanelLeftMargin = window.innerWidth * 0.01;
+        const sidePanelWidth =  Math.floor(window.innerWidth * 0.30);
+        const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? window.innerWidth* 0.02 : window.innerWidth * 0.01)
         const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
 
         // Pixel dimensions for the bar chart container
-        const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.65)
+        const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
         const linePlotHeight = Math.floor((window.innerHeight * 0.35) * 0.72)
 
         drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, fuels, true)
@@ -2002,8 +2002,9 @@ function getInstructions(pageContent, id){
 
 function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(3*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)},
-    width = linePlotWidth - margin.left - margin.right,
+    var margin = {top: Math.floor(3*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)}
+    if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(45*scale), left: Math.floor(15*scale)}}
+    var width = linePlotWidth - margin.left - margin.right,
     height = linePlotHeight - margin.top - margin.bottom;
 
     var svg = d3.select(svgE)
@@ -2123,8 +2124,9 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
 
 function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)},
-    width = barChartWidth - margin.left - margin.right,
+    var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
+    if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(55*scale), left: Math.floor(15*scale)}}
+    var width = barChartWidth - margin.left - margin.right,
     height = barChartHeight - margin.top - margin.bottom;
 
     var svg = d3.select(svgE)
