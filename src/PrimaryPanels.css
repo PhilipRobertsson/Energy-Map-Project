@@ -214,11 +214,11 @@
 }
 
 #linePlotTitleWrapper{
-    width: 75%;
+    width: 65%;
 }
 
 #linePlotTitle{
-    font-size: 1.8vmin;
+    font-size: 1.6vmin;
     font-family: "Lato", sans-serif;
     font-weight: 800;
     font-style: normal;
@@ -233,7 +233,7 @@
 
 #dataToggleTitle{
     margin-right: 0.16dvw;
-    font-size: 1.6vmin;
+    font-size: 1.4vmin;
     font-family: "Lato", sans-serif;
     font-weight: 600;
     font-style: normal;
@@ -256,7 +256,7 @@
 #linePlotTextCollector{
     width: 45%;
     font-family: "Lato", sans-serif;
-    font-size: 1.6vmin;
+    font-size: 1.4vmin;
     font-style: normal;
 }
 

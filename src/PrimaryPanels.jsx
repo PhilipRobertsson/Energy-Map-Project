@@ -1018,7 +1018,7 @@ function PrimaryPanels() {
             gsap.fromTo(linePlot, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     linePlot.classList.toggle("hide")
-                    boldText.textContent = "Electric generation per year "
+                    boldText.textContent = "Global electric generation per year "
                     standardText.textContent = "(GWh)"
                 } } 
             );
@@ -1042,7 +1042,7 @@ function PrimaryPanels() {
             gsap.fromTo(barChart, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     barChart.classList.toggle("hide")
-                    boldText.textContent = "Power plant capacity per fuel "
+                    boldText.textContent = "Global power plant capacity per fuel "
                     standardText.textContent = "(MW)"
                 } } 
             );
@@ -1319,7 +1319,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
     const linePlotTitle = document.createElement("span");
     linePlotTitle.id = "linePlotTitle";
-    linePlotTitle.textContent = "Electricity Generation Trends"
+    linePlotTitle.textContent = "Global Electricity Generation Trends"
 
     const toggleWrapper = document.createElement("div");
     toggleWrapper.id = "dataToggleWrapper";
@@ -1366,7 +1366,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
     const linePlotExBold = document.createElement("span");
     linePlotExBold.id = "linePlotExBoldText"
-    linePlotExBold.textContent = "Electric generation per year "
+    linePlotExBold.textContent = "Global electric generation per year "
 
     const linePlotExStandard = document.createElement("span");
     linePlotExStandard.id = "linePlotExStandardText"
@@ -2002,7 +2002,7 @@ function getInstructions(pageContent, id){
 
 function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(3*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)}
+    var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)}
     if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(45*scale), left: Math.floor(15*scale)}}
     var width = linePlotWidth - margin.left - margin.right,
     height = linePlotHeight - margin.top - margin.bottom;
@@ -2124,7 +2124,7 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
 
 function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
+    var margin = {top: Math.floor(8*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
     if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(55*scale), left: Math.floor(15*scale)}}
     var width = barChartWidth - margin.left - margin.right,
     height = barChartHeight - margin.top - margin.bottom;
