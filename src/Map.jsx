@@ -405,6 +405,9 @@ function Map({ children }) {
             }
           })
           setPopupCount(pc => pc + 1) // Count each pop-up window open
+
+          // Make pop up movable
+          makeMovable(popup.getElement(), map)
         }else if(!isOpen){
           const alertEl = document.getElementById("popUpAlert");
           alertEl.classList.remove("animate");
@@ -537,6 +540,7 @@ function Map({ children }) {
   );
 }
 
+// Function to get relevant information about a given powerplant
 function getPowerPlantInfo(feature, htmlElement){
     // Commisioning year
     const yearStartedField = document.createElement("span")
@@ -936,5 +940,99 @@ function getRegionalInfo(feature, data, colours){
     htmlElement.appendChild(barChartContainer)
     return htmlElement;
 }
+
+// Observers that keep moved pop-ups disconnected from MapLibre
+const moveObservers = new globalThis.Map()
+
+// Function to make the pop-ups movable
+function makeMovable(popUpE, map){
+  const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX
+  const getClientY = (e) => e.touches ? e.touches[0].clientY : e.clientY
+
+        const onStart = (e) => {
+            // Don't start a drag when tapping an interactive element
+            // (close button, rollup icon, etc.) so touch/click still works
+            if(e.target && e.target.closest && e.target.closest('img,button,rect,a,input,[role="button')){
+              return;
+            }
+            e.preventDefault()
+            const startX = getClientX(e)
+            const startY = getClientY(e)
+            const rect = popUpE.getBoundingClientRect()
+            const startLeft = rect.left
+            const startTop = rect.top
+            const popupWidth = rect.width
+            const popupHeight = rect.height
+            let didMove = false
+
+            const onMove = (ev) => {
+                // Delta from where the drag started
+                const dx = getClientX(ev) - startX
+                const dy = getClientY(ev) - startY
+
+                // New position, clamped to the viewport
+                const newLeft = Math.min(Math.max(startLeft + dx, 0), window.innerWidth - popupWidth)
+                const newTop = Math.min(Math.max(startTop + dy, 0), window.innerHeight - popupHeight)
+
+                // If the popup is moved, hide the tip
+                const popUpTip = popUpE.children[0]
+                if (popUpTip) popUpTip.style.display = "none";
+
+                // Disconnect from MapLibre and position directly in the viewport
+                popUpE.style.position = "fixed"
+                popUpE.style.left = `${newLeft}px`
+                popUpE.style.top = `${newTop}px`
+                popUpE.style.transform = "none"
+                popUpE.style.marginLeft = "0"
+                popUpE.style.marginTop = "0"
+
+                didMove = true
+            }
+
+            const onEnd = () => {
+                addRemoveListeners(document,"remove", onMove, onEnd)
+                if (!didMove) return
+
+                // Detach from the map so it stops snapping back to its anchor
+                if (map && map.getContainer().parentElement) {
+                    map.getContainer().parentElement.insertBefore(popUpE, map.nextSibling)
+                }
+                // Observe and neutralize MapLibre's transform updates,
+                // regardless of listener registration order
+                if(!moveObservers.has(popUpE)){
+                  const observer = new MutationObserver(()=>{
+                    if(popUpE.style.transform && popUpE.style.transform !== "none"){
+                      popUpE.style.transform = "none"
+                    }
+                  })
+                  observer.observe(popUpE, {attributes: true, attributeFilter: ['style']})
+                  moveObservers.set(popUpE, observer)
+                }
+            }
+            addRemoveListeners(document, "add", onMove, onEnd)
+        }
+        addRemoveListeners(popUpE,"start",null,null, onStart)
+}
+
+function addRemoveListeners(e,type="", onMove, onEnd, onStart){
+        if(type=="add" && onMove && onEnd){
+            document.addEventListener("mousemove", onMove)
+            document.addEventListener("mouseup", onEnd)
+            document.addEventListener("touchmove", onMove, { passive: false })
+            document.addEventListener("touchend", onEnd)
+        }
+        if(type=="remove" && onMove && onEnd){
+            e.removeEventListener("mousemove", onMove)
+            e.removeEventListener("mouseup", onEnd)
+            e.removeEventListener("touchmove", onMove)
+            e.removeEventListener("touchend", onEnd)
+        }
+        if(onStart){
+            e.addEventListener("mousedown", onStart)
+            e.addEventListener("touchstart", onStart, { passive: false })
+        }
+    }
+
+
 
 export default Map;

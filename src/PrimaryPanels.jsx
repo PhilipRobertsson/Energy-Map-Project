@@ -554,7 +554,7 @@ function PrimaryPanels() {
                         break;
                     case 5: // Fourth instructions page
                         setRegionFilterTo(["SWE", "DNK"])
-                        setFuelFilterTo(["Hydro", "Wind"])
+                        setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
                         break;
                     default:
@@ -1905,11 +1905,7 @@ function getInstructions(pageContent, id){
                     const title = document.createElement("h2")
                     title.classList.add("instructionsTitle")
                     title.textContent = t
-                    if(t != "Research paper" && t !="Source of Information"){
-                        console.log(title)
-                        console.log(container)
-                        container.appendChild(title)
-                    }
+                    if(t != "Research paper" && t !="Source of Information"){container.appendChild(title)}
                     if(content.bodies && content.bodies[i]){
                         content.bodies[i].forEach(p =>{
                             let qrImage = document.createElement("img")
