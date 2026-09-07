@@ -1042,7 +1042,7 @@ function PrimaryPanels() {
             gsap.fromTo(barChart, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     barChart.classList.toggle("hide")
-                    boldText.textContent = "Global power plant capacity per fuel "
+                    boldText.textContent = "Global power plant capacity by source "
                     standardText.textContent = "(MW)"
                 } } 
             );
@@ -1234,7 +1234,7 @@ function getSliderBounds(filter, regionalData){
         if (filter === "year") {
             const minYears = regionalData.map(y => y.oldest_power_plant).filter(y => y != null)
             const maxYears = regionalData.map(y => y.newest_power_plant).filter(y => y != null)
-            if (minYears.length && maxYears.length) { minVal = Math.min(...minYears); maxVal = Math.floor(Math.max(...maxYears)) }
+            if (minYears.length && maxYears.length) { minVal = Math.floor(Math.min(...minYears) / 10) * 10; maxVal = Math.floor(Math.max(...maxYears)) }
         } else {
             var largest = Number.NEGATIVE_INFINITY;
             var smallest = Number.POSITIVE_INFINITY;
@@ -1396,10 +1396,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
         let filterContainer = document.createElement("div")
         filterContainer.classList.add('sidePanelFilterContainer')
         switch (i) {
-            case 0: 
-            filterContainer.id = "firstFilterContainer"
-            filterContainer.appendChild(getDropDown("region", onIndexClick));
-             break;
+            case 0: filterContainer.appendChild(getDropDown("region", onIndexClick)); break;
             //case 1: filterContainer.appendChild(getDropDown("fuel", onIndexClick)); break;
             case 1: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
             case 2: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
@@ -1421,7 +1418,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
     const linePlotTitle = document.createElement("span");
     linePlotTitle.id = "linePlotTitle";
-    linePlotTitle.textContent = "Global Electricity Generation Trends"
+    linePlotTitle.textContent = "Global Electricity Source Trends"
 
     const toggleWrapper = document.createElement("div");
     toggleWrapper.id = "dataToggleWrapper";
@@ -1468,7 +1465,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
     const linePlotExBold = document.createElement("span");
     linePlotExBold.id = "linePlotExBoldText"
-    linePlotExBold.textContent = "Global electric generation per year "
+    linePlotExBold.textContent = "Global electric generation by source"
 
     const linePlotExStandard = document.createElement("span");
     linePlotExStandard.id = "linePlotExStandardText"
@@ -1710,11 +1707,27 @@ function getSliders(filter, regionalData, onChange){
     textSliderTitle.classList.add("sliderTitle")
     textMax.classList.add("sliderEdgeText")
 
+    textMin.style.transform = "translateX(-50%)";
+    textMax.style.transform = "translateX(50%)";
+
     textField.appendChild(textMin)
 
     if(filter=="year"){
-        textSliderTitle.textContent = "Year Started"
-        textField.appendChild(textSliderTitle)
+        const decadeBounds = getSliderBounds("year", regionalData)
+        const span = decadeBounds.maxVal - decadeBounds.minVal
+        const nDecades = Math.floor(span/10)
+        for(let i = 1; i<nDecades; i++){
+            const value = decadeBounds.minVal + (i*10)
+            const percentage = ((value - decadeBounds.minVal) / span) * 100
+            const textDecade = document.createElement("span")
+            textDecade.classList.add("sliderEdgeText")
+            textDecade.style.position = "absolute"
+            textDecade.style.left = percentage + "%"
+            textDecade.style.top = "0"
+            textDecade.style.transform = "translateX(-50%)"
+            textDecade.textContent = value
+            textField.appendChild(textDecade)
+        }
     }else{
         // Wrapper for text and info icon
         const titleAndIconWrapper = document.createElement("span")

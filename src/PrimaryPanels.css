@@ -233,23 +233,23 @@
 
 #dataToggleTitle{
     margin-right: 0.16dvw;
-    font-size: 1.4vmin;
+    font-size: 1.5vmin;
     font-family: "Lato", sans-serif;
-    font-weight: 600;
+    font-weight: 700;
     font-style: normal;
 }
 
 #dataToggleButtonContainer{
     display: flex;
     border: 0.25vmin solid #AAD3DE;
-    border-radius: 0.7vmin;
+    border-radius: 0.2vmin;
 }
 
 .dataToggleButton{
-    padding: 0.4dvh;
-    font-size: 1.4vmin;
+    padding: 0.4dvh 1.1dvh;
+    font-size: 1.2vmin;
     font-family: "Lato", sans-serif;
-    font-weight: 400;
+    font-weight: 700;
     font-style: normal;
 }
 
@@ -312,7 +312,7 @@
 
 .fuelFilterCheckBox{
     border: 0.25vmin solid #004B70;
-    border-radius: 0.7vmin;
+    border-radius: 0.2vmin;
     height: 1.5vmin;
     width: 1.5vmin;
     display: flex;
@@ -368,10 +368,6 @@
     align-self: center;
     border-radius: 1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
-}
-
-#firstFilterContainer{
-    margin-top: 2dvh;
 }
 
 .sidePanelDropDownHeader{
@@ -764,6 +760,7 @@
 }
 
 .sliderTextField{
+    position: relative;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -774,7 +771,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 1.5vmin;
+    font-size: 1.1vmin;
     margin: 0;
     /*Added to remove selection from drop down texts*/
     -webkit-user-select: none; /* Safari */        
