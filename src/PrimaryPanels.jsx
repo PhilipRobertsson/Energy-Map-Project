@@ -26,6 +26,13 @@ const assetSources ={
     zoomOut: "./fuelFilter/filterPanelZoomOut.svg",
     zoomSelection: "./fuelFilter/filterPanelZoomSelection.svg",
     zoomFullScreen: "./fuelFilter/filterPanelFullScreen.svg",
+    fuelIconCoal: "./fuelFilter/fuelIconCoal.svg",
+    fuelIconGas: "./fuelFilter/fuelIconGas.svg",
+    fuelIconHydro: "./fuelFilter/fuelIconHydro.svg",
+    fuelIconNuclear: "./fuelFilter/fuelIconNuclear.svg",
+    fuelIconOil: "./fuelFilter/fuelIconOil.svg",
+    fuelIconSolar: "./fuelFilter/fuelIconSolar.svg",
+    fuelIconWind: "./fuelFilter/fuelIconWind.svg",
     sidePanelHome: "./sidePanel/sidePanelHomeIcon.svg",
     sidePanelInstructions: "./sidePanel/sidePanelInstructionsIcon.svg",
     sidePanelInfo: "./sidePanel/sidePanelInfoIcon.svg",
@@ -224,6 +231,14 @@ function PrimaryPanels() {
             const colour = document.createElement("div")
             colour.classList.add("legendColour")
             colour.style.backgroundColor = fuel.colour
+
+            // Add icon to colour box
+            if(fuel.fuel != "Other"){
+                const icon = document.createElement("img")
+                icon.classList.add("legendIcon")
+                icon.src = eval("assetSources.fuelIcon"+fuel.fuel)
+                colour.appendChild(icon)
+            }
 
             // Create text for legend element
             const label = document.createElement("p")
@@ -1518,6 +1533,14 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
             const filterColour = document.createElement("div");
             filterColour.classList.add("fuelFilterLegendColour");
             filterColour.style.backgroundColor = f.colour;
+
+            // Add icon to colour box
+            if(f.fuel != "Other"){
+                const icon = document.createElement("img")
+                icon.classList.add("legendIcon")
+                icon.src = eval("assetSources.fuelIcon"+f.fuel)
+                filterColour.appendChild(icon)
+            }
 
             const filterName = document.createElement("span");
             filterName.textContent = f.fuel

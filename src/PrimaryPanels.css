@@ -22,11 +22,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 2.1dvh;
-    height: 2.1dvh;
+    width: 2.5dvh;
+    height: 2.5dvh;
     margin: 0.16dvh 0 0.16dvh 0;
-    border: 0.4vmin solid #DEEAED;
-    border-radius: 0.6vmin;
+    border: 0.1vmin solid #DEEAED;
+    border-radius: 0.2vmin;
+}
+.legendIcon{
+    width: 1.5dvh;
+    height: 1.5dvh;
 }
 
 .legendName{ /*The name for each fuel type*/
@@ -304,9 +308,14 @@
 }
 
 .fuelFilterLegendColour{
-    width: 1dvw;
-    height: 0.5dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2dvh;
+    height: 2dvh;
     margin-right: 0.32dvw;
+    padding: 0.1dvh;
+    border-radius: 0.2vmin;
 }
 
 .fuelFilterValue{
