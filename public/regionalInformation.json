@@ -3,6 +3,7 @@
     "country": "AFG",
     "country_long": "Afghanistan",
     "total_power_plants": 9,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -119,6 +120,7 @@
     "country": "ALB",
     "country_long": "Albania",
     "total_power_plants": 8,
+    "continent": "Europe",
     "oldest_power_plant": 1951,
     "newest_power_plant": 1985,
     "power_plants_by_fuel": {
@@ -222,6 +224,7 @@
     "country": "DZA",
     "country_long": "Algeria",
     "total_power_plants": 59,
+    "continent": "Africa",
     "oldest_power_plant": 1952,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -338,6 +341,7 @@
     "country": "AGO",
     "country_long": "Angola",
     "total_power_plants": 14,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -454,6 +458,7 @@
     "country": "ATA",
     "country_long": "Antarctica",
     "total_power_plants": 2,
+    "continent": "Antarctica",
     "oldest_power_plant": 1981,
     "newest_power_plant": 1981,
     "power_plants_by_fuel": {
@@ -557,6 +562,7 @@
     "country": "ARG",
     "country_long": "Argentina",
     "total_power_plants": 236,
+    "continent": "South America",
     "oldest_power_plant": 1943,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -738,6 +744,7 @@
     "country": "ARM",
     "country_long": "Armenia",
     "total_power_plants": 8,
+    "continent": "Europe",
     "oldest_power_plant": 1970,
     "newest_power_plant": 2010,
     "power_plants_by_fuel": {
@@ -854,6 +861,7 @@
     "country": "AUS",
     "country_long": "Australia",
     "total_power_plants": 486,
+    "continent": "Oceania",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -1035,6 +1043,7 @@
     "country": "AUT",
     "country_long": "Austria",
     "total_power_plants": 103,
+    "continent": "Europe",
     "oldest_power_plant": 1925,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -1151,6 +1160,7 @@
     "country": "AZE",
     "country_long": "Azerbaijan",
     "total_power_plants": 14,
+    "continent": "Europe",
     "oldest_power_plant": 1953,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -1267,6 +1277,7 @@
     "country": "BHR",
     "country_long": "Bahrain",
     "total_power_plants": 8,
+    "continent": "Asia",
     "oldest_power_plant": 1985,
     "newest_power_plant": 2012,
     "power_plants_by_fuel": {
@@ -1383,6 +1394,7 @@
     "country": "BGD",
     "country_long": "Bangladesh",
     "total_power_plants": 57,
+    "continent": "Asia",
     "oldest_power_plant": 1962,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -1525,6 +1537,7 @@
     "country": "BLR",
     "country_long": "Belarus",
     "total_power_plants": 24,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -1628,6 +1641,7 @@
     "country": "BEL",
     "country_long": "Belgium",
     "total_power_plants": 69,
+    "continent": "Europe",
     "oldest_power_plant": 1968,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -1822,6 +1836,7 @@
     "country": "BEN",
     "country_long": "Benin",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -1925,6 +1940,7 @@
     "country": "BTN",
     "country_long": "Bhutan",
     "total_power_plants": 5,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2015,6 +2031,7 @@
     "country": "BOL",
     "country_long": "Bolivia",
     "total_power_plants": 26,
+    "continent": "South America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2131,6 +2148,7 @@
     "country": "BIH",
     "country_long": "Bosnia and Herzegovina",
     "total_power_plants": 20,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2234,6 +2252,7 @@
     "country": "BWA",
     "country_long": "Botswana",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2324,6 +2343,7 @@
     "country": "BRA",
     "country_long": "Brazil",
     "total_power_plants": 2360,
+    "continent": "South America",
     "oldest_power_plant": 1900,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -2531,6 +2551,7 @@
     "country": "BRN",
     "country_long": "Brunei Darussalam",
     "total_power_plants": 4,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2621,6 +2642,7 @@
     "country": "BGR",
     "country_long": "Bulgaria",
     "total_power_plants": 43,
+    "continent": "Europe",
     "oldest_power_plant": 1951,
     "newest_power_plant": 2011,
     "power_plants_by_fuel": {
@@ -2763,6 +2785,7 @@
     "country": "BFA",
     "country_long": "Burkina Faso",
     "total_power_plants": 7,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2879,6 +2902,7 @@
     "country": "BDI",
     "country_long": "Burundi",
     "total_power_plants": 4,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -2982,6 +3006,7 @@
     "country": "KHM",
     "country_long": "Cambodia",
     "total_power_plants": 16,
+    "continent": "Asia",
     "oldest_power_plant": 1996,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -3137,6 +3162,7 @@
     "country": "CMR",
     "country_long": "Cameroon",
     "total_power_plants": 8,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -3253,6 +3279,7 @@
     "country": "CAN",
     "country_long": "Canada",
     "total_power_plants": 1159,
+    "continent": "North America",
     "oldest_power_plant": 1948,
     "newest_power_plant": 2014,
     "power_plants_by_fuel": {
@@ -3460,6 +3487,7 @@
     "country": "CPV",
     "country_long": "Cape Verde",
     "total_power_plants": 4,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -3563,6 +3591,7 @@
     "country": "CAF",
     "country_long": "Central African Republic",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -3666,6 +3695,7 @@
     "country": "CHL",
     "country_long": "Chile",
     "total_power_plants": 315,
+    "continent": "South America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -3847,6 +3877,7 @@
     "country": "CHN",
     "country_long": "China",
     "total_power_plants": 4235,
+    "continent": "Asia",
     "oldest_power_plant": 1941,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -4028,6 +4059,7 @@
     "country": "COL",
     "country_long": "Colombia",
     "total_power_plants": 25,
+    "continent": "South America",
     "oldest_power_plant": 1975,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -4170,6 +4202,7 @@
     "country": "COG",
     "country_long": "Congo",
     "total_power_plants": 8,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -4286,6 +4319,7 @@
     "country": "CRI",
     "country_long": "Costa Rica",
     "total_power_plants": 27,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -4415,6 +4449,7 @@
     "country": "CIV",
     "country_long": "Cote DIvoire",
     "total_power_plants": 8,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -4518,6 +4553,7 @@
     "country": "HRV",
     "country_long": "Croatia",
     "total_power_plants": 24,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -4647,6 +4683,7 @@
     "country": "CUB",
     "country_long": "Cuba",
     "total_power_plants": 14,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -4776,6 +4813,7 @@
     "country": "CYP",
     "country_long": "Cyprus",
     "total_power_plants": 3,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -4879,6 +4917,7 @@
     "country": "CZE",
     "country_long": "Czech Republic",
     "total_power_plants": 462,
+    "continent": "Europe",
     "oldest_power_plant": 1944,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -5021,6 +5060,7 @@
     "country": "COD",
     "country_long": "Democratic Republic of the Congo",
     "total_power_plants": 15,
+    "continent": "Africa",
     "oldest_power_plant": 1930,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -5137,6 +5177,7 @@
     "country": "DNK",
     "country_long": "Denmark",
     "total_power_plants": 47,
+    "continent": "Europe",
     "oldest_power_plant": 1970,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -5305,6 +5346,7 @@
     "country": "DJI",
     "country_long": "Djibouti",
     "total_power_plants": 1,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -5395,6 +5437,7 @@
     "country": "DOM",
     "country_long": "Dominican Republic",
     "total_power_plants": 15,
+    "continent": "North America",
     "oldest_power_plant": 1986,
     "newest_power_plant": 2001,
     "power_plants_by_fuel": {
@@ -5550,6 +5593,7 @@
     "country": "ECU",
     "country_long": "Ecuador",
     "total_power_plants": 22,
+    "continent": "South America",
     "oldest_power_plant": 1978,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -5679,6 +5723,7 @@
     "country": "EGY",
     "country_long": "Egypt",
     "total_power_plants": 62,
+    "continent": "Africa",
     "oldest_power_plant": 1967,
     "newest_power_plant": 2014,
     "power_plants_by_fuel": {
@@ -5821,6 +5866,7 @@
     "country": "SLV",
     "country_long": "El Salvador",
     "total_power_plants": 16,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -5950,6 +5996,7 @@
     "country": "GNQ",
     "country_long": "Equatorial Guinea",
     "total_power_plants": 3,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -6053,6 +6100,7 @@
     "country": "ERI",
     "country_long": "Eritrea",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -6143,6 +6191,7 @@
     "country": "EST",
     "country_long": "Estonia",
     "total_power_plants": 17,
+    "continent": "Europe",
     "oldest_power_plant": 2002,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -6259,6 +6308,7 @@
     "country": "ETH",
     "country_long": "Ethiopia",
     "total_power_plants": 13,
+    "continent": "Africa",
     "oldest_power_plant": 1960,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -6375,6 +6425,7 @@
     "country": "FJI",
     "country_long": "Fiji",
     "total_power_plants": 12,
+    "continent": "Oceania",
     "oldest_power_plant": 1983,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -6504,6 +6555,7 @@
     "country": "FIN",
     "country_long": "Finland",
     "total_power_plants": 185,
+    "continent": "Europe",
     "oldest_power_plant": 1981,
     "newest_power_plant": 1981,
     "power_plants_by_fuel": {
@@ -6685,6 +6737,7 @@
     "country": "FRA",
     "country_long": "France",
     "total_power_plants": 2155,
+    "continent": "Europe",
     "oldest_power_plant": 1908,
     "newest_power_plant": 1991,
     "power_plants_by_fuel": {
@@ -6892,6 +6945,7 @@
     "country": "GUF",
     "country_long": "French Guiana",
     "total_power_plants": 6,
+    "continent": "South America",
     "oldest_power_plant": 1994,
     "newest_power_plant": 1994,
     "power_plants_by_fuel": {
@@ -7034,6 +7088,7 @@
     "country": "GAB",
     "country_long": "Gabon",
     "total_power_plants": 6,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -7150,6 +7205,7 @@
     "country": "GMB",
     "country_long": "Gambia",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -7240,6 +7296,7 @@
     "country": "GEO",
     "country_long": "Georgia",
     "total_power_plants": 19,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -7343,6 +7400,7 @@
     "country": "DEU",
     "country_long": "Germany",
     "total_power_plants": 1309,
+    "continent": "Europe",
     "oldest_power_plant": 1905,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -7550,6 +7608,7 @@
     "country": "GHA",
     "country_long": "Ghana",
     "total_power_plants": 6,
+    "continent": "Africa",
     "oldest_power_plant": 1961,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -7666,6 +7725,7 @@
     "country": "GRC",
     "country_long": "Greece",
     "total_power_plants": 90,
+    "continent": "Europe",
     "oldest_power_plant": 1954,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -7834,6 +7894,7 @@
     "country": "GTM",
     "country_long": "Guatemala",
     "total_power_plants": 76,
+    "continent": "North America",
     "oldest_power_plant": 1905,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -8015,6 +8076,7 @@
     "country": "GIN",
     "country_long": "Guinea",
     "total_power_plants": 9,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -8118,6 +8180,7 @@
     "country": "GNB",
     "country_long": "Guinea-Bissau",
     "total_power_plants": 1,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -8208,6 +8271,7 @@
     "country": "GUY",
     "country_long": "Guyana",
     "total_power_plants": 5,
+    "continent": "South America",
     "oldest_power_plant": 2008,
     "newest_power_plant": 2008,
     "power_plants_by_fuel": {
@@ -8311,6 +8375,7 @@
     "country": "HND",
     "country_long": "Honduras",
     "total_power_plants": 40,
+    "continent": "North America",
     "oldest_power_plant": 2015,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -8492,6 +8557,7 @@
     "country": "HUN",
     "country_long": "Hungary",
     "total_power_plants": 18,
+    "continent": "Europe",
     "oldest_power_plant": 1957,
     "newest_power_plant": 1983,
     "power_plants_by_fuel": {
@@ -8634,6 +8700,7 @@
     "country": "ISL",
     "country_long": "Iceland",
     "total_power_plants": 20,
+    "continent": "Europe",
     "oldest_power_plant": 1937,
     "newest_power_plant": 2008,
     "power_plants_by_fuel": {
@@ -8737,6 +8804,7 @@
     "country": "IND",
     "country_long": "India",
     "total_power_plants": 1589,
+    "continent": "Asia",
     "oldest_power_plant": 1927,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -8918,6 +8986,7 @@
     "country": "IDN",
     "country_long": "Indonesia",
     "total_power_plants": 178,
+    "continent": "Asia",
     "oldest_power_plant": 1998,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -9060,6 +9129,7 @@
     "country": "IRN",
     "country_long": "Iran",
     "total_power_plants": 107,
+    "continent": "Asia",
     "oldest_power_plant": 1933,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -9215,6 +9285,7 @@
     "country": "IRQ",
     "country_long": "Iraq",
     "total_power_plants": 28,
+    "continent": "Asia",
     "oldest_power_plant": 1956,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -9331,6 +9402,7 @@
     "country": "IRL",
     "country_long": "Ireland",
     "total_power_plants": 59,
+    "continent": "Europe",
     "oldest_power_plant": 1986,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -9486,6 +9558,7 @@
     "country": "ISR",
     "country_long": "Israel",
     "total_power_plants": 59,
+    "continent": "Asia",
     "oldest_power_plant": 1961,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -9615,6 +9688,7 @@
     "country": "ITA",
     "country_long": "Italy",
     "total_power_plants": 396,
+    "continent": "Europe",
     "oldest_power_plant": 1959,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -9796,6 +9870,7 @@
     "country": "JAM",
     "country_long": "Jamaica",
     "total_power_plants": 10,
+    "continent": "North America",
     "oldest_power_plant": 1945,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -9938,6 +10013,7 @@
     "country": "JPN",
     "country_long": "Japan",
     "total_power_plants": 522,
+    "continent": "Asia",
     "oldest_power_plant": 1963,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -10132,6 +10208,7 @@
     "country": "JOR",
     "country_long": "Jordan",
     "total_power_plants": 33,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -10248,6 +10325,7 @@
     "country": "KAZ",
     "country_long": "Kazakhstan",
     "total_power_plants": 33,
+    "continent": "Asia",
     "oldest_power_plant": 1952,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -10377,6 +10455,7 @@
     "country": "KEN",
     "country_long": "Kenya",
     "total_power_plants": 23,
+    "continent": "Africa",
     "oldest_power_plant": 1968,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -10519,6 +10598,7 @@
     "country": "KOS",
     "country_long": "Kosovo",
     "total_power_plants": 2,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -10609,6 +10689,7 @@
     "country": "KWT",
     "country_long": "Kuwait",
     "total_power_plants": 9,
+    "continent": "Asia",
     "oldest_power_plant": 2007,
     "newest_power_plant": 2008,
     "power_plants_by_fuel": {
@@ -10712,6 +10793,7 @@
     "country": "KGZ",
     "country_long": "Kyrgyzstan",
     "total_power_plants": 8,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -10828,6 +10910,7 @@
     "country": "LAO",
     "country_long": "Laos",
     "total_power_plants": 20,
+    "continent": "Asia",
     "oldest_power_plant": 1990,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -10931,6 +11014,7 @@
     "country": "LVA",
     "country_long": "Latvia",
     "total_power_plants": 5,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11034,6 +11118,7 @@
     "country": "LBN",
     "country_long": "Lebanon",
     "total_power_plants": 7,
+    "continent": "Asia",
     "oldest_power_plant": 1971,
     "newest_power_plant": 1998,
     "power_plants_by_fuel": {
@@ -11137,6 +11222,7 @@
     "country": "LSO",
     "country_long": "Lesotho",
     "total_power_plants": 1,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11227,6 +11313,7 @@
     "country": "LBR",
     "country_long": "Liberia",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11330,6 +11417,7 @@
     "country": "LBY",
     "country_long": "Libya",
     "total_power_plants": 12,
+    "continent": "Africa",
     "oldest_power_plant": 1976,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -11433,6 +11521,7 @@
     "country": "LTU",
     "country_long": "Lithuania",
     "total_power_plants": 6,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11536,6 +11625,7 @@
     "country": "LUX",
     "country_long": "Luxembourg",
     "total_power_plants": 2,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11639,6 +11729,7 @@
     "country": "MKD",
     "country_long": "Macedonia",
     "total_power_plants": 12,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11742,6 +11833,7 @@
     "country": "MDG",
     "country_long": "Madagascar",
     "total_power_plants": 12,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -11884,6 +11976,7 @@
     "country": "MWI",
     "country_long": "Malawi",
     "total_power_plants": 5,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -12000,6 +12093,7 @@
     "country": "MYS",
     "country_long": "Malaysia",
     "total_power_plants": 55,
+    "continent": "Asia",
     "oldest_power_plant": 1996,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -12155,6 +12249,7 @@
     "country": "MLI",
     "country_long": "Mali",
     "total_power_plants": 4,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -12245,6 +12340,7 @@
     "country": "MRT",
     "country_long": "Mauritania",
     "total_power_plants": 7,
+    "continent": "Africa",
     "oldest_power_plant": 2018,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -12374,6 +12470,7 @@
     "country": "MUS",
     "country_long": "Mauritius",
     "total_power_plants": 23,
+    "continent": "Africa",
     "oldest_power_plant": 2000,
     "newest_power_plant": 2007,
     "power_plants_by_fuel": {
@@ -12516,6 +12613,7 @@
     "country": "MEX",
     "country_long": "Mexico",
     "total_power_plants": 277,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -12710,6 +12808,7 @@
     "country": "MDA",
     "country_long": "Moldova",
     "total_power_plants": 6,
+    "continent": "Europe",
     "oldest_power_plant": 1978,
     "newest_power_plant": 1978,
     "power_plants_by_fuel": {
@@ -12826,6 +12925,7 @@
     "country": "MNG",
     "country_long": "Mongolia",
     "total_power_plants": 8,
+    "continent": "Asia",
     "oldest_power_plant": 1982,
     "newest_power_plant": 2014,
     "power_plants_by_fuel": {
@@ -12942,6 +13042,7 @@
     "country": "MNE",
     "country_long": "Montenegro",
     "total_power_plants": 3,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -13045,6 +13146,7 @@
     "country": "MAR",
     "country_long": "Morocco",
     "total_power_plants": 45,
+    "continent": "Africa",
     "oldest_power_plant": 1938,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -13200,6 +13302,7 @@
     "country": "MOZ",
     "country_long": "Mozambique",
     "total_power_plants": 3,
+    "continent": "Africa",
     "oldest_power_plant": 1959,
     "newest_power_plant": 1988,
     "power_plants_by_fuel": {
@@ -13290,6 +13393,7 @@
     "country": "MMR",
     "country_long": "Myanmar",
     "total_power_plants": 35,
+    "continent": "Asia",
     "oldest_power_plant": 1974,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -13419,6 +13523,7 @@
     "country": "NAM",
     "country_long": "Namibia",
     "total_power_plants": 13,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -13548,6 +13653,7 @@
     "country": "NPL",
     "country_long": "Nepal",
     "total_power_plants": 14,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -13651,6 +13757,7 @@
     "country": "NLD",
     "country_long": "Netherlands",
     "total_power_plants": 71,
+    "continent": "Europe",
     "oldest_power_plant": 1973,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -13793,6 +13900,7 @@
     "country": "NZL",
     "country_long": "New Zealand",
     "total_power_plants": 43,
+    "continent": "Oceania",
     "oldest_power_plant": 1914,
     "newest_power_plant": 2014,
     "power_plants_by_fuel": {
@@ -13948,6 +14056,7 @@
     "country": "NIC",
     "country_long": "Nicaragua",
     "total_power_plants": 16,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -14103,6 +14212,7 @@
     "country": "NER",
     "country_long": "Niger",
     "total_power_plants": 7,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -14219,6 +14329,7 @@
     "country": "NGA",
     "country_long": "Nigeria",
     "total_power_plants": 13,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -14335,6 +14446,7 @@
     "country": "PRK",
     "country_long": "North Korea",
     "total_power_plants": 31,
+    "continent": "Asia",
     "oldest_power_plant": 1956,
     "newest_power_plant": 2006,
     "power_plants_by_fuel": {
@@ -14438,6 +14550,7 @@
     "country": "NOR",
     "country_long": "Norway",
     "total_power_plants": 306,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -14554,6 +14667,7 @@
     "country": "OMN",
     "country_long": "Oman",
     "total_power_plants": 12,
+    "continent": "Asia",
     "oldest_power_plant": 1976,
     "newest_power_plant": 2008,
     "power_plants_by_fuel": {
@@ -14657,6 +14771,7 @@
     "country": "PAK",
     "country_long": "Pakistan",
     "total_power_plants": 62,
+    "continent": "Asia",
     "oldest_power_plant": 1971,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -14825,6 +14940,7 @@
     "country": "PSE",
     "country_long": "Palestine",
     "total_power_plants": 1,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -14915,6 +15031,7 @@
     "country": "PAN",
     "country_long": "Panama",
     "total_power_plants": 17,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -15057,6 +15174,7 @@
     "country": "PNG",
     "country_long": "Papua New Guinea",
     "total_power_plants": 15,
+    "continent": "Oceania",
     "oldest_power_plant": 1999,
     "newest_power_plant": 2005,
     "power_plants_by_fuel": {
@@ -15186,6 +15304,7 @@
     "country": "PRY",
     "country_long": "Paraguay",
     "total_power_plants": 3,
+    "continent": "South America",
     "oldest_power_plant": 1981,
     "newest_power_plant": 1994,
     "power_plants_by_fuel": {
@@ -15276,6 +15395,7 @@
     "country": "PER",
     "country_long": "Peru",
     "total_power_plants": 32,
+    "continent": "South America",
     "oldest_power_plant": 1958,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -15418,6 +15538,7 @@
     "country": "PHL",
     "country_long": "Philippines",
     "total_power_plants": 123,
+    "continent": "Asia",
     "oldest_power_plant": 1998,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -15599,6 +15720,7 @@
     "country": "POL",
     "country_long": "Poland",
     "total_power_plants": 189,
+    "continent": "Europe",
     "oldest_power_plant": 1905,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -15767,6 +15889,7 @@
     "country": "PRT",
     "country_long": "Portugal",
     "total_power_plants": 469,
+    "continent": "Europe",
     "oldest_power_plant": 1913,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -15948,6 +16071,7 @@
     "country": "QAT",
     "country_long": "Qatar",
     "total_power_plants": 12,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -16038,6 +16162,7 @@
     "country": "ROU",
     "country_long": "Romania",
     "total_power_plants": 68,
+    "continent": "Europe",
     "oldest_power_plant": 1964,
     "newest_power_plant": 2012,
     "power_plants_by_fuel": {
@@ -16193,6 +16318,7 @@
     "country": "RUS",
     "country_long": "Russia",
     "total_power_plants": 545,
+    "continent": "Asia",
     "oldest_power_plant": 1900,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -16400,6 +16526,7 @@
     "country": "RWA",
     "country_long": "Rwanda",
     "total_power_plants": 11,
+    "continent": "Africa",
     "oldest_power_plant": 1958,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -16542,6 +16669,7 @@
     "country": "LCA",
     "country_long": "Saint Lucia",
     "total_power_plants": 1,
+    "continent": "North America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -16632,6 +16760,7 @@
     "country": "SAU",
     "country_long": "Saudi Arabia",
     "total_power_plants": 90,
+    "continent": "Asia",
     "oldest_power_plant": 1972,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -16748,6 +16877,7 @@
     "country": "SEN",
     "country_long": "Senegal",
     "total_power_plants": 10,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -16864,6 +16994,7 @@
     "country": "SRB",
     "country_long": "Serbia",
     "total_power_plants": 12,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -16967,6 +17098,7 @@
     "country": "SLE",
     "country_long": "Sierra Leone",
     "total_power_plants": 3,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -17070,6 +17202,7 @@
     "country": "SGP",
     "country_long": "Singapore",
     "total_power_plants": 14,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -17186,6 +17319,7 @@
     "country": "SVK",
     "country_long": "Slovakia",
     "total_power_plants": 30,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -17328,6 +17462,7 @@
     "country": "SVN",
     "country_long": "Slovenia",
     "total_power_plants": 8,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -17457,6 +17592,7 @@
     "country": "ZAF",
     "country_long": "South Africa",
     "total_power_plants": 104,
+    "continent": "Africa",
     "oldest_power_plant": 1952,
     "newest_power_plant": 2018,
     "power_plants_by_fuel": {
@@ -17651,6 +17787,7 @@
     "country": "KOR",
     "country_long": "South Korea",
     "total_power_plants": 132,
+    "continent": "Asia",
     "oldest_power_plant": 1944,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -17858,6 +17995,7 @@
     "country": "ESP",
     "country_long": "Spain",
     "total_power_plants": 829,
+    "continent": "Europe",
     "oldest_power_plant": 1923,
     "newest_power_plant": 2013,
     "power_plants_by_fuel": {
@@ -18052,6 +18190,7 @@
     "country": "LKA",
     "country_long": "Sri Lanka",
     "total_power_plants": 48,
+    "continent": "Asia",
     "oldest_power_plant": 1951,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -18194,6 +18333,7 @@
     "country": "SDN",
     "country_long": "Sudan",
     "total_power_plants": 19,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -18323,6 +18463,7 @@
     "country": "SUR",
     "country_long": "Suriname",
     "total_power_plants": 1,
+    "continent": "South America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -18413,6 +18554,7 @@
     "country": "SWZ",
     "country_long": "Swaziland",
     "total_power_plants": 6,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -18516,6 +18658,7 @@
     "country": "SWE",
     "country_long": "Sweden",
     "total_power_plants": 168,
+    "continent": "Europe",
     "oldest_power_plant": 1906,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -18684,6 +18827,7 @@
     "country": "CHE",
     "country_long": "Switzerland",
     "total_power_plants": 168,
+    "continent": "Europe",
     "oldest_power_plant": 1900,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -18800,6 +18944,7 @@
     "country": "SYR",
     "country_long": "Syrian Arab Republic",
     "total_power_plants": 18,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -18916,6 +19061,7 @@
     "country": "TWN",
     "country_long": "Taiwan",
     "total_power_plants": 39,
+    "continent": "Asia",
     "oldest_power_plant": 1941,
     "newest_power_plant": 2011,
     "power_plants_by_fuel": {
@@ -19084,6 +19230,7 @@
     "country": "TJK",
     "country_long": "Tajikistan",
     "total_power_plants": 10,
+    "continent": "Asia",
     "oldest_power_plant": 1969,
     "newest_power_plant": 2009,
     "power_plants_by_fuel": {
@@ -19187,6 +19334,7 @@
     "country": "TZA",
     "country_long": "Tanzania",
     "total_power_plants": 11,
+    "continent": "Africa",
     "oldest_power_plant": 1966,
     "newest_power_plant": 2012,
     "power_plants_by_fuel": {
@@ -19303,6 +19451,7 @@
     "country": "THA",
     "country_long": "Thailand",
     "total_power_plants": 196,
+    "continent": "Asia",
     "oldest_power_plant": 1971,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -19458,6 +19607,7 @@
     "country": "TGO",
     "country_long": "Togo",
     "total_power_plants": 3,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -19574,6 +19724,7 @@
     "country": "TTO",
     "country_long": "Trinidad and Tobago",
     "total_power_plants": 6,
+    "continent": "North America",
     "oldest_power_plant": 1999,
     "newest_power_plant": 2009,
     "power_plants_by_fuel": {
@@ -19677,6 +19828,7 @@
     "country": "TUN",
     "country_long": "Tunisia",
     "total_power_plants": 27,
+    "continent": "Africa",
     "oldest_power_plant": 1956,
     "newest_power_plant": 2015,
     "power_plants_by_fuel": {
@@ -19793,6 +19945,7 @@
     "country": "TUR",
     "country_long": "Turkey",
     "total_power_plants": 163,
+    "continent": "Europe",
     "oldest_power_plant": 1975,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -19961,6 +20114,7 @@
     "country": "TKM",
     "country_long": "Turkmenistan",
     "total_power_plants": 7,
+    "continent": "Asia",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -20064,6 +20218,7 @@
     "country": "UGA",
     "country_long": "Uganda",
     "total_power_plants": 11,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -20193,6 +20348,7 @@
     "country": "UKR",
     "country_long": "Ukraine",
     "total_power_plants": 64,
+    "continent": "Europe",
     "oldest_power_plant": 1962,
     "newest_power_plant": 1985,
     "power_plants_by_fuel": {
@@ -20335,6 +20491,7 @@
     "country": "ARE",
     "country_long": "United Arab Emirates",
     "total_power_plants": 30,
+    "continent": "Asia",
     "oldest_power_plant": 1977,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -20438,6 +20595,7 @@
     "country": "GBR",
     "country_long": "United Kingdom",
     "total_power_plants": 2751,
+    "continent": "Europe",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -20671,6 +20829,7 @@
     "country": "USA",
     "country_long": "United States of America",
     "total_power_plants": 9833,
+    "continent": "North America",
     "oldest_power_plant": 1896,
     "newest_power_plant": 2020,
     "power_plants_by_fuel": {
@@ -20930,6 +21089,7 @@
     "country": "URY",
     "country_long": "Uruguay",
     "total_power_plants": 73,
+    "continent": "South America",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -21085,6 +21245,7 @@
     "country": "UZB",
     "country_long": "Uzbekistan",
     "total_power_plants": 16,
+    "continent": "Asia",
     "oldest_power_plant": 1949,
     "newest_power_plant": 2014,
     "power_plants_by_fuel": {
@@ -21227,6 +21388,7 @@
     "country": "VEN",
     "country_long": "Venezuela",
     "total_power_plants": 43,
+    "continent": "South America",
     "oldest_power_plant": 1956,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -21330,6 +21492,7 @@
     "country": "VNM",
     "country_long": "Vietnam",
     "total_power_plants": 236,
+    "continent": "Asia",
     "oldest_power_plant": 1945,
     "newest_power_plant": 2017,
     "power_plants_by_fuel": {
@@ -21498,6 +21661,7 @@
     "country": "ESH",
     "country_long": "Western Sahara",
     "total_power_plants": 1,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {
@@ -21588,6 +21752,7 @@
     "country": "YEM",
     "country_long": "Yemen",
     "total_power_plants": 7,
+    "continent": "Asia",
     "oldest_power_plant": 1974,
     "newest_power_plant": 2009,
     "power_plants_by_fuel": {
@@ -21691,6 +21856,7 @@
     "country": "ZMB",
     "country_long": "Zambia",
     "total_power_plants": 15,
+    "continent": "Africa",
     "oldest_power_plant": 1971,
     "newest_power_plant": 2016,
     "power_plants_by_fuel": {
@@ -21833,6 +21999,7 @@
     "country": "ZWE",
     "country_long": "Zimbabwe",
     "total_power_plants": 2,
+    "continent": "Africa",
     "oldest_power_plant": null,
     "newest_power_plant": null,
     "power_plants_by_fuel": {

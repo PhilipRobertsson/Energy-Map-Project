@@ -201,6 +201,10 @@
     margin-top: 1dvh;
 }
 
+#linePlotRegionFilter{
+    margin: 1dvh 0 1dvh 0;
+}
+
 #linePlotHeader{
     height: 18%;
     display: flex;

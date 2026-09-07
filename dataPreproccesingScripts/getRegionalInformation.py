@@ -13,7 +13,7 @@ def sum_by_fuel(country_df, col):
         result[fuel] = float(non_null.sum()) if len(non_null) > 0 and non_null.sum() != 0 else None
     return result
 
-def createJSON(path, dataframe, countries):
+def createJSON(path, dataframe, countries,continets):
     entries = []
     for x in countries:
         data = {}
@@ -22,6 +22,10 @@ def createJSON(path, dataframe, countries):
         data['country_long'] = countryDataframe['country_long'].loc[countryDataframe.index[0]]
         data['total_power_plants'] = countryDataframe.shape[0]
 
+        continentDataframe = continets[(continets['Country'] == data['country_long'])]
+        data['continent'] = ''.join(continentDataframe['Continent'].values)
+        if data['continent'] == '':
+            data['continent'] = None
 
         commissioningYears = countryDataframe['commissioning_year'].dropna()
 
@@ -69,7 +73,9 @@ def createJSON(path, dataframe, countries):
 
 if __name__ == '__main__':
     csvPath = './public/global_power_plant_database.csv'
+    continentPath = './public/countries_by_continent.csv'
     savePath = './public/regionalInformation.json'
     df = loadCSV(csvPath)
+    cont = loadCSV(continentPath)
     c = df['country'].unique()
-    createJSON(savePath, df,c)
+    createJSON(savePath, df,c,cont)

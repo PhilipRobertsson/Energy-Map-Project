@@ -47,12 +47,12 @@ const otherFuels =[
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, true, false, true, false, true, true, true, false, false,false,false, false]}, /*Home page*/
-    {id: 1, visibleHtmlElements: [true, false, false, true, false, false, false, false, false, true, false,false,false, false]}, /*Info page*/
-    {id: 2, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, true,false,false, false]}, /*Instructions page 1*/
-    {id: 3, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, false,true,false, false]}, /*Instructions page 2*/
-    {id: 4, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, false,false,true, false]}, /*Instructions page 3*/
-    {id: 5, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
+    {id: 0, visibleHtmlElements: [true, true, true, false, false, true, true, true, false, false,false,false, false]}, /*Home page*/
+    {id: 1, visibleHtmlElements: [true, false, false, true, false, false, false, false, true, false,false,false, false]}, /*Info page*/
+    {id: 2, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, true,false,false, false]}, /*Instructions page 1*/
+    {id: 3, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, false,true,false, false]}, /*Instructions page 2*/
+    {id: 4, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, false,false,true, false]}, /*Instructions page 3*/
+    {id: 5, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
 ];
 
 // static JSON to fetch and states to set
@@ -304,7 +304,7 @@ function PrimaryPanels() {
             if (!sidePanel || !sidePanel.children.length) return
             const pageContainer = sidePanel.children[0]
             const dropdowns = [
-                pageContainer.children[5]?.children[0]
+                pageContainer.querySelector("#linePlotRegionFilter").children[0]
                 //pageContainer.children[4]?.children[0],
             ]
             dropdowns.forEach(element => {
@@ -335,7 +335,7 @@ function PrimaryPanels() {
 
         if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
         //const fueLegSidePanel = sidePanel.children[0].children[4].querySelectorAll(".filterLegend"); // Find all legends
-        const regLegSidePanel = sidePanel.children[0].children[5].querySelectorAll(".filterLegend");
+        const regLegSidePanel = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend");
         const bars = document.querySelectorAll(".barchartContainer");
 
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
@@ -571,7 +571,7 @@ function PrimaryPanels() {
             }
 
             // Add eventlisteners to rollups
-            const sidePanelRegionFilter = pages.children[5].children[0]
+            const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]
             //const sidePanelFuelFilter = pages.children[4].children[0]
 
             const sidePanelRegionHeader = sidePanelRegionFilter.children[0]
@@ -876,7 +876,7 @@ function PrimaryPanels() {
 
     // Set the region filter to a specific list of countries and zoom to them
     function setRegionFilterTo(countries){
-        const selectAllOption = sidePanel.children[0].children[5].querySelectorAll(".filterLegend")[0];
+        const selectAllOption = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend")[0];
         const toggled = regionFilterRef.current.map(r => ({ ...r, show: countries.includes(r.country) }))
         setRegionFilter(toggled)
 
@@ -922,7 +922,7 @@ function PrimaryPanels() {
     }
 
     function handleRegLegClick(clickedCountry){
-        const selectAllOption = sidePanel.children[0].children[5].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
+        const selectAllOption = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
         const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
         setRegionFilter(toggled)
         zoomToRegionFilter(toggled)
@@ -1092,7 +1092,7 @@ function PrimaryPanels() {
 
         const sidePanel = sidePanelContainer.current
         if (sidePanel && sidePanel.children.length) {
-            const regionSelectAll = sidePanel.children[0].children[5].querySelectorAll(".filterLegend")[0]
+            const regionSelectAll = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend")[0]
 
             regionSelectAll.children[1].textContent = "Deselect all regions"
             regionSelectAll.children[0].children[0].style.opacity = "1"
@@ -1392,14 +1392,14 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     pageContainer.appendChild(filterAndResetWrapper)
 
     // Filter drop downs and sliders
-    for(var i = 0; i < 3; i++){
+    for(var i = 0; i < 2; i++){
         let filterContainer = document.createElement("div")
         filterContainer.classList.add('sidePanelFilterContainer')
         switch (i) {
-            case 0: filterContainer.appendChild(getDropDown("region", onIndexClick)); break;
+            //case 0: filterContainer.appendChild(getDropDown("region", onIndexClick)); break;
             //case 1: filterContainer.appendChild(getDropDown("fuel", onIndexClick)); break;
-            case 1: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
-            case 2: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
+            case 0: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
+            case 1: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
         }
         pageContainer.appendChild(filterContainer)
     }
@@ -1407,6 +1407,13 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     // Generation by fuel line plot
     const linePlotContainer = document.createElement("div")
     linePlotContainer.id = "sidePanelLinePlot"
+
+    // Region filter in line plot
+    const regionFilter = document.createElement("div");
+    regionFilter.id = "linePlotRegionFilter"
+    regionFilter.appendChild(getDropDown("region", onIndexClick))
+
+    linePlotContainer.appendChild(regionFilter)
 
     // Header for line plot
     const linePlotHeader = document.createElement("div");
