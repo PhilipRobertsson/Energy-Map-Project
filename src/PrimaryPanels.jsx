@@ -47,12 +47,12 @@ const otherFuels =[
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, false, true, true, true, true, true, false, false, false,false,false, true]}, /*Home page*/
-    {id: 1, visibleHtmlElements: [false, false, true, false, false, false, false, false, true, false, false,false,false, true]}, /*Info page*/
-    {id: 2, visibleHtmlElements: [false, false, false, true, true, true, true, true, false, true, false,false,false, true]}, /*Instructions page 1*/
-    {id: 3, visibleHtmlElements: [false, false, false, true, true, true, true, true, false, false, true,false,false, true]}, /*Instructions page 2*/
-    {id: 4, visibleHtmlElements: [false, false, false, true, true, true, true, true, false, false, false,true,false, true]}, /*Instructions page 3*/
-    {id: 5, visibleHtmlElements: [false, false, false, true, true, true, true,true, false, false, false,false,true, true]}, /*Instructions page 4*/
+    {id: 0, visibleHtmlElements: [true, true, true, false, true, false, true, true, true, false, false,false,false, false]}, /*Home page*/
+    {id: 1, visibleHtmlElements: [true, false, false, true, false, false, false, false, false, true, false,false,false, false]}, /*Info page*/
+    {id: 2, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, true,false,false, false]}, /*Instructions page 1*/
+    {id: 3, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, false,true,false, false]}, /*Instructions page 2*/
+    {id: 4, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, false,false,true, false]}, /*Instructions page 3*/
+    {id: 5, visibleHtmlElements: [true, false, false, false, true, false, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
 ];
 
 // static JSON to fetch and states to set
@@ -304,7 +304,7 @@ function PrimaryPanels() {
             if (!sidePanel || !sidePanel.children.length) return
             const pageContainer = sidePanel.children[0]
             const dropdowns = [
-                pageContainer.children[3]?.children[0]
+                pageContainer.children[5]?.children[0]
                 //pageContainer.children[4]?.children[0],
             ]
             dropdowns.forEach(element => {
@@ -335,7 +335,7 @@ function PrimaryPanels() {
 
         if (!sidePanel || !sidePanel.children.length || !fuelFilter.length || !regionFilter.length) return; // If id does not exsist don't update anything
         //const fueLegSidePanel = sidePanel.children[0].children[4].querySelectorAll(".filterLegend"); // Find all legends
-        const regLegSidePanel = sidePanel.children[0].children[3].querySelectorAll(".filterLegend");
+        const regLegSidePanel = sidePanel.children[0].children[5].querySelectorAll(".filterLegend");
         const bars = document.querySelectorAll(".barchartContainer");
 
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
@@ -571,7 +571,7 @@ function PrimaryPanels() {
             }
 
             // Add eventlisteners to rollups
-            const sidePanelRegionFilter = pages.children[3].children[0]
+            const sidePanelRegionFilter = pages.children[5].children[0]
             //const sidePanelFuelFilter = pages.children[4].children[0]
 
             const sidePanelRegionHeader = sidePanelRegionFilter.children[0]
@@ -876,7 +876,7 @@ function PrimaryPanels() {
 
     // Set the region filter to a specific list of countries and zoom to them
     function setRegionFilterTo(countries){
-        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0];
+        const selectAllOption = sidePanel.children[0].children[5].querySelectorAll(".filterLegend")[0];
         const toggled = regionFilterRef.current.map(r => ({ ...r, show: countries.includes(r.country) }))
         setRegionFilter(toggled)
 
@@ -922,7 +922,7 @@ function PrimaryPanels() {
     }
 
     function handleRegLegClick(clickedCountry){
-        const selectAllOption = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
+        const selectAllOption = sidePanel.children[0].children[5].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
         const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
         setRegionFilter(toggled)
         zoomToRegionFilter(toggled)
@@ -1092,7 +1092,7 @@ function PrimaryPanels() {
 
         const sidePanel = sidePanelContainer.current
         if (sidePanel && sidePanel.children.length) {
-            const regionSelectAll = sidePanel.children[0].children[3].querySelectorAll(".filterLegend")[0]
+            const regionSelectAll = sidePanel.children[0].children[5].querySelectorAll(".filterLegend")[0]
 
             regionSelectAll.children[1].textContent = "Deselect all regions"
             regionSelectAll.children[0].children[0].style.opacity = "1"
@@ -1271,6 +1271,64 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
                                   onYearChange, onGenerationChange, onReset, onIndexClick, onToggleClick, onLegendClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
+
+    // NEW STRUCTURE:
+    // - Navigation bar *Shown on all pages
+    // - Main title (Info Title) *Shown on home page (and info page) 
+    // - Subtitle *Only shown on home page
+    // - sidePanelFilterAndResetWrapper (filter counter) *Shown on all pages except info page
+    // - Year Filter *Shown on all pages except info page
+    // - Generation Filter *Shown on all pages except info page
+    // - Diagram (With region and fuel filters integrated) *Shown on all pages except info page
+    // - Option to add additional diagrams *Shown on all pages except info page
+    // - Information text *Shown on all pages except home page
+
+    // Navigation bar
+    const navigationContainer = document.createElement("div")
+    navigationContainer.id = "navigationBarContainer"
+
+    // Smaller main title
+    const mainTitleSmall = document.createElement("span")
+    mainTitleSmall.id = "sidePanelMainTitleSmall"
+    mainTitleSmall.textContent = "Energy Map"
+
+    navigationContainer.appendChild(mainTitleSmall)
+
+    const navigationElements = document.createElement("div")
+    navigationElements.style.display = "flex"
+
+    for(let i = 0; i<6;i++){
+        const wrapper = document.createElement("div")
+        wrapper.classList.add("navigationBarIconWrapper")
+
+        const icon = document.createElement("img")
+        if(i==0){
+            icon.src = assetSources.sidePanelHome
+            icon.classList.add("navigationBarIconLarge")
+            wrapper.classList.add("navigationBarIconWrapperLarge")
+            wrapper.appendChild(icon)
+        }else if(i==1){
+            icon.src = assetSources.sidePanelInfo
+            icon.classList.add("navigationBarIconLarge")
+            wrapper.classList.add("navigationBarIconWrapperLarge")
+            wrapper.appendChild(icon)
+        }else{
+            icon.src = assetSources.sidePanelInstructions
+            icon.classList.add("navigationBarIconSmall")
+            wrapper.classList.add("navigationBarIconWrapperSmall")
+
+            const number = document.createElement("span")
+            number.classList.add("navigationBarIconNumber")
+            number.textContent = (i-1)
+            wrapper.appendChild(icon)
+            wrapper.appendChild(number)
+        }
+        icon.id = "navigationID" + i
+        navigationElements.appendChild(wrapper)
+        navigationContainer.appendChild(navigationElements)
+    }
+
+    pageContainer.appendChild(navigationContainer)
     
     // Main title and subtitle
     const sidePanelMainTitle = document.createElement("h1")
@@ -1288,6 +1346,50 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     infoTitle.id = "InfoTitle"
     infoTitle.textContent = "Info"
     pageContainer.appendChild(infoTitle)
+
+    // Wrapper for filter and reset button
+    const filterAndResetWrapper = document.createElement("div")
+    filterAndResetWrapper.id = "sidePanelFilterAndResetWrapper"
+
+    // Filter counter
+    const filterCounter = document.createElement("span")
+    const filterCounterValue = document.createElement("span")
+    const filterCounterStatic = document.createElement("span")
+
+    filterCounter.id = "filterCounter"
+    filterCounterValue.id = "filterCounterValue"
+    filterCounterStatic.id = "filterCounterStatic"
+
+    var count = powerPlants? powerPlants.features.length : "1000"
+    filterCounterValue.textContent = count // Update based on number of power plants in the data
+    filterCounterStatic.textContent = "/"+ count + " power plants selected"// Update based on number of power plants in the data
+
+    filterCounter.appendChild(filterCounterValue)
+    filterCounter.appendChild(filterCounterStatic)
+    filterAndResetWrapper.appendChild(filterCounter)
+
+    // Close pop-ups button
+    const closeButtonField = document.createElement("div")
+    const closeButtonText = document.createElement("span")
+
+    closeButtonField.classList.add("sidePanelResetButton")
+    closeButtonText.textContent = "Close Pop-Ups"
+    closeButtonField.onclick = () => onReset(closeButtonField, "close")
+
+    closeButtonField.appendChild(closeButtonText)
+    filterAndResetWrapper.appendChild(closeButtonField)
+
+    // Reset button
+    const resetButtonField = document.createElement("div")
+    const resetButtonText = document.createElement("span")
+
+    resetButtonField.classList.add("sidePanelResetButton")
+    resetButtonText.textContent = "Reset Filters"
+    resetButtonField.onclick = () => onReset(resetButtonField, "reset")
+
+    resetButtonField.appendChild(resetButtonText)
+    filterAndResetWrapper.appendChild(resetButtonField)
+    pageContainer.appendChild(filterAndResetWrapper)
 
     // Filter drop downs and sliders
     for(var i = 0; i < 3; i++){
@@ -1502,102 +1604,11 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     linePlotContainer.appendChild(linePlotBody)
     pageContainer.appendChild(linePlotContainer)
 
-    // Wrapper for filter and reset button
-    const filterAndResetWrapper = document.createElement("div")
-    filterAndResetWrapper.id = "sidePanelFilterAndResetWrapper"
-
-    // Filter counter
-    const filterCounter = document.createElement("span")
-    const filterCounterValue = document.createElement("span")
-    const filterCounterStatic = document.createElement("span")
-
-    filterCounter.id = "filterCounter"
-    filterCounterValue.id = "filterCounterValue"
-    filterCounterStatic.id = "filterCounterStatic"
-
-    var count = powerPlants? powerPlants.features.length : "1000"
-    filterCounterValue.textContent = count // Update based on number of power plants in the data
-    filterCounterStatic.textContent = "/"+ count + " power plants selected"// Update based on number of power plants in the data
-
-    filterCounter.appendChild(filterCounterValue)
-    filterCounter.appendChild(filterCounterStatic)
-    filterAndResetWrapper.appendChild(filterCounter)
-
-    // Close pop-ups button
-    const closeButtonField = document.createElement("div")
-    const closeButtonText = document.createElement("span")
-
-    closeButtonField.classList.add("sidePanelResetButton")
-    closeButtonText.textContent = "Close Pop-Ups"
-    closeButtonField.onclick = () => onReset(closeButtonField, "close")
-
-    closeButtonField.appendChild(closeButtonText)
-    filterAndResetWrapper.appendChild(closeButtonField)
-
-    // Reset button
-    const resetButtonField = document.createElement("div")
-    const resetButtonText = document.createElement("span")
-
-    resetButtonField.classList.add("sidePanelResetButton")
-    resetButtonText.textContent = "Reset Filters"
-    resetButtonField.onclick = () => onReset(resetButtonField, "reset")
-
-    resetButtonField.appendChild(resetButtonText)
-    filterAndResetWrapper.appendChild(resetButtonField)
-    pageContainer.appendChild(filterAndResetWrapper)
-
     // Instruction containers / Info text
     for(var i = 0; i<pageContent.length; i++){
         let page = getInstructions(pageContent, i)
         pageContainer.appendChild(page)
     }
-
-    // Navigation bar at bottom of side panel
-    const navigationContainer = document.createElement("div")
-    navigationContainer.id = "navigationBarContainer"
-
-    // Smaller main title
-    const mainTitleSmall = document.createElement("span")
-    mainTitleSmall.id = "sidePanelMainTitleSmall"
-    mainTitleSmall.textContent = "Energy Map"
-
-    navigationContainer.appendChild(mainTitleSmall)
-
-    const navigationElements = document.createElement("div")
-    navigationElements.style.display = "flex"
-
-    for(let i = 0; i<6;i++){
-        const wrapper = document.createElement("div")
-        wrapper.classList.add("navigationBarIconWrapper")
-
-        const icon = document.createElement("img")
-        if(i==0){
-            icon.src = assetSources.sidePanelHome
-            icon.classList.add("navigationBarIconLarge")
-            wrapper.classList.add("navigationBarIconWrapperLarge")
-            wrapper.appendChild(icon)
-        }else if(i==1){
-            icon.src = assetSources.sidePanelInfo
-            icon.classList.add("navigationBarIconLarge")
-            wrapper.classList.add("navigationBarIconWrapperLarge")
-            wrapper.appendChild(icon)
-        }else{
-            icon.src = assetSources.sidePanelInstructions
-            icon.classList.add("navigationBarIconSmall")
-            wrapper.classList.add("navigationBarIconWrapperSmall")
-
-            const number = document.createElement("span")
-            number.classList.add("navigationBarIconNumber")
-            number.textContent = (i-1)
-            wrapper.appendChild(icon)
-            wrapper.appendChild(number)
-        }
-        icon.id = "navigationID" + i
-        navigationElements.appendChild(wrapper)
-        navigationContainer.appendChild(navigationElements)
-    }
-
-    pageContainer.appendChild(navigationContainer)
 
     return pageContainer
 }

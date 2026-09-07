@@ -82,7 +82,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 3vmax;
-    margin: 2dvh 0 0 0;
+    margin: 1dvh 0 0 0;
     color: #004B70;
     /*Added to remove selection from drop down texts*/
     -webkit-user-select: none; /* Safari */        
@@ -112,7 +112,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 1vmax;
-    margin: -1dvh 0 0 0;
+    margin: 0;
     color: #004B70;
     /*Added to remove selection from drop down texts*/
     -webkit-user-select: none; /* Safari */        
@@ -127,7 +127,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 3vmax;
-    margin: 2dvh 0 0 0;
+    margin: 1dvh 0 0 0;
     align-self:flex-start;
     color: #004B70;
     /*Added to remove selection from drop down texts*/
@@ -155,7 +155,7 @@
     font-family: "Lato", sans-serif;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.4vmin;
+    font-size: 1.5vmin;
     margin: 0;
 }
 
@@ -168,20 +168,20 @@
 }
 
 .sidePanelResetButton{
-    background-color: #11658C;
     z-index: 8;
-    border-radius: 1dvh;
+    border-radius: 0.2dvh;
+    border: #AAD3DE solid 0.1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
-    padding: 0.75dvh
+    padding: 0.25dvh;
 }
 
 .sidePanelResetButton span{
     font-family: "Lato", sans-serif;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.4vmin;
+    font-size: 1.2vmin;
     margin: 0;
-    color: #f7f7f7;
+    color: #030303;
     cursor: pointer;
     /*Added to remove selection from drop down texts*/
     -webkit-user-select: none; /* Safari */        
@@ -620,11 +620,9 @@
     align-self: flex-end;
     display: flex;
     justify-content: space-between;
-    width: 26%;
-    position: fixed;
+    width: 100%;
+    margin: 2dvh 0 0 0;
     flex-direction: row;
-    bottom: 3dvh;
-    right: 0;
     align-items: center;
 }
 
