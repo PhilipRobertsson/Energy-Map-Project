@@ -192,7 +192,7 @@
 
 #sidePanelLinePlot{
     width: 100%;
-    height: 35dvh;
+    height: 40dvh;
     display: flex;
     flex-direction: column;
     background-color: #f7f7f7;
@@ -855,6 +855,11 @@
 .legendCheckBox{
     border: 0.4vmin solid #004B70;
     border-radius: 0.7vmin;
+}
+
+.legendRadio{
+    border-color: #004B70;
+    border-radius: 50%;
 }
 
 /*Specific styling for tablet-sized devices*/

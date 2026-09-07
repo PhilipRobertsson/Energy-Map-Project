@@ -47,12 +47,12 @@ const otherFuels =[
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, true, false, false, true, true, true, false, false,false,false, false]}, /*Home page*/
+    {id: 0, visibleHtmlElements: [true, true, true, false, true, true, true, true, false, false,false,false, false]}, /*Home page*/
     {id: 1, visibleHtmlElements: [true, false, false, true, false, false, false, false, true, false,false,false, false]}, /*Info page*/
-    {id: 2, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, true,false,false, false]}, /*Instructions page 1*/
-    {id: 3, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, false,true,false, false]}, /*Instructions page 2*/
-    {id: 4, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, false,false,true, false]}, /*Instructions page 3*/
-    {id: 5, visibleHtmlElements: [true, false, false, false, false, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
+    {id: 2, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, true,false,false, false]}, /*Instructions page 1*/
+    {id: 3, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,true,false, false]}, /*Instructions page 2*/
+    {id: 4, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,true, false]}, /*Instructions page 3*/
+    {id: 5, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
 ];
 
 // static JSON to fetch and states to set
@@ -345,7 +345,7 @@ function PrimaryPanels() {
         const shownFuels = fuelFilter.filter((fuel) => fuel.show)
 
         const handleDropDownTitle = (titleE, sidePanelE, type, shown)=>{
-            if(shown.length == (sidePanelE.length - 1)){
+            if(shown.length == sidePanelE.length){
                 titleE.textContent = (type =="region")?   "All Regions" : "All Power Sources"
             }else if(shown.length == 0){
                 titleE.textContent = "No "
@@ -381,9 +381,9 @@ function PrimaryPanels() {
             }
         }); */
         regionFilter.forEach((region, i)=>{
-            if(regLegSidePanel[i+1]){
-                regLegSidePanel[i+1].style.opacity = region.show ? "1" : "0.3";
-                regLegSidePanel[i+1].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
+            if(regLegSidePanel[i]){
+                regLegSidePanel[i].style.opacity = region.show ? "1" : "0.3";
+                regLegSidePanel[i].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
             }
         })
 
@@ -584,26 +584,6 @@ function PrimaryPanels() {
             const fillDropDowns = (dropDownE,type,filter) =>{
                 const legendContainer = dropDownE.querySelector(".sidePanelLegendContainer")
                 if(legendContainer.children.length == 0){
-                    let selectAllField = document.createElement("div")
-                    selectAllField.classList.add("filterLegend", "selectAllDropdown")
-
-                    let selectAllCheckBox = document.createElement("div")
-                    selectAllCheckBox.classList.add("legendColour", "sidePanelFilterColour")
-                    selectAllCheckBox.style.backgroundColor = "rgba(0,0,0,0.0)"
-
-                    let selectAllCircle = document.createElement("img")
-                    selectAllCircle.classList.add("selectAllCheck")
-                    selectAllCircle.src = assetSources.sidePanelSelectAllCircle
-
-                    let selectAllName = document.createElement("p")
-                    selectAllName.classList.add("legendName", "sidePanelFilterName")
-                    selectAllName.textContent = "Deselect all " + type + "s"
-
-                    selectAllCheckBox.appendChild(selectAllCircle)
-                    selectAllField.appendChild(selectAllCheckBox)
-                    selectAllField.appendChild(selectAllName) // Append the text to the legend element
-                    legendContainer.appendChild(selectAllField) // Append the legend to the filter container
-
                     for(let i = 0; i < filter.length; i++){
                         const item = filter[i] // Used for easier access
 
@@ -611,28 +591,26 @@ function PrimaryPanels() {
                         const legend = document.createElement("div")
                         legend.classList.add("filterLegend")
 
-                        // Create colour legend / check box
+                        // Create colour legend / radio circle
                         const colour = document.createElement("div")
                         colour.classList.add("legendColour", "sidePanelFilterColour")
 
                         if(type == "region"){
-                            /*Use checkmark*/
+                            /*Use radio circle*/
                             colour.style.backgroundColor = "rgba(0,0,0,0.0)"
-                            colour.classList.add("legendCheckBox")
+                            colour.classList.add("legendRadio")
 
-                            const checkMark = document.createElement("img")
-                            checkMark.classList.add("legendCheck")
-                            checkMark.src = assetSources.sidePanelCheckMark
+                            const radioCircle = document.createElement("img")
+                            radioCircle.classList.add("selectAllCheck")
+                            radioCircle.src = assetSources.sidePanelSelectAllCircle
 
-                            colour.appendChild(checkMark)
-                            legend.onclick = () => handleRegLegClick(item.country); // Filters the data points on the map according to regionFilter state
-                            selectAllField.onclick = () => handleRegLegClick("all"); // Selects all regions on click
+                            colour.appendChild(radioCircle)
+                            legend.onclick = () => handleRegLegClick(item.country); // Select only this region (radio-button logic)
                         }else{
                             /*Use available colour*/
                             colour.style.backgroundColor = item.colour
 
                             legend.onclick = () => handleFueLegClick(item.fuel); // Filters the data points on the map according to fuelFilter state
-                            selectAllField.onclick = () => handleFueLegClick("all"); // Selects all regions on click
                         }
                         const name = document.createElement("p")
                         name.classList.add("legendName", "sidePanelFilterName")
@@ -876,17 +854,8 @@ function PrimaryPanels() {
 
     // Set the region filter to a specific list of countries and zoom to them
     function setRegionFilterTo(countries){
-        const selectAllOption = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend")[0];
         const toggled = regionFilterRef.current.map(r => ({ ...r, show: countries.includes(r.country) }))
         setRegionFilter(toggled)
-
-        if(toggled.every(r => r.show)){
-            selectAllOption.children[1].textContent = "Deselect all regions"
-            selectAllOption.children[0].children[0].style.opacity = "1"
-        }else{
-            selectAllOption.children[1].textContent = "Select all regions"
-            selectAllOption.children[0].children[0].style.opacity = "0"
-        }
         zoomToRegionFilter(toggled)
     }
 
@@ -922,8 +891,18 @@ function PrimaryPanels() {
     }
 
     function handleRegLegClick(clickedCountry){
-        const selectAllOption = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend")[0]; // Easy acess to the select all regions option
-        const toggled = checkAndSetFilter(selectAllOption, regionFilterRef.current, clickedCountry, "region")
+        const prev = regionFilterRef.current
+        const shown = prev.filter(r => r.show)
+        const isOnlyShown = shown.length === 1 && shown[0].country === clickedCountry
+
+        let toggled
+        if (isOnlyShown) {
+            // Clicking the only selected region deselects it (show all regions)
+            toggled = prev.map(r => ({ ...r, show: true }))
+        } else {
+            // Radio-button logic: select only the clicked region
+            toggled = prev.map(r => ({ ...r, show: r.country === clickedCountry }))
+        }
         setRegionFilter(toggled)
         zoomToRegionFilter(toggled)
     }
@@ -1092,11 +1071,6 @@ function PrimaryPanels() {
 
         const sidePanel = sidePanelContainer.current
         if (sidePanel && sidePanel.children.length) {
-            const regionSelectAll = sidePanel.children[0].querySelector("#linePlotRegionFilter").querySelectorAll(".filterLegend")[0]
-
-            regionSelectAll.children[1].textContent = "Deselect all regions"
-            regionSelectAll.children[0].children[0].style.opacity = "1"
-
             sidePanel.querySelectorAll(".sidePanelFilterSliderContainer").forEach(slider => {
                 if (slider.reset) slider.reset()
             })
