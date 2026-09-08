@@ -686,9 +686,11 @@ function PrimaryPanels() {
                 const wrapper = iconWrappers[i]
                 const icon = wrapper.querySelector("img")
                 if(sidePanelPage.id == i){
-                    icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
+                    //icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
+                    icon.style.filter = "brightness(0) saturate(100%) invert(85%) sepia(31%) saturate(240%) hue-rotate(149deg) brightness(93%) contrast(85%)"
                 }else{
-                    icon.style.filter = "brightness(0) saturate(100%) invert(99%) sepia(27%) saturate(3815%) hue-rotate(171deg) brightness(87%) contrast(84%)"
+                    //icon.style.filter = "brightness(0) saturate(100%) invert(99%) sepia(27%) saturate(3815%) hue-rotate(171deg) brightness(87%) contrast(84%)"
+                    icon.style.filter = "brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(624%) hue-rotate(160deg) brightness(94%) contrast(90%)"
                 }
                 icon.onclick = () => handleNavigationClick(i, icon)
             }
@@ -941,7 +943,6 @@ function PrimaryPanels() {
         gsap.fromTo(icon, { scale: 1 }, 
             { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1, overwrite: true }
         );
-        icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
     }
 
     // Handle side panel open /close
@@ -2054,7 +2055,7 @@ function getInstructions(pageContent, id){
                                     iconWrapper.classList.add("infoStepIconWrapper")
                                     const icon = document.createElement("img")
                                     icon.src = assetSources.sidePanelInstructions
-                                    icon.style.filter = "brightness(0) saturate(100%) invert(28%) sepia(99%) saturate(443%) hue-rotate(154deg) brightness(97%) contrast(94%)"
+                                    icon.style.filter = "brightness(0) saturate(100%) invert(85%) sepia(31%) saturate(240%) hue-rotate(149deg) brightness(93%) contrast(85%)"
                                     icon.classList.add("infoStepIcon")
                                     const number = document.createElement("span")
                                     number.classList.add("infoStepNumber")
