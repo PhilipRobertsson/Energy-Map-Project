@@ -865,6 +865,13 @@ function PrimaryPanels() {
                 padding: 75,
                 maxZoom: 15
             });
+        }else{
+            mapRef.current?.flyTo({
+                center: [23.333333, 15.5],
+                zoom: 1.8,
+                speed: 0.8,
+                curve: 1.4
+            });
         }
     }
 
@@ -941,9 +948,7 @@ function PrimaryPanels() {
     function handleSidePanelToggle(){
         const sidePanel = sidePanelContainer.current
         const toggleButton = document.querySelector("#sidePanelToggleContainer")
-        if (!sidePanel) return
-
-
+        if (!sidePanel) return;
 
         if (sidePanelOpenRef.current) {
             gsap.fromTo(sidePanel.children,{opacity: 1}, {opacity:0, duration: 0.1, ease: "power2.out", onComplete: ()=>{
@@ -1064,11 +1069,17 @@ function PrimaryPanels() {
         element.classList.toggle("continentSelected")
 
         // Set region filter
+        const prevFilter = regionFilterRef.current
+
+        let toggled
         if(continent == "Global"){
-            setRegionFilter(prev => prev.map(r => ({ ...r, show: true })))
+            toggled = prevFilter.map(r => ({ ...r, show: true }))
         }else{
-            setRegionFilter(prev => prev.map(r => ({ ...r, show: r.continent === continent })))
+            toggled = prevFilter.map(r => ({ ...r, show: r.continent === continent }))
         }
+
+        setRegionFilter(toggled)
+        zoomToRegionFilter(toggled)
     }
 
     // Get new title
