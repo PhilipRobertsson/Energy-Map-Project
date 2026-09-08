@@ -207,6 +207,38 @@
 
 #linePlotRegionFilter{
     margin: 1dvh 0 1dvh 0;
+    border-bottom: #004B70 solid 0.2dvh;
+    padding: 0 0 1dvh 0;
+}
+
+#linePlotContinentFilter{
+    margin: 0.15dvh 0 0.15dvh 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 1dvw 0 1dvw;
+}
+
+.linePlotContinentButton{
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+    font-size: 1vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
+    cursor: pointer;
+    /*Added to remove selection from texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+.continentSelected{
+    border: 0.1vmin solid #65A1E0;
+    background-color: #65A1E0;
+    color: #FCFCFC;
 }
 
 #linePlotHeader{
@@ -249,7 +281,7 @@
 
 #dataToggleButtonContainer{
     display: flex;
-    border: 0.25vmin solid #AAD3DE;
+    border: 0.1vmin solid #AAD3DE;
     border-radius: 0.2vmin;
 }
 

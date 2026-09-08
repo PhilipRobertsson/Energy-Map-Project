@@ -511,7 +511,8 @@ function PrimaryPanels() {
                 handleResetClick,
                 handleIndexClick,
                 handleLinePlotToggle,
-                handleFueLegClick
+                handleFueLegClick,
+                handleContinentClick
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -1053,6 +1054,23 @@ function PrimaryPanels() {
         );
     }
 
+    function handleContinentClick(element, continent){
+        // Get previous selection, return if identical click
+        const prev = document.querySelector(".continentSelected")
+        if(element == prev) return;
+        
+        // Remove selected class from previous button, add class to clicked element
+        prev.classList.toggle("continentSelected")
+        element.classList.toggle("continentSelected")
+
+        // Set region filter
+        if(continent == "Global"){
+            setRegionFilter(prev => prev.map(r => ({ ...r, show: true })))
+        }else{
+            setRegionFilter(prev => prev.map(r => ({ ...r, show: r.continent === continent })))
+        }
+    }
+
     // Get new title
     function getNewDropDownTitle(shownElements, type){
         var newTitle = ""
@@ -1142,14 +1160,14 @@ function PrimaryPanels() {
             gsap.to(rollupIcon,
                 {rotationX: 180, duration: 0.6, ease: "power4.out"}
             )
-            element.parentElement.style['border-radius'] = "1dvh 1dvh 0 0";
+            //element.parentElement.style['border-radius'] = "1dvh 1dvh 0 0";
             element.parentElement.style['z-index'] = "100"
             dropdown.classList.toggle("hide");
         } else {
             gsap.to(dropdown,
                 { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
                     onComplete: () => {
-                        element.parentElement.style['border-radius'] = "1dvh";
+                        //element.parentElement.style['border-radius'] = "1dvh";
                         element.parentElement.style['z-index'] = "unset"
                         dropdown.classList.toggle("hide");
                     }
@@ -1257,7 +1275,8 @@ function getSliderBounds(filter, regionalData){
 }
 
 function createPages(pageContent, powerPlants, regionalData, fuels,
-                                  onYearChange, onGenerationChange, onReset, onIndexClick, onToggleClick, onLegendClick){
+                                  onYearChange, onGenerationChange, onReset, onIndexClick,
+                                  onToggleClick, onLegendClick, onContinentClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
 
@@ -1403,6 +1422,29 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
     regionFilter.appendChild(getDropDown("region", onIndexClick))
 
     linePlotContainer.appendChild(regionFilter)
+
+    // Continent buttons
+    const continentFilter = document.createElement("div");
+    continentFilter.id = "linePlotContinentFilter"
+
+    const continents = ["Global", "Africa", "Asia","Europe","North America", "Oceania", "South America"]
+    for(let i = 0; i<continents.length; i++){
+        let continentButton = document.createElement("div");
+        continentButton.classList.add("linePlotContinentButton");
+        if(i == 0){ // First entry, selected by default
+            continentButton.classList.toggle("continentSelected");
+        }
+
+        let continentName = document.createElement("span");
+        continentName.textContent = continents[i];
+
+        continentButton.onclick = () => onContinentClick(continentButton, continents[i])
+
+        continentButton.appendChild(continentName)
+        continentFilter.appendChild(continentButton)
+    }
+
+    linePlotContainer.appendChild(continentFilter)
 
     // Header for line plot
     const linePlotHeader = document.createElement("div");
