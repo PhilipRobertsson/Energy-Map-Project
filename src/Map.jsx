@@ -182,7 +182,7 @@ const powerPlantPaint = {
   ], */
   "circle-color": [],
   "circle-stroke-width": 1,
-  "circle-stroke-color": "#efefef",
+  "circle-stroke-color": "#a19eb6",
 };
 
 // Sources for the different svg files stored in the public folder

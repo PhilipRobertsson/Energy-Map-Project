@@ -8,29 +8,29 @@ def loadCSV(path, delimiter=','):
 def getColourAndID(fuelName):
     match fuelName:
         case "Coal":
-            return ["#66c2a5", 0]
+            return ["#C4A882", 0]
         #case "Petcoke": Only 12 points in data
             #return ["#a3a3a3", 1]
         case "Gas":
-            return ["#fc8d62", 1]
+            return ["#F28E2B", 1]
         case "Oil":
-            return ["#8da0cb", 2]
+            return ["#E15759", 2]
         case "Nuclear":
-            return ["#e78ac3", 3]
+            return ["#B07AA1", 3]
         #case "Biomass":
             #return ["#80b3af", 4]
         #case "Waste":
             #return ["#81e4be", 5]
         case "Hydro":
-            return ["#a6d854", 4]
+            return ["#4E79A7", 4]
         #case "Tidal": Does not show up apparently
             #return ["#2d6c94", 8]
         #case "Wave and Tidal": Only 10 points in data
             #return ["#0a027e", 9]
         case "Wind":
-            return ["#ffd92f", 5]
+            return ["#76B7B2", 5]
         case "Solar":
-            return ["#e5c494", 6]
+            return ["#EDC948", 6]
         #case "Geothermal": Only 189 points in data
             #return ["#ea0611", 12]
         #case "Cogeneration": Only 41 points in data
