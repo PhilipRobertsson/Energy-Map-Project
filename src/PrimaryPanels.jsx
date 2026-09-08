@@ -1830,6 +1830,20 @@ function getSliders(filter, regionalData, onChange){
 
     sliderContainer.appendChild(textField)
 
+    if(filter=="year"){
+        const playbackField = document.createElement("div");
+        playbackField.id = "sliderPlaybackField";
+
+        const playBackSliderTitle = document.createElement("strong")
+        playBackSliderTitle.classList.add("sliderTitle")
+        playBackSliderTitle.textContent = "Year Started"
+
+
+
+        playbackField.appendChild(playBackSliderTitle)
+        sliderContainer.appendChild(playbackField)
+    }
+
     const minMax = getSliderBounds(filter, regionalData)
     const minVal = minMax.minVal
     const maxVal = minMax.maxVal
