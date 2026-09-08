@@ -11,6 +11,11 @@
       "Solar": 2,
       "Gas": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 42.0,
+      "Hydro": 238.55,
+      "Solar": 20.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 996.05,
@@ -127,6 +132,10 @@
       "Hydro": 7,
       "Other": 1
     },
+    "sum_capacity_mw": {
+      "Hydro": 1431.0,
+      "Other": 98.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 5259.639999999999,
@@ -231,6 +240,11 @@
       "Solar": 27,
       "Gas": 31,
       "Hydro": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 15179.0,
+      "Hydro": 24.0,
+      "Solar": 670.8
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -349,6 +363,11 @@
       "Hydro": 5,
       "Gas": 3
     },
+    "sum_capacity_mw": {
+      "Gas": 163.68,
+      "Hydro": 770.6,
+      "Oil": 136.9
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2330.55,
@@ -465,6 +484,10 @@
       "Oil": 1,
       "Wind": 1
     },
+    "sum_capacity_mw": {
+      "Oil": 6.6,
+      "Wind": 1.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -574,6 +597,16 @@
       "Coal": 9,
       "Solar": 7,
       "Wind": 12
+    },
+    "sum_capacity_mw": {
+      "Coal": 4857.4,
+      "Gas": 13041.84,
+      "Hydro": 9999.710000000001,
+      "Nuclear": 1763.0,
+      "Oil": 1199.289,
+      "Other": 1324.46,
+      "Solar": 515.7,
+      "Wind": 211.68
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -752,6 +785,11 @@
       "Gas": 3,
       "Hydro": 4
     },
+    "sum_capacity_mw": {
+      "Gas": 1931.0,
+      "Hydro": 965.0,
+      "Nuclear": 375.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1412.42,
@@ -873,6 +911,16 @@
       "Hydro": 73,
       "Waste": 50,
       "Biomass": 25
+    },
+    "sum_capacity_mw": {
+      "Biomass": 589.5,
+      "Coal": 25543.0,
+      "Gas": 20011.72,
+      "Hydro": 8521.3,
+      "Oil": 1099.57,
+      "Solar": 4159.67,
+      "Waste": 188.62600000000003,
+      "Wind": 5738.63
     },
     "regional_annual_output": {
       "generation_gwh_2013": 190381.02138888894,
@@ -1051,6 +1099,11 @@
       "Gas": 3,
       "Wind": 4
     },
+    "sum_capacity_mw": {
+      "Gas": 2067.0,
+      "Hydro": 9072.1,
+      "Wind": 88.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 31445.260000000002,
@@ -1168,6 +1221,11 @@
       "Oil": 1,
       "Hydro": 5
     },
+    "sum_capacity_mw": {
+      "Gas": 2390.0,
+      "Hydro": 974.0,
+      "Oil": 2400.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2216.7799999999997,
@@ -1284,6 +1342,11 @@
       "Gas": 6,
       "Solar": 1,
       "Oil": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 7574.0,
+      "Oil": 7.3,
+      "Solar": 5.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -1403,6 +1466,13 @@
       "Coal": 1,
       "Solar": 2,
       "Hydro": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 250.0,
+      "Gas": 8767.0,
+      "Hydro": 230.0,
+      "Oil": 2560.0,
+      "Solar": 33.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -1544,6 +1614,10 @@
       "Gas": 17,
       "Solar": 7
     },
+    "sum_capacity_mw": {
+      "Gas": 8302.0,
+      "Solar": 232.9
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 349.57,
@@ -1654,6 +1728,17 @@
       "Nuclear": 3,
       "Solar": 3,
       "Coal": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 363.0,
+      "Coal": 470.0,
+      "Gas": 3855.8,
+      "Hydro": 1393.3000000000002,
+      "Nuclear": 5925.8,
+      "Oil": 182.0,
+      "Solar": 116.2,
+      "Waste": 223.4,
+      "Wind": 875.3000000000001
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -1843,6 +1928,10 @@
       "Gas": 1,
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 40.5,
+      "Oil": 20.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -1946,6 +2035,9 @@
     "power_plants_by_fuel": {
       "Hydro": 5
     },
+    "sum_capacity_mw": {
+      "Hydro": 1482.2
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 5009.12,
@@ -2038,6 +2130,11 @@
       "Gas": 9,
       "Hydro": 14,
       "Solar": 3
+    },
+    "sum_capacity_mw": {
+      "Gas": 1053.42,
+      "Hydro": 449.1,
+      "Solar": 60.6
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -2155,6 +2252,10 @@
       "Hydro": 16,
       "Coal": 4
     },
+    "sum_capacity_mw": {
+      "Coal": 1780.0,
+      "Hydro": 2205.5
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 8790.32,
@@ -2258,6 +2359,9 @@
     "power_plants_by_fuel": {
       "Coal": 2
     },
+    "sum_capacity_mw": {
+      "Coal": 746.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -2357,6 +2461,18 @@
       "Waste": 12,
       "Solar": 24,
       "Other": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 12843.8146,
+      "Coal": 2792.881,
+      "Gas": 11286.00446,
+      "Hydro": 98039.3839,
+      "Nuclear": 1990.0,
+      "Oil": 8281.47074,
+      "Other": 147.3,
+      "Solar": 1807.36863,
+      "Waste": 106.09400000000001,
+      "Wind": 10294.954
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -2557,6 +2673,9 @@
     "power_plants_by_fuel": {
       "Gas": 4
     },
+    "sum_capacity_mw": {
+      "Gas": 586.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -2651,6 +2770,13 @@
       "Hydro": 7,
       "Nuclear": 1,
       "Wind": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 4859.0,
+      "Hydro": 1958.0,
+      "Nuclear": 2000.0,
+      "Solar": 279.2,
+      "Wind": 156.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -2793,6 +2919,11 @@
       "Oil": 3,
       "Solar": 2
     },
+    "sum_capacity_mw": {
+      "Hydro": 30.0,
+      "Oil": 146.406,
+      "Solar": 52.9
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 200.18,
@@ -2909,6 +3040,10 @@
       "Hydro": 3,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Hydro": 49.57,
+      "Solar": 7.6
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 194.44,
@@ -3016,6 +3151,14 @@
       "Oil": 3,
       "Waste": 2,
       "Coal": 2
+    },
+    "sum_capacity_mw": {
+      "Biomass": 2.0,
+      "Coal": 505.0,
+      "Hydro": 909.0,
+      "Oil": 53.6,
+      "Solar": 22.8,
+      "Waste": 25.2
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -3170,6 +3313,11 @@
       "Hydro": 3,
       "Gas": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 200.0,
+      "Hydro": 630.2,
+      "Oil": 51.379999999999995
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 3088.6899999999996,
@@ -3293,6 +3441,18 @@
       "Nuclear": 6,
       "Oil": 9,
       "Other": 2
+    },
+    "sum_capacity_mw": {
+      "Biomass": 2741.9,
+      "Coal": 9772.0,
+      "Gas": 19786.4,
+      "Hydro": 80683.0,
+      "Nuclear": 14254.0,
+      "Oil": 2344.0,
+      "Other": 17.0,
+      "Solar": 1826.6000000000001,
+      "Wave and Tidal": 20.0,
+      "Wind": 12133.8
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -3494,6 +3654,10 @@
       "Oil": 3,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Oil": 87.805,
+      "Solar": 5.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 10.9,
@@ -3597,6 +3761,10 @@
     "power_plants_by_fuel": {
       "Oil": 1,
       "Hydro": 1
+    },
+    "sum_capacity_mw": {
+      "Hydro": 19.3,
+      "Oil": 14.364
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -3707,6 +3875,16 @@
       "Biomass": 22,
       "Coal": 14,
       "Petcoke": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 383.9,
+      "Coal": 4839.2686,
+      "Gas": 2998.107689,
+      "Hydro": 6410.0,
+      "Oil": 2930.824878,
+      "Petcoke": 62.9775,
+      "Solar": 3953.75,
+      "Wind": 896.8199999999999
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -3890,6 +4068,16 @@
       "Oil": 5,
       "Geothermal": 2
     },
+    "sum_capacity_mw": {
+      "Coal": 955718.0,
+      "Gas": 59774.5,
+      "Geothermal": 26.1,
+      "Hydro": 259025.59999999998,
+      "Nuclear": 33402.0,
+      "Oil": 1329.0,
+      "Solar": 54801.82,
+      "Wind": 50990.36
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 745110.7400000001,
@@ -4069,6 +4257,13 @@
       "Coal": 5,
       "Gas": 5
     },
+    "sum_capacity_mw": {
+      "Coal": 1393.0,
+      "Gas": 2553.0,
+      "Hydro": 6694.0,
+      "Oil": 188.0,
+      "Solar": 96.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 27977.64,
@@ -4210,6 +4405,11 @@
       "Hydro": 4,
       "Oil": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 336.0,
+      "Hydro": 219.0,
+      "Oil": 70.9
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 711.69,
@@ -4327,6 +4527,12 @@
       "Geothermal": 5,
       "Solar": 1,
       "Oil": 3
+    },
+    "sum_capacity_mw": {
+      "Geothermal": 198.95,
+      "Hydro": 1298.0000000000002,
+      "Oil": 466.45,
+      "Solar": 5.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -4456,6 +4662,10 @@
       "Hydro": 5,
       "Gas": 3
     },
+    "sum_capacity_mw": {
+      "Gas": 604.0,
+      "Hydro": 599.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1702.44,
@@ -4561,6 +4771,12 @@
       "Gas": 4,
       "Coal": 1,
       "Oil": 2
+    },
+    "sum_capacity_mw": {
+      "Coal": 330.0,
+      "Gas": 581.8,
+      "Hydro": 1622.7,
+      "Oil": 740.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -4692,6 +4908,12 @@
       "Wind": 1,
       "Solar": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 411.0,
+      "Oil": 3366.6,
+      "Solar": 9.0,
+      "Wind": 10.2
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 17.98,
@@ -4820,6 +5042,10 @@
       "Oil": 2,
       "Gas": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 868.0,
+      "Oil": 600.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -4926,6 +5152,13 @@
       "Hydro": 8,
       "Nuclear": 2,
       "Gas": 3
+    },
+    "sum_capacity_mw": {
+      "Coal": 8363.0,
+      "Gas": 1320.0,
+      "Hydro": 1827.0,
+      "Nuclear": 4173.0,
+      "Solar": 1188.7
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -5068,6 +5301,11 @@
       "Hydro": 13,
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 25.0,
+      "Hydro": 3018.8,
+      "Oil": 13.24
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 4103.900000000001,
@@ -5188,6 +5426,15 @@
       "Gas": 3,
       "Biomass": 1,
       "Oil": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 88.0,
+      "Coal": 5089.0,
+      "Gas": 571.0,
+      "Geothermal": 14.0,
+      "Oil": 664.0,
+      "Solar": 251.1,
+      "Wind": 1408.1000000000001
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -5352,6 +5599,9 @@
     "power_plants_by_fuel": {
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Oil": 107.332
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -5447,6 +5697,14 @@
       "Oil": 5,
       "Hydro": 3,
       "Wind": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 305.0,
+      "Gas": 319.0,
+      "Hydro": 227.09,
+      "Oil": 842.0,
+      "Solar": 113.0,
+      "Wind": 52.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -5602,6 +5860,12 @@
       "Oil": 6,
       "Solar": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 473.3,
+      "Hydro": 3254.32,
+      "Oil": 467.86,
+      "Solar": 50.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": 17810.190000000002,
       "estimated_generation_gwh_2013": 11045.710000000001,
@@ -5732,6 +5996,13 @@
       "Hydro": 4,
       "Solar": 19,
       "Wind": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 29077.0,
+      "Hydro": 2800.0,
+      "Oil": 1000.0,
+      "Solar": 759.5,
+      "Wind": 547.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -5875,6 +6146,12 @@
       "Geothermal": 2,
       "Solar": 8
     },
+    "sum_capacity_mw": {
+      "Geothermal": 204.0,
+      "Hydro": 469.3,
+      "Oil": 475.2,
+      "Solar": 270.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2301.02,
@@ -6003,6 +6280,10 @@
       "Gas": 2,
       "Hydro": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 30.5,
+      "Hydro": 120.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 211.2,
@@ -6106,6 +6387,9 @@
     "power_plants_by_fuel": {
       "Oil": 2
     },
+    "sum_capacity_mw": {
+      "Oil": 133.19
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -6198,6 +6482,11 @@
       "Wind": 13,
       "Oil": 2,
       "Gas": 2
+    },
+    "sum_capacity_mw": {
+      "Gas": 423.0,
+      "Oil": 1841.0,
+      "Wind": 277.9
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -6316,6 +6605,11 @@
       "Geothermal": 1,
       "Hydro": 11
     },
+    "sum_capacity_mw": {
+      "Geothermal": 7.3,
+      "Hydro": 3812.6,
+      "Wind": 204.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 14475.089999999998,
@@ -6433,6 +6727,12 @@
       "Oil": 4,
       "Biomass": 3,
       "Hydro": 4
+    },
+    "sum_capacity_mw": {
+      "Biomass": 24.3,
+      "Hydro": 209.0,
+      "Oil": 73.97999999999999,
+      "Wind": 10.1
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -6567,6 +6867,16 @@
       "Wind": 12,
       "Nuclear": 2,
       "Other": 4
+    },
+    "sum_capacity_mw": {
+      "Biomass": 2180.4399999999996,
+      "Coal": 1340.0,
+      "Gas": 1924.1,
+      "Hydro": 2382.32,
+      "Nuclear": 2752.0,
+      "Oil": 858.8000000000002,
+      "Other": 282.5,
+      "Wind": 76.6
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -6751,6 +7061,18 @@
       "Geothermal": 1,
       "Coal": 5,
       "Wave and Tidal": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 792.5999999999999,
+      "Coal": 3575.0,
+      "Gas": 5007.0,
+      "Geothermal": 4.5,
+      "Hydro": 19505.7799,
+      "Nuclear": 63130.0,
+      "Oil": 4388.0,
+      "Solar": 4910.4169999999995,
+      "Wave and Tidal": 240.0,
+      "Wind": 9062.632
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -6955,6 +7277,13 @@
       "Hydro": 1,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Biomass": 2.0,
+      "Gas": 92.0,
+      "Hydro": 113.6,
+      "Oil": 40.0,
+      "Solar": 5.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 493.59999999999997,
@@ -7096,6 +7425,11 @@
       "Gas": 2,
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 145.3,
+      "Hydro": 286.0,
+      "Oil": 15.51
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 854.6,
@@ -7211,6 +7545,9 @@
     "power_plants_by_fuel": {
       "Oil": 2
     },
+    "sum_capacity_mw": {
+      "Oil": 70.4
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -7302,6 +7639,10 @@
     "power_plants_by_fuel": {
       "Hydro": 16,
       "Gas": 3
+    },
+    "sum_capacity_mw": {
+      "Gas": 1250.0,
+      "Hydro": 2581.3999999999996
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -7414,6 +7755,18 @@
       "Biomass": 53,
       "Nuclear": 7,
       "Other": 11
+    },
+    "sum_capacity_mw": {
+      "Biomass": 1655.3000000000002,
+      "Coal": 47772.9,
+      "Gas": 24430.25,
+      "Hydro": 9984.1,
+      "Nuclear": 11171.0,
+      "Oil": 2851.2,
+      "Other": 756.9000000000001,
+      "Solar": 6770.5628799999995,
+      "Waste": 1588.7999999999997,
+      "Wind": 5059.361999999999
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -7616,6 +7969,11 @@
       "Solar": 1,
       "Gas": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 490.0,
+      "Hydro": 1598.0,
+      "Solar": 20.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 5776.3,
@@ -7736,6 +8094,15 @@
       "Hydro": 18,
       "Oil": 3,
       "Wind": 12
+    },
+    "sum_capacity_mw": {
+      "Coal": 4995.0,
+      "Gas": 5205.0,
+      "Hydro": 3501.0,
+      "Oil": 501.0,
+      "Solar": 217.70000000000002,
+      "Waste": 24.0,
+      "Wind": 214.95000000000002
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -7906,6 +8273,16 @@
       "Waste": 2,
       "Geothermal": 2,
       "Wind": 2
+    },
+    "sum_capacity_mw": {
+      "Biomass": 880.0999999999999,
+      "Coal": 572.2,
+      "Geothermal": 53.8,
+      "Hydro": 1007.5999999999999,
+      "Oil": 983.4,
+      "Solar": 115.0,
+      "Waste": 5.9,
+      "Wind": 71.1
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -8083,6 +8460,10 @@
       "Hydro": 6,
       "Oil": 3
     },
+    "sum_capacity_mw": {
+      "Hydro": 418.32,
+      "Oil": 92.1
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1469.59,
@@ -8186,6 +8567,9 @@
     "power_plants_by_fuel": {
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Oil": 18.237
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -8277,6 +8661,10 @@
     "power_plants_by_fuel": {
       "Oil": 4,
       "Biomass": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 30.0,
+      "Oil": 106.3
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -8387,6 +8775,16 @@
       "Oil": 5,
       "Gas": 1,
       "Geothermal": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 50.0,
+      "Gas": 39.2,
+      "Geothermal": 39.0,
+      "Hydro": 515.1700000000001,
+      "Oil": 788.6,
+      "Solar": 604.45,
+      "Waste": 2.45,
+      "Wind": 126.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -8567,6 +8965,13 @@
       "Oil": 1,
       "Nuclear": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 1194.0,
+      "Gas": 2955.3,
+      "Nuclear": 1886.8,
+      "Oil": 170.0,
+      "Solar": 84.6
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 128.2,
@@ -8707,6 +9112,10 @@
       "Hydro": 14,
       "Geothermal": 6
     },
+    "sum_capacity_mw": {
+      "Geothermal": 572.0,
+      "Hydro": 1912.6
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 5429.01,
@@ -8816,6 +9225,16 @@
       "Biomass": 50,
       "Oil": 17,
       "Nuclear": 9
+    },
+    "sum_capacity_mw": {
+      "Biomass": 1003.26,
+      "Coal": 204919.22,
+      "Gas": 24947.506,
+      "Hydro": 45561.47,
+      "Nuclear": 8780.0,
+      "Oil": 1680.8400000000001,
+      "Solar": 25549.100000000002,
+      "Wind": 3647.15
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -8996,6 +9415,13 @@
       "Geothermal": 10,
       "Gas": 41
     },
+    "sum_capacity_mw": {
+      "Coal": 29333.0,
+      "Gas": 12810.0,
+      "Geothermal": 1342.0,
+      "Hydro": 4559.592,
+      "Oil": 706.826
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 14517.2,
@@ -9139,6 +9565,14 @@
       "Solar": 8,
       "Nuclear": 1,
       "Wind": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 38003.0,
+      "Hydro": 10857.5,
+      "Nuclear": 1000.0,
+      "Oil": 11310.6,
+      "Solar": 91.0,
+      "Wind": 100.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -9293,6 +9727,11 @@
       "Gas": 14,
       "Oil": 6
     },
+    "sum_capacity_mw": {
+      "Gas": 9546.6,
+      "Hydro": 2574.0,
+      "Oil": 6040.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 7818.489999999999,
@@ -9412,6 +9851,14 @@
       "Oil": 6,
       "Coal": 1,
       "Biomass": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 137.0,
+      "Coal": 915.0,
+      "Gas": 3692.5,
+      "Hydro": 405.0,
+      "Oil": 1145.6,
+      "Wind": 1287.05
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -9567,6 +10014,12 @@
       "Wind": 2,
       "Coal": 2
     },
+    "sum_capacity_mw": {
+      "Coal": 4840.0,
+      "Gas": 9213.0,
+      "Solar": 570.8000000000001,
+      "Wind": 42.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 399.39,
@@ -9700,6 +10153,16 @@
       "Coal": 9,
       "Geothermal": 33,
       "Wind": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 9012.0,
+      "Gas": 38570.65,
+      "Geothermal": 857.0,
+      "Hydro": 13384.18,
+      "Oil": 8828.7,
+      "Other": 384.6,
+      "Solar": 1952.6899999999998,
+      "Wind": 105.24
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -9880,6 +10343,13 @@
       "Hydro": 3,
       "Wind": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 120.0,
+      "Hydro": 14.799999999999999,
+      "Oil": 599.0,
+      "Solar": 20.0,
+      "Wind": 38.7
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 105.91,
@@ -10026,6 +10496,17 @@
       "Waste": 1,
       "Coal": 51,
       "Geothermal": 14
+    },
+    "sum_capacity_mw": {
+      "Coal": 41513.0,
+      "Gas": 53362.75,
+      "Geothermal": 536.3,
+      "Hydro": 27439.0,
+      "Nuclear": 42537.0,
+      "Oil": 44120.2,
+      "Solar": 5686.599999999999,
+      "Waste": 21.0,
+      "Wind": 150.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -10216,6 +10697,11 @@
       "Gas": 7,
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 3754.0,
+      "Oil": 382.0,
+      "Solar": 567.5
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1330.99,
@@ -10333,6 +10819,12 @@
       "Gas": 2,
       "Solar": 5,
       "Hydro": 4
+    },
+    "sum_capacity_mw": {
+      "Coal": 15868.0,
+      "Gas": 400.0,
+      "Hydro": 2090.0,
+      "Solar": 270.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -10464,6 +10956,13 @@
       "Oil": 6,
       "Wind": 2,
       "Geothermal": 6
+    },
+    "sum_capacity_mw": {
+      "Geothermal": 754.0,
+      "Hydro": 785.2,
+      "Oil": 555.5,
+      "Solar": 55.7,
+      "Wind": 335.5
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -10604,6 +11103,9 @@
     "power_plants_by_fuel": {
       "Coal": 2
     },
+    "sum_capacity_mw": {
+      "Coal": 1478.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -10695,6 +11197,10 @@
     "power_plants_by_fuel": {
       "Gas": 8,
       "Solar": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 17819.5,
+      "Solar": 10.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -10800,6 +11306,11 @@
       "Hydro": 6,
       "Coal": 1,
       "Oil": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 674.0,
+      "Hydro": 2910.0,
+      "Oil": 50.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -10917,6 +11428,10 @@
       "Coal": 1,
       "Hydro": 19
     },
+    "sum_capacity_mw": {
+      "Coal": 1878.0,
+      "Hydro": 3108.86
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 8361.24,
@@ -11020,6 +11535,10 @@
     "power_plants_by_fuel": {
       "Hydro": 3,
       "Gas": 2
+    },
+    "sum_capacity_mw": {
+      "Gas": 1001.0,
+      "Hydro": 1536.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -11125,6 +11644,10 @@
       "Oil": 5,
       "Gas": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 940.0,
+      "Oil": 1130.3
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -11228,6 +11751,9 @@
     "power_plants_by_fuel": {
       "Hydro": 1
     },
+    "sum_capacity_mw": {
+      "Hydro": 72.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 184.77,
@@ -11319,6 +11845,10 @@
     "power_plants_by_fuel": {
       "Oil": 1,
       "Hydro": 1
+    },
+    "sum_capacity_mw": {
+      "Hydro": 60.0,
+      "Oil": 13.3
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -11424,6 +11954,10 @@
       "Gas": 9,
       "Oil": 3
     },
+    "sum_capacity_mw": {
+      "Gas": 5916.0,
+      "Oil": 315.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -11527,6 +12061,10 @@
     "power_plants_by_fuel": {
       "Gas": 4,
       "Hydro": 2
+    },
+    "sum_capacity_mw": {
+      "Gas": 2490.0,
+      "Hydro": 1000.8
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -11632,6 +12170,10 @@
       "Gas": 1,
       "Hydro": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 385.0,
+      "Hydro": 1296.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2443.57,
@@ -11735,6 +12277,10 @@
     "power_plants_by_fuel": {
       "Coal": 2,
       "Hydro": 10
+    },
+    "sum_capacity_mw": {
+      "Coal": 800.0,
+      "Hydro": 562.6
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -11842,6 +12388,13 @@
       "Oil": 3,
       "Hydro": 5,
       "Gas": 2
+    },
+    "sum_capacity_mw": {
+      "Coal": 120.0,
+      "Gas": 29.57,
+      "Hydro": 112.65,
+      "Oil": 72.71000000000001,
+      "Solar": 25.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -11984,6 +12537,11 @@
       "Hydro": 3,
       "Biomass": 1
     },
+    "sum_capacity_mw": {
+      "Biomass": 10.0,
+      "Gas": 15.5,
+      "Hydro": 343.6
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1390.57,
@@ -12103,6 +12661,14 @@
       "Coal": 7,
       "Oil": 4,
       "Biomass": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 12.0,
+      "Coal": 13004.0,
+      "Gas": 13330.0,
+      "Hydro": 1989.0,
+      "Oil": 178.0,
+      "Solar": 281.5
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -12255,6 +12821,9 @@
     "power_plants_by_fuel": {
       "Hydro": 4
     },
+    "sum_capacity_mw": {
+      "Hydro": 311.5
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1568.74,
@@ -12348,6 +12917,12 @@
       "Gas": 1,
       "Solar": 2,
       "Wind": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 120.0,
+      "Oil": 132.804,
+      "Solar": 33.0,
+      "Wind": 30.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -12479,6 +13054,13 @@
       "Hydro": 3,
       "Biomass": 5,
       "Oil": 5
+    },
+    "sum_capacity_mw": {
+      "Biomass": 101.85,
+      "Coal": 224.7,
+      "Hydro": 51.382999999999996,
+      "Oil": 499.436,
+      "Solar": 111.89999999999999
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -12626,6 +13208,17 @@
       "Coal": 3,
       "Geothermal": 5,
       "Nuclear": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 676.4000000000001,
+      "Coal": 5378.4,
+      "Gas": 25674.2,
+      "Geothermal": 903.6,
+      "Hydro": 12442.9,
+      "Nuclear": 1510.0,
+      "Oil": 11522.400000000001,
+      "Solar": 2671.2,
+      "Wind": 1586.8000000000002
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -12816,6 +13409,11 @@
       "Hydro": 2,
       "Coal": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 2520.0,
+      "Gas": 330.0,
+      "Hydro": 64.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 230.57999999999998,
@@ -12933,6 +13531,11 @@
       "Coal": 3,
       "Wind": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 804.0,
+      "Solar": 50.0,
+      "Wind": 50.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 79.32000000000001,
@@ -13049,6 +13652,10 @@
       "Hydro": 2,
       "Coal": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 218.5,
+      "Hydro": 667.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2105.17,
@@ -13156,6 +13763,14 @@
       "Wind": 11,
       "Oil": 5,
       "Coal": 3
+    },
+    "sum_capacity_mw": {
+      "Coal": 2835.0,
+      "Gas": 1666.0,
+      "Hydro": 1676.5,
+      "Oil": 777.3,
+      "Solar": 533.0,
+      "Wind": 1209.76
     },
     "regional_annual_output": {
       "generation_gwh_2013": 394.7,
@@ -13308,6 +13923,9 @@
     "power_plants_by_fuel": {
       "Hydro": 3
     },
+    "sum_capacity_mw": {
+      "Hydro": 2285.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 588.8,
@@ -13401,6 +14019,12 @@
       "Hydro": 20,
       "Coal": 2,
       "Solar": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 165.0,
+      "Gas": 1046.9,
+      "Hydro": 2725.2,
+      "Solar": 50.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -13532,6 +14156,12 @@
       "Hydro": 1,
       "Coal": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 120.0,
+      "Hydro": 240.0,
+      "Oil": 59.9,
+      "Solar": 82.6
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1119.03,
@@ -13660,6 +14290,10 @@
       "Hydro": 12,
       "Solar": 2
     },
+    "sum_capacity_mw": {
+      "Hydro": 557.9499999999999,
+      "Solar": 30.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2184.4700000000003,
@@ -13766,6 +14400,13 @@
       "Nuclear": 1,
       "Gas": 12,
       "Coal": 5
+    },
+    "sum_capacity_mw": {
+      "Coal": 5015.0,
+      "Gas": 9312.0,
+      "Nuclear": 485.0,
+      "Solar": 245.10000000000002,
+      "Wind": 1936.5900000000001
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -13910,6 +14551,14 @@
       "Coal": 1,
       "Geothermal": 7,
       "Oil": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 500.0,
+      "Gas": 507.0,
+      "Geothermal": 666.0,
+      "Hydro": 4388.0,
+      "Oil": 155.0,
+      "Wind": 458.55000000000007
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -14067,6 +14716,14 @@
       "Waste": 2,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 65.0,
+      "Geothermal": 159.0,
+      "Hydro": 104.4,
+      "Oil": 406.6,
+      "Solar": 12.6,
+      "Waste": 115.8
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 413.61999999999995,
@@ -14220,6 +14877,11 @@
       "Oil": 5,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 37.6,
+      "Oil": 122.6,
+      "Solar": 7.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 14.14,
@@ -14337,6 +14999,11 @@
       "Solar": 1,
       "Hydro": 3
     },
+    "sum_capacity_mw": {
+      "Gas": 4350.0,
+      "Hydro": 1900.0,
+      "Solar": 10.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1738.48,
@@ -14453,6 +15120,10 @@
       "Hydro": 15,
       "Coal": 16
     },
+    "sum_capacity_mw": {
+      "Coal": 5403.0,
+      "Hydro": 3805.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 10297.44,
@@ -14557,6 +15228,11 @@
       "Hydro": 291,
       "Wind": 10,
       "Gas": 5
+    },
+    "sum_capacity_mw": {
+      "Gas": 1454.0,
+      "Hydro": 30474.0,
+      "Wind": 623.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -14674,6 +15350,10 @@
       "Gas": 9,
       "Solar": 3
     },
+    "sum_capacity_mw": {
+      "Gas": 4872.0,
+      "Solar": 1138.8000000000002
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 2130.27,
@@ -14782,6 +15462,15 @@
       "Nuclear": 2,
       "Wind": 7,
       "Coal": 7
+    },
+    "sum_capacity_mw": {
+      "Coal": 3108.0,
+      "Gas": 2853.0,
+      "Hydro": 7989.6,
+      "Nuclear": 1467.0,
+      "Oil": 4853.0,
+      "Solar": 678.4,
+      "Wind": 506.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -14946,6 +15635,9 @@
     "power_plants_by_fuel": {
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Solar": 7.6
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 16.55,
@@ -15040,6 +15732,13 @@
       "Hydro": 8,
       "Gas": 1,
       "Solar": 3
+    },
+    "sum_capacity_mw": {
+      "Coal": 120.0,
+      "Gas": 160.0,
+      "Hydro": 1062.9,
+      "Oil": 262.4,
+      "Solar": 27.9
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -15183,6 +15882,12 @@
       "Hydro": 6,
       "Geothermal": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 72.0,
+      "Geothermal": 30.0,
+      "Hydro": 165.0,
+      "Oil": 139.9
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 579.04,
@@ -15310,6 +16015,9 @@
     "power_plants_by_fuel": {
       "Hydro": 3
     },
+    "sum_capacity_mw": {
+      "Hydro": 8760.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 40011.1,
@@ -15404,6 +16112,13 @@
       "Coal": 1,
       "Solar": 6,
       "Wind": 2
+    },
+    "sum_capacity_mw": {
+      "Coal": 132.0,
+      "Gas": 4262.200000000001,
+      "Hydro": 2735.4,
+      "Solar": 240.5,
+      "Wind": 62.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -15550,6 +16265,16 @@
       "Oil": 17,
       "Wind": 2,
       "Biomass": 2
+    },
+    "sum_capacity_mw": {
+      "Biomass": 23.3,
+      "Coal": 8731.3,
+      "Gas": 3411.0,
+      "Geothermal": 1848.2,
+      "Hydro": 3401.1000000000004,
+      "Oil": 2056.1,
+      "Solar": 1196.4,
+      "Wind": 51.9
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -15732,6 +16457,15 @@
       "Wind": 59,
       "Solar": 9
     },
+    "sum_capacity_mw": {
+      "Biomass": 215.0,
+      "Coal": 30959.0,
+      "Gas": 1804.0,
+      "Hydro": 2078.0,
+      "Oil": 655.0,
+      "Solar": 17.0,
+      "Wind": 2174.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 8870.46,
@@ -15901,6 +16635,16 @@
       "Gas": 4,
       "Coal": 2,
       "Geothermal": 2
+    },
+    "sum_capacity_mw": {
+      "Biomass": 452.90000000000003,
+      "Coal": 1978.0,
+      "Gas": 3829.0,
+      "Geothermal": 28.8,
+      "Hydro": 2760.4500000000003,
+      "Solar": 621.584,
+      "Waste": 131.8,
+      "Wind": 4942.33
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -16077,6 +16821,9 @@
     "power_plants_by_fuel": {
       "Gas": 12
     },
+    "sum_capacity_mw": {
+      "Gas": 10548.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -16172,6 +16919,14 @@
       "Nuclear": 1,
       "Wind": 3,
       "Gas": 8
+    },
+    "sum_capacity_mw": {
+      "Coal": 5807.0,
+      "Gas": 3352.0,
+      "Hydro": 3332.0,
+      "Nuclear": 1298.0,
+      "Solar": 471.90000000000003,
+      "Wind": 386.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -16332,6 +17087,18 @@
       "Other": 2,
       "Geothermal": 3,
       "Wind": 3
+    },
+    "sum_capacity_mw": {
+      "Biomass": 580.0,
+      "Coal": 46072.22,
+      "Gas": 106722.62,
+      "Geothermal": 74.0,
+      "Hydro": 45591.44,
+      "Nuclear": 28168.0,
+      "Oil": 99.07,
+      "Other": 29.7,
+      "Solar": 840.7,
+      "Wind": 42.300000000000004
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -16536,6 +17303,13 @@
       "Hydro": 6,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 26.0,
+      "Hydro": 127.6,
+      "Oil": 27.8,
+      "Solar": 8.5,
+      "Waste": 3.78
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 517.6800000000001,
@@ -16675,6 +17449,9 @@
     "power_plants_by_fuel": {
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Solar": 3.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 5.99,
@@ -16767,6 +17544,11 @@
       "Gas": 31,
       "Oil": 53,
       "Solar": 6
+    },
+    "sum_capacity_mw": {
+      "Gas": 34502.12,
+      "Oil": 49702.43000000001,
+      "Solar": 137.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -16885,6 +17667,11 @@
       "Solar": 4,
       "Hydro": 1
     },
+    "sum_capacity_mw": {
+      "Hydro": 120.0,
+      "Oil": 470.46000000000004,
+      "Solar": 105.69999999999999
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 627.4100000000001,
@@ -17001,6 +17788,10 @@
       "Hydro": 4,
       "Coal": 8
     },
+    "sum_capacity_mw": {
+      "Coal": 5568.0,
+      "Hydro": 2390.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 10572.53,
@@ -17104,6 +17895,10 @@
     "power_plants_by_fuel": {
       "Oil": 2,
       "Hydro": 1
+    },
+    "sum_capacity_mw": {
+      "Hydro": 50.0,
+      "Oil": 76.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -17209,6 +18004,11 @@
       "Gas": 8,
       "Waste": 3,
       "Oil": 3
+    },
+    "sum_capacity_mw": {
+      "Gas": 9552.0,
+      "Oil": 3950.0,
+      "Waste": 158.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -17328,6 +18128,13 @@
       "Hydro": 21,
       "Gas": 3,
       "Coal": 2
+    },
+    "sum_capacity_mw": {
+      "Coal": 1398.0,
+      "Gas": 728.0,
+      "Hydro": 2320.86,
+      "Nuclear": 1760.0,
+      "Solar": 24.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -17471,6 +18278,12 @@
       "Hydro": 3,
       "Nuclear": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 1321.0,
+      "Gas": 297.0,
+      "Hydro": 422.0,
+      "Nuclear": 696.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1659.04,
@@ -17605,6 +18418,17 @@
       "Waste": 6,
       "Biomass": 2,
       "Nuclear": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 13.6,
+      "Coal": 39794.0,
+      "Gas": 342.0,
+      "Hydro": 2019.57,
+      "Nuclear": 1800.0,
+      "Oil": 2067.0,
+      "Solar": 2313.04,
+      "Waste": 42.59,
+      "Wind": 2030.9
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -17801,6 +18625,18 @@
       "Nuclear": 6,
       "Oil": 3,
       "Wave and Tidal": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 108.0,
+      "Coal": 33133.0,
+      "Gas": 31552.9,
+      "Hydro": 6063.0599999999995,
+      "Nuclear": 23076.0,
+      "Oil": 4655.0,
+      "Solar": 160.5,
+      "Waste": 69.12,
+      "Wave and Tidal": 254.0,
+      "Wind": 401.1
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -18009,6 +18845,17 @@
       "Oil": 26,
       "Nuclear": 5
     },
+    "sum_capacity_mw": {
+      "Biomass": 20.0,
+      "Coal": 8783.310000000001,
+      "Gas": 26159.144,
+      "Hydro": 15659.135999999999,
+      "Nuclear": 7120.0599999999995,
+      "Oil": 4666.671,
+      "Solar": 4901.313,
+      "Waste": 388.0540000000001,
+      "Wind": 11337.380000000001
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 75071.60999999999,
@@ -18200,6 +19047,13 @@
       "Solar": 3,
       "Coal": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 900.0,
+      "Hydro": 1441.7,
+      "Oil": 1205.0,
+      "Solar": 44.4,
+      "Wind": 129.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 5580.03,
@@ -18342,6 +19196,12 @@
       "Hydro": 6,
       "Biomass": 2
     },
+    "sum_capacity_mw": {
+      "Biomass": 126.0,
+      "Gas": 319.0,
+      "Hydro": 1540.01,
+      "Oil": 813.1
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1413.76,
@@ -18469,6 +19329,9 @@
     "power_plants_by_fuel": {
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Solar": 5.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 9.87,
@@ -18560,6 +19423,10 @@
     "power_plants_by_fuel": {
       "Hydro": 3,
       "Biomass": 3
+    },
+    "sum_capacity_mw": {
+      "Biomass": 44.0,
+      "Hydro": 50.8
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -18669,6 +19536,15 @@
       "Gas": 3,
       "Oil": 1,
       "Coal": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 876.7,
+      "Coal": 80.0,
+      "Gas": 1340.0,
+      "Hydro": 12822.900000000001,
+      "Nuclear": 9762.0,
+      "Oil": 840.0,
+      "Wind": 697.0999999999999
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -18835,6 +19711,11 @@
       "Solar": 2,
       "Nuclear": 4
     },
+    "sum_capacity_mw": {
+      "Hydro": 9667.8,
+      "Nuclear": 3430.0,
+      "Solar": 20.2
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 25434.93,
@@ -18951,6 +19832,11 @@
       "Gas": 8,
       "Oil": 7,
       "Hydro": 3
+    },
+    "sum_capacity_mw": {
+      "Gas": 2914.0,
+      "Hydro": 1505.0,
+      "Oil": 3547.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -19072,6 +19958,15 @@
       "Nuclear": 3,
       "Hydro": 9,
       "Oil": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 14190.0,
+      "Gas": 11673.0,
+      "Hydro": 3825.5,
+      "Nuclear": 5214.0,
+      "Oil": 2000.0,
+      "Solar": 114.3,
+      "Wind": 195.06
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -19237,6 +20132,10 @@
       "Hydro": 8,
       "Oil": 2
     },
+    "sum_capacity_mw": {
+      "Hydro": 4686.4,
+      "Oil": 610.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 14478.85,
@@ -19341,6 +20240,11 @@
       "Hydro": 6,
       "Oil": 1,
       "Gas": 4
+    },
+    "sum_capacity_mw": {
+      "Gas": 333.5,
+      "Hydro": 561.0,
+      "Oil": 100.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -19461,6 +20365,14 @@
       "Hydro": 10,
       "Wind": 2,
       "Biomass": 5
+    },
+    "sum_capacity_mw": {
+      "Biomass": 88.6,
+      "Coal": 5260.0,
+      "Gas": 28959.0,
+      "Hydro": 3788.0,
+      "Solar": 1348.6999999999998,
+      "Wind": 210.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -19615,6 +20527,11 @@
       "Hydro": 1,
       "Gas": 1
     },
+    "sum_capacity_mw": {
+      "Gas": 28.3,
+      "Hydro": 65.6,
+      "Oil": 101.214
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 159.64,
@@ -19731,6 +20648,10 @@
       "Gas": 4,
       "Oil": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 1873.6,
+      "Oil": 271.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -19835,6 +20756,11 @@
       "Hydro": 6,
       "Gas": 19,
       "Wind": 2
+    },
+    "sum_capacity_mw": {
+      "Gas": 4856.0,
+      "Hydro": 54.2,
+      "Wind": 142.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -19956,6 +20882,15 @@
       "Hydro": 28,
       "Wind": 8,
       "Oil": 3
+    },
+    "sum_capacity_mw": {
+      "Coal": 17707.0,
+      "Gas": 17491.0,
+      "Geothermal": 480.0,
+      "Hydro": 13839.0,
+      "Oil": 842.6,
+      "Solar": 694.6,
+      "Wind": 390.5
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -20121,6 +21056,10 @@
       "Gas": 5,
       "Oil": 2
     },
+    "sum_capacity_mw": {
+      "Gas": 1179.0,
+      "Oil": 2275.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -20226,6 +21165,12 @@
       "Solar": 3,
       "Biomass": 1,
       "Oil": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 12.0,
+      "Hydro": 666.5,
+      "Oil": 50.0,
+      "Solar": 44.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -20357,6 +21302,13 @@
       "Hydro": 10,
       "Gas": 2,
       "Nuclear": 4
+    },
+    "sum_capacity_mw": {
+      "Coal": 26550.0,
+      "Gas": 1740.0,
+      "Hydro": 5729.0,
+      "Nuclear": 13835.0,
+      "Solar": 715.8
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -20498,6 +21450,10 @@
       "Gas": 24,
       "Solar": 6
     },
+    "sum_capacity_mw": {
+      "Gas": 29487.0,
+      "Solar": 840.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 1536.27,
@@ -20611,6 +21567,20 @@
       "Nuclear": 8,
       "Wave and Tidal": 7,
       "Cogeneration": 7
+    },
+    "sum_capacity_mw": {
+      "Biomass": 1583.7,
+      "Coal": 12296.0,
+      "Cogeneration": 3006.0,
+      "Gas": 29916.3,
+      "Hydro": 6364.905000000001,
+      "Nuclear": 8918.0,
+      "Oil": 372.4,
+      "Solar": 8674.99798,
+      "Storage": 896.6999999999999,
+      "Waste": 1885.6,
+      "Wave and Tidal": 38.2,
+      "Wind": 23202.4815
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -20847,6 +21817,22 @@
       "Petcoke": 11,
       "Nuclear": 58,
       "Other": 16
+    },
+    "sum_capacity_mw": {
+      "Biomass": 5123.2,
+      "Coal": 249149.09999999998,
+      "Cogeneration": 1042.0,
+      "Gas": 546435.8,
+      "Geothermal": 3889.2000000000003,
+      "Hydro": 101656.90000000001,
+      "Nuclear": 104233.1,
+      "Oil": 37143.399999999994,
+      "Other": 572.4,
+      "Petcoke": 2361.6,
+      "Solar": 37970.35,
+      "Storage": 815.6,
+      "Waste": 9768.5,
+      "Wind": 104476.9
     },
     "regional_annual_output": {
       "generation_gwh_2013": 3474741.0064040003,
@@ -21100,6 +22086,14 @@
       "Gas": 3,
       "Oil": 4
     },
+    "sum_capacity_mw": {
+      "Biomass": 412.7,
+      "Gas": 265.72,
+      "Hydro": 1538.0,
+      "Oil": 385.74,
+      "Solar": 225.01,
+      "Wind": 1381.95
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 7370.510000000001,
@@ -21255,6 +22249,13 @@
       "Gas": 6,
       "Solar": 1
     },
+    "sum_capacity_mw": {
+      "Coal": 2522.0,
+      "Gas": 8578.0,
+      "Hydro": 1140.0,
+      "Oil": 300.0,
+      "Solar": 100.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": 3905.6799999999994,
@@ -21395,6 +22396,10 @@
       "Gas": 34,
       "Hydro": 9
     },
+    "sum_capacity_mw": {
+      "Gas": 13430.0,
+      "Hydro": 17666.0
+    },
     "regional_annual_output": {
       "generation_gwh_2013": 120004.0,
       "estimated_generation_gwh_2013": 76985.26999999999,
@@ -21503,6 +22508,15 @@
       "Wind": 5,
       "Solar": 16,
       "Biomass": 2
+    },
+    "sum_capacity_mw": {
+      "Biomass": 22.0,
+      "Coal": 14125.0,
+      "Gas": 7734.0,
+      "Hydro": 16750.089999999997,
+      "Oil": 915.0,
+      "Solar": 1616.3999999999999,
+      "Wind": 188.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -21667,6 +22681,9 @@
     "power_plants_by_fuel": {
       "Oil": 1
     },
+    "sum_capacity_mw": {
+      "Oil": 23.4
+    },
     "regional_annual_output": {
       "generation_gwh_2013": null,
       "estimated_generation_gwh_2013": null,
@@ -21758,6 +22775,10 @@
     "power_plants_by_fuel": {
       "Oil": 6,
       "Gas": 1
+    },
+    "sum_capacity_mw": {
+      "Gas": 400.0,
+      "Oil": 645.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -21865,6 +22886,13 @@
       "Solar": 1,
       "Coal": 1,
       "Biomass": 1
+    },
+    "sum_capacity_mw": {
+      "Biomass": 12.237,
+      "Coal": 300.0,
+      "Hydro": 2160.0,
+      "Oil": 169.6,
+      "Solar": 47.5
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,
@@ -22005,6 +23033,10 @@
     "power_plants_by_fuel": {
       "Coal": 1,
       "Hydro": 1
+    },
+    "sum_capacity_mw": {
+      "Coal": 920.0,
+      "Hydro": 750.0
     },
     "regional_annual_output": {
       "generation_gwh_2013": null,

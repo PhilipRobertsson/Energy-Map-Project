@@ -88,6 +88,7 @@ function PrimaryPanels() {
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
     const fuelFilterRef = useRef([]);
+    const regionalDataRef = useRef([]);
     const sidePanelOpenRef = useRef(true);
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -98,7 +99,8 @@ function PrimaryPanels() {
     useEffect(() => {
         regionFilterRef.current = regionFilter
         fuelFilterRef.current = fuelFilter
-    }, [regionFilter, fuelFilter]);
+        regionalDataRef.current = regionalData
+    }, [regionFilter, fuelFilter, regionalData]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -160,7 +162,7 @@ function PrimaryPanels() {
             linePlotSVG?.remove()
             barChartSVG?.remove()
 
-            const fuels = fuelFilterRef.current
+            const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current)
             if (fuels.length) {
                 drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
                 drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
@@ -255,13 +257,41 @@ function PrimaryPanels() {
         filter.appendChild(controlContainer) // Append control panel to filter panel
     }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
 
-    // Update zoom selection icon when filters change
+    // Update zoom selection icon when filters change, redraw plots
     useEffect(() => {
         const filter = filterContainer.current
         if (!filter || !fuelFilter.length || !powerPlants) return
         const zoomSelection = filter.querySelectorAll(".controlIcon")[2]
         if (!zoomSelection) return
         const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
+
+        const linePlotSVG = document.getElementById("linePlotSVG")
+        const barChartSVG = document.getElementById("barChartSVG")
+
+        if(linePlotSVG && barChartSVG){
+            const dataVisualization = (linePlotSVG || barChartSVG).parentElement
+            const linePlotHidden = linePlotSVG ? linePlotSVG.classList.contains("hide") : true
+            const barChartHidden = barChartSVG ? barChartSVG.classList.contains("hide") : true
+
+            const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+            const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+
+            const sidePanelWidth = Math.floor(width * 0.30)
+            const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? width* 0.02 : width * 0.01)
+            const sidePanelPadding = Math.floor(2 * width * 0.01)
+            const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
+            const plotHeight = Math.floor((height * 0.35) * 0.72)
+
+            linePlotSVG?.remove()
+            barChartSVG?.remove()
+
+            const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current)
+            if (fuels.length) {
+                drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
+                drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
+            }
+        }
+
         if (powerPlants.features.length != pps.length) {
             // Filtered → show "full screen" icon
             if (zoomSelection.classList.contains("selection")) {
@@ -406,12 +436,21 @@ function PrimaryPanels() {
         const linePlotFuelContainer = sidePanel.querySelector("#fuelFilterContainer")
         if (linePlotFuelContainer) {
             const linePlotEntries = linePlotFuelContainer.querySelectorAll(".fuelFilterEntry")
+            const allRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuelFilter, false)
             fuelFilter.forEach((fuel, i) => {
                 const entry = linePlotEntries[i+1] // +1 to skip the select all entry
                 if (entry) {
                     entry.style.opacity = fuel.show ? "1" : "0.3";
                     const checkMark = entry.querySelector(".fuelFilterCheckMark")
                     if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
+
+                    const regionFuel = allRegionFuels.find(rf => rf.fuel === fuel.fuel)
+                    const capacityValue = regionFuel ? regionFuel.sum_capacity_mw : fuel.sum_capacity_mw
+                    const generationValue = getLatestGenerationValue(regionFuel || fuel)
+                    const capacityEl = entry.querySelector(".ffCapacity")
+                    const generationEl = entry.querySelector(".ffGeneration")
+                    if (capacityEl) capacityEl.textContent = formatPowerOf10(capacityValue)
+                    if (generationEl) generationEl.textContent = formatPowerOf10(generationValue)
                 }
             })
 
@@ -427,7 +466,7 @@ function PrimaryPanels() {
                 }
             }
         }
-    }, [fuelFilter,regionFilter,popupCount]);
+    }, [fuelFilter,regionFilter,regionalData,popupCount]);
 
     // Update map layer filter
     useEffect(() => {
@@ -505,7 +544,7 @@ function PrimaryPanels() {
 
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
-            const newPages = createPages(pageContent, powerPlants, regionalData, fuelFilter,
+            const newPages = createPages(pageContent, powerPlants, regionalData, regionFilter, fuelFilter,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 handleResetClick,
@@ -1255,6 +1294,85 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerpl
     return shownPowerPlants
 }
 
+// Aggregate generation data from regionalInformation.json for the currently shown regions,
+// producing the same per-fuel shape that drawLinePlot / drawBarChart expect.
+function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, filterByShow = true){
+    const shownCountries = regionFilter.filter(r => r.show).map(r => r.country)
+    const shownRegions = regionalData.filter(d => shownCountries.includes(d.country))
+
+    // Sum a given generation field across shown regions for a set of raw fuel names
+    const sumFuelField = (field, rawFuels) => {
+        let total = 0
+        let hasValue = false
+        shownRegions.forEach(d => {
+            const map = d.annual_output_by_fuel[field]
+            if (!map) return
+            rawFuels.forEach(fuel => {
+                const v = map[fuel]
+                if (v != null) { total += v; hasValue = true }
+            })
+        })
+        return hasValue ? total : null
+    }
+
+    const fuels = filterByShow ? fuelFilter.filter(f => f.show) : fuelFilter
+
+    return fuels
+        .map(f => {
+            // The "Other" category aggregates several raw fuels
+            const rawFuels = f.fuel === "Other" ? otherFuels : [f.fuel]
+            const result = { fuel: f.fuel, colour: f.colour }
+
+            for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
+                result["sum_generation_" + year] = sumFuelField("generation_gwh_" + year, rawFuels)
+            }
+            for(let year = _firstYearOfEstimatedGenerationData; year <= _latestYearOfEstimatedGenerationData; year++){
+                result["sum_estimated_generation_" + year] = sumFuelField("estimated_generation_gwh_" + year, rawFuels)
+            }
+
+            // Sum capacity across shown regions for the raw fuel names
+            let capacity = 0
+            let hasCapacity = false
+            shownRegions.forEach(d => {
+                rawFuels.forEach(fuel => {
+                    const v = d.sum_capacity_mw[fuel]
+                    if (v != null) { capacity += v; hasCapacity = true }
+                })
+            })
+            result["sum_capacity_mw"] = hasCapacity ? capacity : null
+
+            return result
+        })
+}
+
+function formatPowerOf10(num){
+    if (num == null) return "N/A";
+    if (num === 0) return `0`.trim();
+
+    // Define metric prefixes mapping to powers of 10
+    const prefixes = [
+        { value: 1e3,  symbol: 'k' }, // kilo
+        { value: 1,    symbol: ''  },
+    ];
+
+    // Find the closest matching tier
+    const tier = prefixes.find(p => num >= p.value) || prefixes[prefixes.length - 1];
+
+    // Round to nearest whole number relative to the tier
+    const rounded = Math.round((num / tier.value));
+
+    return `${rounded} ${tier.symbol}`.trim();
+}
+
+// Find the latest year (checking backwards) where a fuel has reported generation data
+function getLatestGenerationValue(fuelData){
+    for(let year = _latestYearOfGenerationData; year >= _firstYearOfGenerationData; year--){
+        const value = fuelData["sum_generation_" + year]
+        if (value != null) return value
+    }
+    return null
+}
+
 function getSliderBounds(filter, regionalData){
     let minVal = 0, maxVal = 100
     if (regionalData.length) {
@@ -1294,7 +1412,7 @@ function getSliderBounds(filter, regionalData){
     return { minVal, maxVal }
 }
 
-function createPages(pageContent, powerPlants, regionalData, fuels,
+function createPages(pageContent, powerPlants, regionalData, regionFilterData, fuels,
                                   onYearChange, onGenerationChange, onReset, onIndexClick,
                                   onToggleClick, onLegendClick, onContinentClick){
     const pageContainer = document.createElement("div")
@@ -1557,8 +1675,10 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
         const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
         const linePlotHeight = Math.floor((window.innerHeight * 0.35) * 0.72)
 
-        drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, fuels, true)
-        drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, fuels, false)
+        const shownRegionFuels = getShownRegionFuelData(regionalData, regionFilterData, fuels)
+        const allRegionFuels = getShownRegionFuelData(regionalData, regionFilterData, fuels, false)
+        drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, shownRegionFuels, true)
+        drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, shownRegionFuels, false)
 
         // Select all option
         const selectAllEntry = document.createElement("div");
@@ -1585,6 +1705,7 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
 
         // Fuel filter entries
         fuels.forEach(f =>{
+            const regionFuel = allRegionFuels.find(rf => rf.fuel === f.fuel)
             const filterEntry = document.createElement("div");
             filterEntry.classList.add("fuelFilterEntry");
 
@@ -1610,36 +1731,17 @@ function createPages(pageContent, powerPlants, regionalData, fuels,
             leftDiv.appendChild(filterColour)
             leftDiv.appendChild(filterName)
 
-            const formatPowerOf10 = (num) => {
-                if (num === 0) return `0`.trim();
-  
-                // Define metric prefixes mapping to powers of 10
-                const prefixes = [
-                    //{ value: 1e6,  symbol: 'M' }, // Mega
-                    { value: 1e3,  symbol: 'k' }, // kilo
-                    { value: 1,    symbol: ''  }, 
-                ];
-
-                // Find the closest matching tier
-                const tier = prefixes.find(p => num >= p.value) || prefixes[prefixes.length - 1];
-  
-                // Round to 1 decimal place relative to the tier
-                const rounded = Math.round((num / tier.value));
-  
-                return `${rounded} ${tier.symbol}`.trim();
-            }
-
             const rightDiv = document.createElement("div");
             rightDiv.style.display = "flex";
             rightDiv.style.alignItems = "center"
 
             const filterCapacity = document.createElement("span");
             filterCapacity.classList.add("fuelFilterValue", "hide", "ffCapacity");
-            filterCapacity.textContent = formatPowerOf10(f.sum_capacity_mw);
+            filterCapacity.textContent = formatPowerOf10(regionFuel ? regionFuel.sum_capacity_mw : f.sum_capacity_mw);
 
             const filterGeneration = document.createElement("span");
             filterGeneration.classList.add("fuelFilterValue", "ffGeneration");
-            filterGeneration.textContent = formatPowerOf10(f.sum_generation_2019);
+            filterGeneration.textContent = formatPowerOf10(getLatestGenerationValue(regionFuel || f));
 
             const checkBox = document.createElement("div");
             checkBox.style.backgroundColor = "rgba(0,0,0,0.0)"
@@ -1834,13 +1936,20 @@ function getSliders(filter, regionalData, onChange){
         const playbackField = document.createElement("div");
         playbackField.id = "sliderPlaybackField";
 
-        const playBackSliderTitle = document.createElement("strong")
-        playBackSliderTitle.classList.add("sliderTitle")
-        playBackSliderTitle.textContent = "Year Started"
+        const playbackSliderTitle = document.createElement("strong")
+        playbackSliderTitle.classList.add("sliderTitle")
+        playbackSliderTitle.textContent = "Year Started"
+
+        const playbackSliderButton = document.createElement("div");
+        playbackSliderButton.id = "sliderPlaybackButton"
+
+        const playbackSliderButtonText = document.createElement("span");
+        playbackSliderButtonText.textContent = "Animated historical playback";
+        playbackSliderButton.appendChild(playbackSliderButtonText)
 
 
-
-        playbackField.appendChild(playBackSliderTitle)
+        playbackField.appendChild(playbackSliderTitle)
+        playbackField.appendChild(playbackSliderButton)
         sliderContainer.appendChild(playbackField)
     }
 
@@ -2197,29 +2306,9 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
           }
           return d3.line()
             .x(function(p) { return x(p.year); })
-            .y(function(p) { return p.value == null ? null : y(p.value); })
+            .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
             (points)
         })
-
-    // Second set of lines for estimated data
-    /* svg.selectAll(".line")
-      .data(Array.from(sumstat.values()))
-      .enter()
-      .append("path")
-        .attr("fill", "none")
-        .attr("stroke", function(d){ return d.colour })
-        .attr("stroke-width", 1.5)
-        .style("stroke-dasharray", ("2, 2"))
-        .attr("d", function(d){
-          const points = []
-          for(let year = _firstYearOfEstimatedGenerationData; year <= _latestYearOfEstimatedGenerationData; year++){
-            points.push({ year: year, value: d["sum_estimated_generation_" + year] })
-          }
-          return d3.line()
-            .x(function(p) { return x(p.year); })
-            .y(function(p) { return p.value == null ? y(0) : y(p.value); })
-            (points)
-        }) */
 }
 
 function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
@@ -2299,6 +2388,8 @@ function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
             .attr("x", function(d) { return x(d.fuel); })
             .attr("y", function(d) { return y(d.sum_capacity_mw); })
             .attr("width", x.bandwidth())
-            .attr("height", function(d) { return height - y(d.sum_capacity_mw); })
+            .attr("height", function(d) { 
+                return (d.sum_capacity_mw==null || d.sum_capacity_mw<0)? 0.0 : height - y(d.sum_capacity_mw);
+             })
             .attr("fill", function(d) {return d.colour})
 }

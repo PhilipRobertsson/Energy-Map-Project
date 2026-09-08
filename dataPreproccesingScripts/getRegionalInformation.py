@@ -39,6 +39,8 @@ def createJSON(path, dataframe, countries,continets):
             else:
                 data['power_plants_by_fuel'][y] = 1
 
+        data['sum_capacity_mw'] = sum_by_fuel(countryDataframe, 'capacity_mw')
+
         data['regional_annual_output'] = {}
         data['annual_output_by_fuel'] = {}
         data['regional_min_output'] = {}
