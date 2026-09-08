@@ -176,7 +176,7 @@
     border-radius: 0.2dvh;
     border: #AAD3DE solid 0.1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
-    padding: 0.25dvh;
+    padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
 }
 
 .sidePanelResetButton span{

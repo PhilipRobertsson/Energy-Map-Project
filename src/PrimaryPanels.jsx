@@ -1065,8 +1065,16 @@ function PrimaryPanels() {
         if(element == prev) return;
         
         // Remove selected class from previous button, add class to clicked element
-        prev.classList.toggle("continentSelected")
-        element.classList.toggle("continentSelected")
+        gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000" }, 
+            { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC",  duration: 0.15, onComplete: () =>{
+                element.classList.toggle("continentSelected")
+            } } 
+        );
+        gsap.fromTo(prev, { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
+            { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
+                prev.classList.toggle("continentSelected")
+            } } 
+        );
 
         // Set region filter
         const prevFilter = regionFilterRef.current
