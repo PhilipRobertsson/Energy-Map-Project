@@ -2304,10 +2304,11 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
           for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
             points.push({ year: year, value: d["sum_generation_" + year] })
           }
+          const filtered = points.filter(d => d.value < 0 || d.value !== null);
           return d3.line()
             .x(function(p) { return x(p.year); })
             .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
-            (points)
+            (filtered)
         })
 }
 
@@ -2388,7 +2389,7 @@ function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
             .attr("x", function(d) { return x(d.fuel); })
             .attr("y", function(d) { return y(d.sum_capacity_mw); })
             .attr("width", x.bandwidth())
-            .attr("height", function(d) { 
+            .attr("height", function(d) {
                 return (d.sum_capacity_mw==null || d.sum_capacity_mw<0)? 0.0 : height - y(d.sum_capacity_mw);
              })
             .attr("fill", function(d) {return d.colour})
