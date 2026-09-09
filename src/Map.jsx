@@ -207,6 +207,7 @@ const INTERVAL_IN_MILISECONDS = 1000;
 
 function Map({ children }) {
   const [data, setData] = useState(null);
+  const [boundaryData, setBoundaryData] = useState(null);
   const [filter, setFilter] = useState(null);
   const [popupCount, setPopupCount] = useState(0);
   const [colourData, setColourData] = useState(null);
@@ -233,6 +234,11 @@ function Map({ children }) {
       .then((response) => response.json())
       .then((powerPlants) => {
         setData(powerPlants);
+      });
+    fetch("./countryBoundaries.geojson") // TODO: Find different dataset that doesn't mark Crimea as Russian
+      .then((response) => response.json())
+      .then((boundaries) => {
+        setBoundaryData(boundaries);
       });
     fetch("./regionalInformation.json")
       .then((response) => response.json())
@@ -418,11 +424,42 @@ function Map({ children }) {
 
     const addSourceAndLayer = () => {
       if (map.getSource("powerplants")) return; // If the power plants layer already has been added, return
+      if (map.getSource("countryboundaries")) return; // If the country boundaries layer already has been added, return
+
       // Add the power plant data as a source to the map
       map.addSource("powerplants", {
         type: "geojson",
         data: data,
       });
+
+      // Add country boundaries as a source to the map
+      map.addSource("countryboundaries",{
+        type: "geojson",
+        data: boundaryData,
+      });
+
+      // Create country boundaries layer on the map, each polygon is a country
+      // TODO: Make fill colour depend on regional information fossil_fuel_usage or low_carbon_usage,
+      // actual switch should happen in primary panels.
+      map.addLayer({
+        id: "countryboundaries-fill",
+        type: "fill",
+        source: "countryboundaries",
+        paint: {
+          'fill-color': '#086018',
+          'fill-opacity': 0.4
+        }
+      })
+      map.addLayer({
+        id: 'countryboundaries-border',
+        type: 'line',
+        source: 'countryboundaries',
+        paint: {
+          'line-color': '#20a114',
+          'line-width': 2 // Set your desired border thickness here
+        }
+        });
+
       // Create the power plants layer on the map, each circle is a power plant
       map.addLayer({
         id: "powerplants-layer",
