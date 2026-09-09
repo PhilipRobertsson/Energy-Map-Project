@@ -13,7 +13,7 @@ def sum_by_fuel(country_df, col):
         result[fuel] = float(non_null.sum()) if len(non_null) > 0 and non_null.sum() != 0 else None
     return result
 
-def createJSON(path, dataframe, countries,continets):
+def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonUsage):
     entries = []
     for x in countries:
         data = {}
@@ -68,6 +68,19 @@ def createJSON(path, dataframe, countries,continets):
                 data['regional_min_output'][col_estimated] = estMin if not math.isnan(estMin) and estMin > 0 else None
                 data['regional_max_output'][col_estimated] = estMax if not math.isnan(estMax) and estMax > 0 else None
 
+        data['fossil_fuel_usage'] = {}
+        data['low_carbon_usage'] = {}
+
+        countryFossilUsage = fossilFuelUsage[(fossilFuelUsage['Code'] == x)]
+        countryLowUsage = lowCarbonUsage[(lowCarbonUsage['Code'] == x)]
+        
+        for i in range(1965, 2026):
+            valueFF = countryFossilUsage['Fossil fuels'][(fossilFuelUsage['Year'] == i)].values
+            valueLC = countryLowUsage['Low-carbon energy'][(countryLowUsage['Year'] == i)].values
+            col = 'usage_' + str(i)
+            data['fossil_fuel_usage'][col] = None if not valueFF.size else valueFF[0]
+            data['low_carbon_usage'][col] = None if not valueLC.size else valueLC[0]
+
         entries.append(data)
     with open(path, "w") as f:
         json.dump(entries, f, indent=2)
@@ -76,8 +89,17 @@ def createJSON(path, dataframe, countries,continets):
 if __name__ == '__main__':
     csvPath = './public/global_power_plant_database.csv'
     continentPath = './public/countries_by_continent.csv'
+    fossilFuelUsagePath = "./public/share-of-primary-energy-from-fossil-fuels.csv"
+    lowCarbonUsagePath = "./public/share-of-primary-energy-from-low-carbon-energy.csv"
     savePath = './public/regionalInformation.json'
+
     df = loadCSV(csvPath)
     cont = loadCSV(continentPath)
+    fossilFuelUsage = loadCSV(fossilFuelUsagePath)
+    lowCarbonUsage = loadCSV(lowCarbonUsagePath)
+
     c = df['country'].unique()
-    createJSON(savePath, df,c,cont)
+    filteredFFUsage = fossilFuelUsage[fossilFuelUsage['Code'].isin(c)]
+    filteredLCUsage = lowCarbonUsage[lowCarbonUsage['Code'].isin(c)]
+
+    createJSON(savePath, df,c,cont, filteredFFUsage, filteredLCUsage)
