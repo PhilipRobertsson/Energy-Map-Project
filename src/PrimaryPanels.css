@@ -26,7 +26,7 @@
     width: 2.5dvh;
     height: 2.5dvh;
     margin: 0.16dvh 0 0.16dvh 0;
-    border: 0.1vmin solid #DEEAED;
+    border: 0.1vmin solid #AAD3DE;
     border-radius: 0.2vmin;
 }
 .legendIcon{
@@ -48,6 +48,36 @@
     width: 1.8dvh;
     height: auto;
     margin-left: unset;
+}
+
+#mapToggleContainer{
+    margin: 0.5dvh 0 0.5dvh 0;
+    border-radius: 0.2dvh;
+    border: 0.1vmin solid #AAD3DE;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+    /*padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;*/
+}
+
+.mapToggleButton{
+    padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.6vmin;
+    margin: 0;
+    /*color: #030303;*/
+    color:#f7f7f7;
+    cursor: pointer;
+    /*Added to remove selection from drop down texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+.selectedMapMode{
+    background-color: #AAD3DE;
+    color: #243B6D;
 }
 
 #controlContainer{ /*Container for the control buttons*/

@@ -216,7 +216,40 @@ function PrimaryPanels() {
         controlContainer.appendChild(zoomOut) // Append zoom out button
         controlContainer.appendChild(zoomSelection) // Append slection zoom button
 
+        // Map mode toggle buttons
+        const mapToggleButtonContainer = document.createElement("div");
+        mapToggleButtonContainer.id = "mapToggleContainer"
+
+        const currentSelection = document.querySelector(".selectedMapMode");
+
+        for(let i = 0; i<3;i++){
+            let toggleButton = document.createElement("div");
+            toggleButton.classList.add("mapToggleButton");
+
+            let toggleText = document.createElement("span");
+            switch(i){
+                case 0:
+                    toggleText.textContent = "Power Plants"
+                    break;
+                case 1:
+                    toggleText.textContent = "Low Carbon Usage"
+                    break;
+                case 2:
+                    toggleText.textContent = "Fossil Fuel Usage"
+                    break;
+            }
+            toggleButton.appendChild(toggleText);
+            toggleButton.onclick = () => handleMapModeToggle(toggleButton)
+
+            if(i==0){
+                toggleButton.classList.toggle("selectedMapMode");
+            }
+            
+            mapToggleButtonContainer.appendChild(toggleButton)
+        }
+
         if(filter.children.length > 0){
+            filter.replaceChild(mapToggleButtonContainer, filter.children[filter.children.length-2])
             filter.replaceChild(controlContainer, filter.children[filter.children.length - 1])
         }
 
@@ -254,6 +287,7 @@ function PrimaryPanels() {
             filter.appendChild(legend) // Append the legend to the filter container
         }
 
+        filter.appendChild(mapToggleButtonContainer)
         filter.appendChild(controlContainer) // Append control panel to filter panel
     }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
 
@@ -1128,6 +1162,24 @@ function PrimaryPanels() {
 
         setRegionFilter(toggled)
         zoomToRegionFilter(toggled)
+    }
+
+    function handleMapModeToggle(element){
+        // Get previous selection, return if identical click
+        const prev = document.querySelector(".selectedMapMode")
+        if(element == prev) return;
+
+        // Remove selected class from previous button, add class to clicked element
+        gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)", color:"#f7f7f7" }, 
+            { backgroundColor: "#AAD3DE", color:"#243B6D",  duration: 0.15, onComplete: () =>{
+                element.classList.toggle("selectedMapMode")
+            } } 
+        );
+        gsap.fromTo(prev, { backgroundColor: "#AAD3DE", color:"#243B6D" }, 
+            { backgroundColor: "rgba(0,0,0,0.0)", color:"#f7f7f7",  duration: 0.15, onComplete: () =>{
+                prev.classList.toggle("selectedMapMode")
+            } } 
+        );
     }
 
     // Get new title
