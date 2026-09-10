@@ -425,6 +425,57 @@ function Map({ children }) {
     const addSourceAndLayer = () => {
       if (map.getSource("powerplants")) return; // If the power plants layer already has been added, return
       if (map.getSource("countryboundaries")) return; // If the country boundaries layer already has been added, return
+      if (!boundaryData || !regionalData) return; // Wait until all data is loaded
+
+      // Build a mapping from country code to usage percentages (low carbon and fossil fuel)
+      const usageMap = {}
+      let LCMinUsage = Infinity
+      let LCMaxUsage = -Infinity
+      let FFMinUsage = Infinity
+      let FFMaxUsage = -Infinity
+      regionalData.forEach(r => {
+        const LCUsage = r.low_carbon_usage && r.low_carbon_usage.usage_2025
+        const FFUsage = r.fossil_fuel_usage && r.fossil_fuel_usage.usage_2025
+
+        usageMap[r.country] = { LCUsage, FFUsage }
+
+        if (LCUsage != null) {
+          if (LCUsage < LCMinUsage) LCMinUsage = LCUsage
+          if (LCUsage > LCMaxUsage) LCMaxUsage = LCUsage
+        }
+        if (FFUsage != null) {
+          if (FFUsage < FFMinUsage) FFMinUsage = FFUsage
+          if (FFUsage > FFMaxUsage) FFMaxUsage = FFUsage
+        }
+      })
+
+      // Attach the usage values to each boundary feature (matched by iso_a3)
+      boundaryData.features.forEach(f => {
+        const iso = f.properties.iso_a3
+        const entry = usageMap[iso]
+        f.properties.lowCarbonUsage = entry && entry.LCUsage != null ? entry.LCUsage : null
+        f.properties.fossilFuelUsage = entry && entry.FFUsage != null ? entry.FFUsage : null
+      })
+
+      // Interpolate low carbon colour between the min and max usage values,
+      // leaving countries with no data (null) transparent
+      const lowCarbonColor = (LCMinUsage !== LCMaxUsage && LCMaxUsage !== -Infinity)
+        ? [
+            'case',
+            ['==', ['get', 'lowCarbonUsage'], null],
+            '#00000000',
+            ['interpolate', ['linear'], ['get', 'lowCarbonUsage'], LCMinUsage, '#295305', LCMaxUsage, '#06f616']
+          ]
+        : '#00000000'
+
+        const fossilFuelColor = (FFMinUsage !== FFMaxUsage && FFMaxUsage !== -Infinity)
+        ? [
+            'case',
+            ['==', ['get', 'fossilFuelUsage'], null],
+            '#00000000',
+            ['interpolate', ['linear'], ['get', 'fossilFuelUsage'], FFMinUsage, '#6a0606', FFMaxUsage, '#e4210b']
+          ]
+        : '#00000000'
 
       // Add the power plant data as a source to the map
       map.addSource("powerplants", {
@@ -439,26 +490,50 @@ function Map({ children }) {
       });
 
       // Create country boundaries layer on the map, each polygon is a country
-      // TODO: Make fill colour depend on regional information fossil_fuel_usage or low_carbon_usage,
-      // actual switch should happen in primary panels.
       map.addLayer({
-        id: "countryboundaries-fill",
+        id: "lowCarbon-fill",
         type: "fill",
         source: "countryboundaries",
         paint: {
-          'fill-color': '#086018',
+          'fill-color': lowCarbonColor,
           'fill-opacity': 0.4
         }
-      })
+      });
       map.addLayer({
-        id: 'countryboundaries-border',
+        id: 'lowCarbon-border',
         type: 'line',
         source: 'countryboundaries',
         paint: {
-          'line-color': '#20a114',
+          'line-color': lowCarbonColor,
           'line-width': 2 // Set your desired border thickness here
         }
-        });
+      });
+
+        map.addLayer({
+        id: "fossilFuel-fill",
+        type: "fill",
+        source: "countryboundaries",
+        paint: {
+          'fill-color': fossilFuelColor,
+          'fill-opacity': 0.4
+        }
+      });
+      map.addLayer({
+        id: 'fossilFuel-border',
+        type: 'line',
+        source: 'countryboundaries',
+        paint: {
+          'line-color': fossilFuelColor,
+          'line-width': 2 // Set your desired border thickness here
+        }
+      });
+
+      // Hide fossil fuel and low carbon layers by default
+      map.getLayer("lowCarbon-fill").visibility = "none"
+      map.getLayer("lowCarbon-border").visibility = "none"
+      map.getLayer("fossilFuel-fill").visibility = "none"
+      map.getLayer("fossilFuel-border").visibility = "none"
+
 
       // Create the power plants layer on the map, each circle is a power plant
       map.addLayer({
@@ -484,7 +559,7 @@ function Map({ children }) {
     } else {
       map.once("load", addSourceAndLayer);
     }
-  }, [data, regionalData, colourData]);
+  }, [data, boundaryData, regionalData, colourData]);
 
   // Timer update
   useEffect(() =>{

@@ -1180,6 +1180,48 @@ function PrimaryPanels() {
                 prev.classList.toggle("selectedMapMode")
             } } 
         );
+
+        // Get map context
+        const currentMap = mapRef.current
+
+        console.log(currentMap.getSource("countryboundaries"))
+
+        const prevMode = prev.querySelector("span").textContent
+        const selectedMode = element.querySelector("span").textContent
+
+        // Set visibility for a set of layer ids
+        const setVisibility = (layerIds, visibility) => {
+            layerIds.forEach(id => {
+                if (currentMap.getLayer(id)) currentMap.setLayoutProperty(id, "visibility", visibility)
+            })
+        }
+
+        // Hide previous mode's layers
+        switch(prevMode){
+            case "Power Plants":
+                setVisibility(["powerplants-layer"], "none")
+                break;
+            case "Low Carbon Usage":
+                setVisibility(["lowCarbon-fill", "lowCarbon-border"], "none")
+                break;
+            case "Fossil Fuel Usage":
+                setVisibility(["fossilFuel-fill", "fossilFuel-border"], "none")
+                break;
+        }
+
+        // Show selected mode's layers
+        switch(selectedMode){
+            case "Power Plants":
+                setVisibility(["powerplants-layer"], "visible")
+                break;
+            case "Low Carbon Usage":
+                setVisibility(["lowCarbon-fill", "lowCarbon-border"], "visible")
+                break;
+            case "Fossil Fuel Usage":
+                setVisibility(["fossilFuel-fill", "fossilFuel-border"], "visible")
+                break;
+        }
+
     }
 
     // Get new title
