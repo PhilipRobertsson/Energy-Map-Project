@@ -1115,11 +1115,18 @@ function PrimaryPanels() {
         const capacityValues = document.querySelectorAll(".ffCapacity")
         const generationValues = document.querySelectorAll(".ffGeneration")
 
+        // Get selected continent name
+        const continent = document.querySelector(".continentSelected").querySelector("span").textContent
+
         if(linePlot.classList.contains("hide")){
             gsap.fromTo(linePlot, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     linePlot.classList.toggle("hide")
-                    boldText.textContent = "Global electric generation per year "
+                    if(continent == "Global"){
+                        boldText.textContent = "Global electric generation per year "
+                    }else{
+                        boldText.textContent = continent + "'s electric generation per year "
+                    }
                     standardText.textContent = "(GWh)"
                 } } 
             );
@@ -1143,7 +1150,11 @@ function PrimaryPanels() {
             gsap.fromTo(barChart, { opacity: 0 }, 
                 { opacity: 1,  duration: 0.15, onComplete: () =>{
                     barChart.classList.toggle("hide")
-                    boldText.textContent = "Global power plant capacity by source "
+                    if(continent == "Global"){
+                        boldText.textContent = "Global power plant capacity by source "
+                    }else{
+                        boldText.textContent = continent+ "'s power plant capacity by source "
+                    }
                     standardText.textContent = "(MW)"
                 } } 
             );
@@ -1180,11 +1191,27 @@ function PrimaryPanels() {
         // Set region filter
         const prevFilter = regionFilterRef.current
 
+        // Get lineplot titles
+        const linePlotTitle = document.querySelector("#linePlotTitle")
+        const linePlotBold = document.querySelector("#linePlotExBoldText")
+
         let toggled
         if(continent == "Global"){
             toggled = prevFilter.map(r => ({ ...r, show: true }))
+            linePlotTitle.textContent = "Global Electricity Source Trends"
+            if(document.getElementById("linePlotSVG").classList.contains("hide")){
+                linePlotBold.textContent = "Global power plant capacity by source "
+            }else{
+                linePlotBold.textContent = "Global electric generation per year "
+            }
         }else{
             toggled = prevFilter.map(r => ({ ...r, show: r.continent === continent }))
+            linePlotTitle.textContent = continent + "'s Electricity Source Trends"
+            if(document.getElementById("linePlotSVG").classList.contains("hide")){
+                linePlotBold.textContent = continent + "'s power plant capacity by source "
+            }else{
+                linePlotBold.textContent = continent+ "'s electric generation per year "
+            }
         }
 
         setRegionFilter(toggled)
