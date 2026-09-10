@@ -612,7 +612,8 @@ function PrimaryPanels() {
                 handleIndexClick,
                 handleLinePlotToggle,
                 handleFueLegClick,
-                handleContinentClick
+                handleContinentClick,
+                handleOnAddDiagramClick
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -1285,6 +1286,24 @@ function PrimaryPanels() {
 
     }
 
+    function handleOnAddDiagramClick(){
+        // Get the diagram wrapper
+        const diagramWrapper = document.querySelector("#allDiagramContainer")
+        console.log(diagramWrapper)
+
+        const newDiagram = document.createElement("div");
+
+        // All temporary things, done for testing
+        newDiagram.style.width = " 100%";
+        newDiagram.style.height = "40dvh";
+        newDiagram.style.backgroundColor = "#f7f7f7";
+        newDiagram.style.filter = "drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10))";
+        newDiagram.style.borderRadius = "1dvh";
+        newDiagram.style.marginTop = "1dvh";
+
+        diagramWrapper.appendChild(newDiagram)
+    }
+
     // Get new title
     function getNewDropDownTitle(shownElements, type){
         var newTitle = ""
@@ -1570,7 +1589,7 @@ function getSliderBounds(filter, regionalData){
 
 function createPages(pageContent, powerPlants, regionalData, regionFilterData, fuels,
                                   onYearChange, onGenerationChange, onReset, onIndexClick,
-                                  onToggleClick, onLegendClick, onContinentClick){
+                                  onToggleClick, onLegendClick, onContinentClick, onAddDiagramClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
 
@@ -1705,6 +1724,10 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, f
         }
         pageContainer.appendChild(filterContainer)
     }
+
+    // Diagram wrapper (for the initial one + additional ones)
+    const allDiagramContainer = document.createElement("div");
+    allDiagramContainer.id = "allDiagramContainer"
 
     // Generation by fuel line plot
     const linePlotContainer = document.createElement("div")
@@ -1920,10 +1943,27 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, f
         })
     }
 
+    // Additional diagram prompt
+    const additionalDiagramPromptContainer = document.createElement("div");
+    additionalDiagramPromptContainer.id = "additionalDiagramPromptContainer"
+    const promptText = document.createElement("span");
+    promptText.id = "diagramPromptText"
+    promptText.textContent = "+ add one diagram for comparision";
+
+    const additionalDiagramIcon = document.createElement("img");
+    additionalDiagramIcon.src = assetSources.sidePanelRollupOpen
+
+    additionalDiagramPromptContainer.appendChild(promptText)
+    additionalDiagramPromptContainer.appendChild(additionalDiagramIcon)
+
+    additionalDiagramPromptContainer.onclick = () => onAddDiagramClick()
+
     linePlotBody.appendChild(dataVisualization)
     linePlotBody.appendChild(fuelFilterContainer)
     linePlotContainer.appendChild(linePlotBody)
-    pageContainer.appendChild(linePlotContainer)
+    allDiagramContainer.appendChild(linePlotContainer)
+    allDiagramContainer.appendChild(additionalDiagramPromptContainer)
+    pageContainer.appendChild(allDiagramContainer)
 
     // Instruction containers / Info text
     for(var i = 0; i<pageContent.length; i++){
@@ -2382,8 +2422,6 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
             .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
     var sumstat = d3.index(data, (d) => d.fuel)
-
-    console.log(sumstat)
 
     // Create x-axis
     var x = d3.scaleLinear()

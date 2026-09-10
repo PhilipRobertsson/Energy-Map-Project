@@ -113,11 +113,11 @@
 
 .sidePanelPageContainer{
     width: 100%;
-    height: 95%;
     margin-left: 2dvw;
     padding: 0 1dvw 0 1dvw;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
 }
 
 #sidePanelMainTitle{
@@ -439,6 +439,31 @@
     width: 0.8dvh;
     height: auto;
     margin-left: unset;
+}
+
+#additionalDiagramPromptContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 1dvh 0 1dvh 0;
+}
+
+#additionalDiagramPromptContainer span{
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.5vmin;
+    margin: 0 1dvh 0 0;
+    color: #f7f7f7;
+    /*Added to remove selection from text*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+#additionalDiagramPromptContainer img{
+    filter: brightness(0) saturate(100%) invert(85%) sepia(31%) saturate(240%) hue-rotate(149deg) brightness(93%) contrast(85%);
 }
 
 .instructionTitle{
