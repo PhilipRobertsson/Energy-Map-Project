@@ -50,6 +50,14 @@
     margin-left: unset;
 }
 
+.gradientLegend{
+    width: 2.5dvh;
+    height: 24dvh;
+    margin: 0.16dvh 0 0.16dvh 0;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+}
+
 #mapToggleContainer{
     margin: 0.5dvh 0 0.5dvh 0;
     border-radius: 0.2dvh;

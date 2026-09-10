@@ -256,6 +256,16 @@ function PrimaryPanels() {
         }
 
         if (filter.children.length > 0) return;
+
+        const legendContainer = document.createElement("div")
+        legendContainer.classList.add("fuelFilterContent")
+
+        const lowCarbonContainer = document.createElement("div")
+        lowCarbonContainer.classList.add("fuelFilterContent", "hide")
+
+        const fossilFuelContainer = document.createElement("div")
+        fossilFuelContainer.classList.add("fuelFilterContent", "hide")
+
         // Create colour legends for each fuel available
         for(let i = 0; i < fuelFilter.length; i++){
             const fuel = fuelFilter[i] // Used for easier access
@@ -286,9 +296,24 @@ function PrimaryPanels() {
             legend.style.opacity = fuel.show ? "1" : "0.3"
             legend.appendChild(colour) // Append the colour box to the legend element
             legend.appendChild(label) // Append the text to the legend element
-            filter.appendChild(legend) // Append the legend to the filter container
+            legendContainer.appendChild(legend) // Append the legend to the filter container
         }
 
+        // Creat low carbon colour gradient, append to lowCarbonContainer
+        const lowCarbonLegend = document.createElement("div");
+        lowCarbonLegend.classList.add("gradientLegend")
+        lowCarbonLegend.style.background = "linear-gradient(0deg,rgba(29, 62, 0, 1) 0%, rgba(1, 255, 18, 1) 100%)"
+        lowCarbonContainer.appendChild(lowCarbonLegend)
+
+        // Create fossil fuel colour gradient, append to fossilFuelContainer
+        const fossilFuelLegend = document.createElement("div");
+        fossilFuelLegend.classList.add("gradientLegend")
+        fossilFuelLegend.style.background = "linear-gradient(0deg,rgba(82, 0, 0, 1) 0%, rgba(255, 25, 0, 1) 100%)"
+        fossilFuelContainer.appendChild(fossilFuelLegend)
+
+        filter.appendChild(legendContainer)
+        filter.appendChild(lowCarbonContainer)
+        filter.appendChild(fossilFuelContainer)
         filter.appendChild(mapToggleButtonContainer)
         filter.appendChild(controlContainer) // Append control panel to filter panel
     }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
@@ -1189,6 +1214,9 @@ function PrimaryPanels() {
         const prevMode = prev.querySelector("span").textContent
         const selectedMode = element.querySelector("span").textContent
 
+        // Get different containers in the fuel filter
+        const fuelFilterContents = document.querySelectorAll(".fuelFilterContent")
+
         // Set visibility for a set of layer ids
         const setVisibility = (layerIds, visibility) => {
             layerIds.forEach(id => {
@@ -1200,12 +1228,15 @@ function PrimaryPanels() {
         switch(prevMode){
             case "Power Plants":
                 setVisibility(["powerplants-layer"], "none")
+                fuelFilterContents[0].classList.toggle("hide")
                 break;
             case "Low Carbon Usage":
                 setVisibility(["lowCarbon-fill", "lowCarbon-border"], "none")
+                fuelFilterContents[1].classList.toggle("hide")
                 break;
             case "Fossil Fuel Usage":
                 setVisibility(["fossilFuel-fill", "fossilFuel-border"], "none")
+                fuelFilterContents[2].classList.toggle("hide")
                 break;
         }
 
@@ -1213,12 +1244,15 @@ function PrimaryPanels() {
         switch(selectedMode){
             case "Power Plants":
                 setVisibility(["powerplants-layer"], "visible")
+                fuelFilterContents[0].classList.toggle("hide")
                 break;
             case "Low Carbon Usage":
                 setVisibility(["lowCarbon-fill", "lowCarbon-border"], "visible")
+                fuelFilterContents[1].classList.toggle("hide")
                 break;
             case "Fossil Fuel Usage":
                 setVisibility(["fossilFuel-fill", "fossilFuel-border"], "visible")
+                fuelFilterContents[2].classList.toggle("hide")
                 break;
         }
 
