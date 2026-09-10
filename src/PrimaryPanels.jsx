@@ -1495,7 +1495,8 @@ function formatPowerOf10(num){
 // Find the latest year (checking backwards) where a fuel has reported generation data
 function getLatestGenerationValue(fuelData){
     for(let year = _latestYearOfGenerationData; year >= _firstYearOfGenerationData; year--){
-        const value = fuelData["sum_generation_" + year]
+        var value = fuelData["sum_generation_" + year]
+        if(value == null && year <=_latestYearOfEstimatedGenerationData) value = fuelData["sum_estimated_generation_"+year]
         if (value != null) return value
     }
     return null
@@ -2355,6 +2356,8 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
 
     var sumstat = d3.index(data, (d) => d.fuel)
 
+    console.log(sumstat)
+
     // Create x-axis
     var x = d3.scaleLinear()
     .domain([_firstYearOfGenerationData-0.2, _latestYearOfGenerationData])
@@ -2376,10 +2379,10 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
         for(let i = _firstYearOfGenerationData; i <= _latestYearOfGenerationData; i++){
             let reported = eval("d.sum_generation_"+i)
             if(reported >= max){max = reported}
-            /* if(i <= _latestYearOfEstimatedGenerationData){
+            if(i <= _latestYearOfEstimatedGenerationData && reported == null){
                 let estimated = eval("d.sum_estimated_generation_"+i)
                 if(estimated >= max){max = estimated}
-            } */
+            }
         }
         return max
     }
@@ -2430,9 +2433,22 @@ function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
         .attr("d", function(d){
           const points = []
           for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
-            points.push({ year: year, value: d["sum_generation_" + year] })
+            if(d["sum_generation_" + year] != null){
+                points.push({ year: year, value: d["sum_generation_" + year] })
+            }else if(year <= _latestYearOfEstimatedGenerationData){
+                points.push({ year: year, value: d["sum_estimated_generation_" + year] })
+            }
           }
-          const filtered = points.filter(d => d.value < 0 || d.value !== null);
+          const filtered = points.filter(p => p.value !== null);
+          if(filtered.length == 1){
+            const point = filtered[0]
+            svg.append("circle")
+                .attr("class", "lone-point")
+                .attr("cx", x(point.year))
+                .attr("cy", (point.value == null || point.value < 0) ? y(0.0) : y(point.value))
+                .attr("r", 5)
+                .attr("fill", d.colour);
+          }
           return d3.line()
             .x(function(p) { return x(p.year); })
             .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
