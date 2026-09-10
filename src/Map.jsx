@@ -464,7 +464,7 @@ function Map({ children }) {
             'case',
             ['==', ['get', 'lowCarbonUsage'], null],
             '#00000000',
-            ['interpolate', ['linear'], ['get', 'lowCarbonUsage'], LCMinUsage, '#295305', LCMaxUsage, '#06f616']
+            ['interpolate', ['linear'], ['get', 'lowCarbonUsage'], LCMinUsage, '#1d3e00', LCMaxUsage, '#01ff12']
           ]
         : '#00000000'
 
@@ -473,7 +473,7 @@ function Map({ children }) {
             'case',
             ['==', ['get', 'fossilFuelUsage'], null],
             '#00000000',
-            ['interpolate', ['linear'], ['get', 'fossilFuelUsage'], FFMinUsage, '#6a0606', FFMaxUsage, '#e4210b']
+            ['interpolate', ['linear'], ['get', 'fossilFuelUsage'], FFMinUsage, '#520000', FFMaxUsage, '#ff1900']
           ]
         : '#00000000'
 

@@ -220,7 +220,9 @@ function PrimaryPanels() {
         const mapToggleButtonContainer = document.createElement("div");
         mapToggleButtonContainer.id = "mapToggleContainer"
 
-        const currentSelection = document.querySelector(".selectedMapMode");
+        // Find the currently selected map mode, defaulting to "Power Plants"
+        const currentSelection = filter.querySelector(".selectedMapMode");
+        const selectedModeName = currentSelection ? currentSelection.querySelector("span").textContent : "Power Plants";
 
         for(let i = 0; i<3;i++){
             let toggleButton = document.createElement("div");
@@ -241,8 +243,8 @@ function PrimaryPanels() {
             toggleButton.appendChild(toggleText);
             toggleButton.onclick = () => handleMapModeToggle(toggleButton)
 
-            if(i==0){
-                toggleButton.classList.toggle("selectedMapMode");
+            if(toggleText.textContent === selectedModeName){
+                toggleButton.classList.add("selectedMapMode");
             }
             
             mapToggleButtonContainer.appendChild(toggleButton)
@@ -1183,8 +1185,6 @@ function PrimaryPanels() {
 
         // Get map context
         const currentMap = mapRef.current
-
-        console.log(currentMap.getSource("countryboundaries"))
 
         const prevMode = prev.querySelector("span").textContent
         const selectedMode = element.querySelector("span").textContent
