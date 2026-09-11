@@ -42,7 +42,8 @@ const assetSources ={
     sidePanelSelectAllCircle: "./sidePanel/sidePanelSelectAllCircle.svg",
     infoIcon: "./popup/popupInfo.svg",
     jinyiPaperQR: "./qrCodes/jinyiPaper.png",
-    energyDataQR: "./qrCodes/energyData.png"
+    energyDataQR: "./qrCodes/energyData.png",
+    closeIcon: "./popup/popupClose.svg"
 };
 
 // Used to filter out fuels which either are too uncommon or unimportant for the visualization
@@ -613,7 +614,7 @@ function PrimaryPanels() {
                 handleLinePlotToggle,
                 handleFueLegClick,
                 handleContinentClick,
-                handleOnAddDiagramClick
+                handleAddDiagramClick
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -1286,22 +1287,69 @@ function PrimaryPanels() {
 
     }
 
-    function handleOnAddDiagramClick(){
-        // Get the diagram wrapper
-        const diagramWrapper = document.querySelector("#allDiagramContainer")
-        console.log(diagramWrapper)
+    function handleAddDiagramClick(){
+        // Get the diagram wrapper and check if the comparison window already has been created
+        const diagramWrapper = document.querySelector("#allDiagramContainer");
 
+        // Used for height assignment
+        const firstDiagramHeight = diagramWrapper.firstChild.offsetHeight
+
+        const promptText = diagramWrapper.querySelector("#additionalDiagramPromptContainer").querySelector("span");
+        const promptIcon = diagramWrapper.querySelector("#additionalDiagramPromptContainer").querySelector("img");
+
+        const prev = document.querySelector("#sidePanelComparisonLinePlot");
+        if(prev != null){
+            // Remove present comparison diagram
+            gsap.fromTo(prev,
+                { height: firstDiagramHeight + "px", opacity: 1, },
+                { height: 0, opacity: 0, duration: 0.15, ease: "power2.out",
+                    onComplete: () =>{
+                        prev.remove()
+                    }
+                }
+            )
+
+            gsap.fromTo(diagramWrapper.querySelector("#additionalDiagramPromptContainer"),
+                {opacity: 1},
+                {opacity: 0, duration: 0.085, ease: "power2.out",
+                    onComplete: () =>{
+                        promptText.textContent = "+ add one diagram for comparison";
+                        promptIcon.src = assetSources.sidePanelRollupOpen;
+                        gsap.fromTo(diagramWrapper.querySelector("#additionalDiagramPromptContainer"),
+                            {opacity: 0},
+                            {opacity: 1, duration: 0.085, ease: "power2.in"}
+                        )
+                    }
+                }
+            )
+            return;
+        };
+
+        // Create new diagram
         const newDiagram = document.createElement("div");
+        newDiagram.id = "sidePanelComparisonLinePlot";
+        newDiagram.style.opacity = 0
 
-        // All temporary things, done for testing
-        newDiagram.style.width = " 100%";
-        newDiagram.style.height = "40dvh";
-        newDiagram.style.backgroundColor = "#f7f7f7";
-        newDiagram.style.filter = "drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10))";
-        newDiagram.style.borderRadius = "1dvh";
-        newDiagram.style.marginTop = "1dvh";
+        gsap.fromTo(diagramWrapper.querySelector("#additionalDiagramPromptContainer"),
+            {opacity: 1},
+            {opacity: 0, duration: 0.085, ease: "power2.out", onComplete: () =>{
+                    promptText.textContent = "Close comparison diagram";
+                    promptIcon.src = assetSources.closeIcon;
+                    gsap.fromTo(diagramWrapper.querySelector("#additionalDiagramPromptContainer"),
+                        {opacity: 0},
+                        {opacity: 1, duration: 0.085, ease: "power2.in"}
+                    )
+                }
+            }
+        )
 
         diagramWrapper.appendChild(newDiagram)
+
+        // Open animation and height assignment
+        gsap.fromTo(diagramWrapper.lastChild,
+            { height: 0, opacity: 0 },
+            { height: firstDiagramHeight + "px", opacity: 1, duration: 0.15, ease: "power2.in"}
+        )
     }
 
     // Get new title
@@ -1948,7 +1996,7 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, f
     additionalDiagramPromptContainer.id = "additionalDiagramPromptContainer"
     const promptText = document.createElement("span");
     promptText.id = "diagramPromptText"
-    promptText.textContent = "+ add one diagram for comparision";
+    promptText.textContent = "+ add one diagram for comparison";
 
     const additionalDiagramIcon = document.createElement("img");
     additionalDiagramIcon.src = assetSources.sidePanelRollupOpen
