@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useContext, createElement } from 'react'
 import { gsap } from "gsap";
-import * as d3 from "d3";
 
 import { MapContext } from './Map.jsx'
+import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue, otherFuels, drawLinePlot, drawBarChart, getDropDown } from './sidePanelUtilities.js'
 
 import './PrimaryPanels.css'
 
@@ -46,13 +46,6 @@ const assetSources ={
     closeIcon: "./popup/popupClose.svg"
 };
 
-// Used to filter out fuels which either are too uncommon or unimportant for the visualization
-const otherFuels =[
-    "Petcoke", "Wave and Tidal", "Tidal",
-    "Geothermal", "Cogeneration", "Storage",
-    "Biomass", "Waste", "Other"
-];
-
 // The different pages on the instruction page
 const allPages = [
     {id: 0, visibleHtmlElements: [true, true, true, false, true, true, true, true, false, false,false,false, false]}, /*Home page*/
@@ -67,30 +60,37 @@ const allPages = [
 const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "instructions"]
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
 
-const _firstYearOfGenerationData = 2013;
-const _latestYearOfGenerationData = 2019;
-const _firstYearOfEstimatedGenerationData = 2013;
-const _latestYearOfEstimatedGenerationData = 2017;
-
 function PrimaryPanels() {
     const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
+
     const [fuelFilter, setFuelFilter] = useState([]);
     const [regionFilter, setRegionFilter] = useState([]);
     const [yearFilter, setYearFilter] = useState([]);
     const [generationFilter, setGenerationFilter] = useState([]);
+
+    // Used by the possible "additional diagram" feature
+    const [comparisonFuelFilter, setComparisonFuelFilter] = useState([]);
+    const [comparisonRegionFilter, setComparisonRegionFilter] = useState([]);
+
     const [regionalData, setRegionalData] = useState([]);
+
     const [sidePanelPage, setSidePanelPage] = useState(allPages[0]);
     const [pages, setPages] = useState(null);
     const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
+
     const prevPageRef = useRef(null);
     const regionFilterRef = useRef([]);
     const fuelFilterRef = useRef([]);
     const regionalDataRef = useRef([]);
     const sidePanelOpenRef = useRef(true);
+
+    const compRegionFilterRef = useRef([]);
+    const compFuelFilterRef = useRef([]);
+
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
         height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
@@ -100,8 +100,10 @@ function PrimaryPanels() {
     useEffect(() => {
         regionFilterRef.current = regionFilter
         fuelFilterRef.current = fuelFilter
+        compRegionFilterRef.current = comparisonRegionFilter
+        compFuelFilterRef.current = comparisonFuelFilter
         regionalDataRef.current = regionalData
-    }, [regionFilter, fuelFilter, regionalData]);
+    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -111,6 +113,8 @@ function PrimaryPanels() {
                 .then((response) => response.json())
                 .then((data) =>{
                     eval("set"+state+"(data)");
+                    if(state == "FuelFilter"){setComparisonFuelFilter(data)}
+                    if(state == "RegionFilter"){setComparisonRegionFilter(data)}
                 })
         }
     }, []);
@@ -127,7 +131,8 @@ function PrimaryPanels() {
     // Check if anything updates, resets timer
     useEffect(() =>{
         resetTimer()
-    }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent])
+    }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent,
+        comparisonRegionFilter, comparisonFuelFilter])
 
     // Check the timer, if it reaches zero, reset everything
     useEffect(() =>{
@@ -164,10 +169,8 @@ function PrimaryPanels() {
             barChartSVG?.remove()
 
             const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current)
-            if (fuels.length) {
-                drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
-                drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
-            }
+            drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
+            drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
         }
 
         const handleResize = () => {
@@ -293,7 +296,7 @@ function PrimaryPanels() {
             label.classList.add("legendName")
             label.textContent = fuel.fuel
 
-            legend.onclick = () => handleFueLegClick(fuel.fuel); // Filters the data points on the map according to fuelFilter state
+            legend.onclick = () => handleFueLegClick(fuel.fuel, setBarChartFilter, setFuelFilter); // Filters the data points on the map according to fuelFilter state
             legend.style.opacity = fuel.show ? "1" : "0.3"
             legend.appendChild(colour) // Append the colour box to the legend element
             legend.appendChild(label) // Append the text to the legend element
@@ -348,10 +351,34 @@ function PrimaryPanels() {
             barChartSVG?.remove()
 
             const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current)
-            if (fuels.length) {
-                drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
-                drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
-            }
+            drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
+            drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
+        }
+
+        // Redraw comparison plots if they exist
+        const compLinePlotSVG = document.getElementById("compLinePlotSVG")
+        const compBarChartSVG = document.getElementById("compBarChartSVG")
+
+        if(compLinePlotSVG && compBarChartSVG){
+            const compDataVisualization = (compLinePlotSVG || compBarChartSVG).parentElement
+            const compLinePlotHidden = compLinePlotSVG ? compLinePlotSVG.classList.contains("hide") : true
+            const compBarChartHidden = compBarChartSVG ? compBarChartSVG.classList.contains("hide") : true
+
+            const compWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+            const compHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+
+            const compSidePanelWidth = Math.floor(compWidth * 0.30)
+            const compSidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? compWidth* 0.02 : compWidth * 0.01)
+            const compSidePanelPadding = Math.floor(2 * compWidth * 0.01)
+            const compPlotWidth = Math.floor((compSidePanelWidth - compSidePanelLeftMargin - compSidePanelPadding) * 0.55)
+            const compPlotHeight = Math.floor((compHeight * 0.35) * 0.72)
+
+            compLinePlotSVG?.remove()
+            compBarChartSVG?.remove()
+
+            const compFuels = getShownRegionFuelData(regionalDataRef.current, compRegionFilterRef.current, compFuelFilterRef.current)
+            drawLinePlot(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compLinePlotHidden, "compLinePlotSVG")
+            drawBarChart(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compBarChartHidden, "compBarChartSVG")
         }
 
         if (powerPlants.features.length != pps.length) {
@@ -369,7 +396,7 @@ function PrimaryPanels() {
                 zoomSelectionState.current.isSelection = true
             }
         }
-    }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants])
+    }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants, comparisonRegionFilter, comparisonFuelFilter])
 
     // Check the context filter for any updates
     useEffect(()=>{
@@ -411,7 +438,8 @@ function PrimaryPanels() {
             if (!sidePanel || !sidePanel.children.length) return
             const pageContainer = sidePanel.children[0]
             const dropdowns = [
-                pageContainer.querySelector("#linePlotRegionFilter").children[0]
+                pageContainer.querySelector("#linePlotRegionFilter").children[0],
+                pageContainer.querySelector("#compRegionFilter")?.children[0]
                 //pageContainer.children[4]?.children[0],
             ]
             dropdowns.forEach(element => {
@@ -448,6 +476,8 @@ function PrimaryPanels() {
         const regionFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[0]
         //const fuelFilterDropDownTitle = sidePanel.children[0].querySelectorAll(".sidePanelFilterTitle")[1]
 
+        const comparisonRegionFilterDropDown = sidePanel.children[0].querySelectorAll("#compRegionFilter")[0]
+
         const shownRegions = regionFilter.filter((region) => region.show)
         const shownFuels = fuelFilter.filter((fuel) => fuel.show)
 
@@ -465,6 +495,20 @@ function PrimaryPanels() {
 
         handleDropDownTitle(regionFilterDropDownTitle,regLegSidePanel, "region", shownRegions)
         //handleDropDownTitle(fuelFilterDropDownTitle,fueLegSidePanel, "fuel", shownFuels)
+
+        if(comparisonRegionFilterDropDown){
+            const compRegionFilterDropDownTitle = comparisonRegionFilterDropDown.querySelectorAll(".sidePanelFilterTitle")[0]
+            const compRegionFilterLegend = comparisonRegionFilterDropDown.querySelectorAll(".filterLegend")
+            const shownCompRegions = comparisonRegionFilter.filter((region) => region.show)
+            handleDropDownTitle(compRegionFilterDropDownTitle, compRegionFilterLegend, "region", shownCompRegions)
+
+            comparisonRegionFilter.forEach((region, i)=>{
+                if(compRegionFilterLegend[i]){
+                    compRegionFilterLegend[i].style.opacity = region.show ? "1" : "0.3";
+                    compRegionFilterLegend[i].children[0].children[0].style.opacity = region.show ? "1" : "0.0";
+                }
+            })
+        }
         
         if(bars.length){
             for(var i = 0; i < bars.length; i++){
@@ -528,7 +572,21 @@ function PrimaryPanels() {
                 }
             }
         }
-    }, [fuelFilter,regionFilter,regionalData,popupCount]);
+
+        // Update the comparison diagram fuel filter legend opacity
+        const comparisonFuelContainer = sidePanel.querySelector("#compFuelFilterContainer")
+        if (comparisonFuelContainer) {
+            const comparisonEntries = comparisonFuelContainer.querySelectorAll(".fuelFilterEntry")
+            comparisonFuelFilter.forEach((fuel, i) => {
+                const entry = comparisonEntries[i+1] // +1 to skip the select all entry
+                if (entry) {
+                    entry.style.opacity = fuel.show ? "1" : "0.3";
+                    const checkMark = entry.querySelector(".fuelFilterCheckMark")
+                    if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
+                }
+            })
+        }
+    }, [fuelFilter,regionFilter,regionalData,popupCount, comparisonRegionFilter, comparisonFuelFilter]);
 
     // Update map layer filter
     useEffect(() => {
@@ -606,7 +664,8 @@ function PrimaryPanels() {
 
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
-            const newPages = createPages(pageContent, powerPlants, regionalData, regionFilter, fuelFilter,
+            const newPages = createPages(pageContent, powerPlants, regionalData, regionFilter, regionFilterRef, fuelFilter,
+                setFuelFilter, setRegionFilter, setBarChartFilter,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 handleResetClick,
@@ -695,54 +754,10 @@ function PrimaryPanels() {
 
             sidePanelRegionHeader.onclick = () => handleRollupClick(sidePanelRegionFilter)
 
-            // Fills the provided drop down with the corresponding filter contents
-            const fillDropDowns = (dropDownE,type,filter) =>{
-                const legendContainer = dropDownE.querySelector(".sidePanelLegendContainer")
-                if(legendContainer.children.length == 0){
-                    for(let i = 0; i < filter.length; i++){
-                        const item = filter[i] // Used for easier access
-
-                        // Create legend element
-                        const legend = document.createElement("div")
-                        legend.classList.add("filterLegend")
-
-                        // Create colour legend / radio circle
-                        const colour = document.createElement("div")
-                        colour.classList.add("legendColour", "sidePanelFilterColour")
-
-                        if(type == "region"){
-                            /*Use radio circle*/
-                            colour.style.backgroundColor = "rgba(0,0,0,0.0)"
-                            colour.classList.add("legendRadio")
-
-                            const radioCircle = document.createElement("img")
-                            radioCircle.classList.add("selectAllCheck")
-                            radioCircle.src = assetSources.sidePanelSelectAllCircle
-
-                            colour.appendChild(radioCircle)
-                            legend.onclick = () => handleRegLegClick(item.country); // Select only this region (radio-button logic)
-                        }else{
-                            /*Use available colour*/
-                            colour.style.backgroundColor = item.colour
-
-                            legend.onclick = () => handleFueLegClick(item.fuel); // Filters the data points on the map according to fuelFilter state
-                        }
-                        const name = document.createElement("p")
-                        name.classList.add("legendName", "sidePanelFilterName")
-                        name.textContent = item.country_long? item.country_long : item.fuel
-
-                        legend.appendChild(colour)
-                        legend.appendChild(name) // Append the text to the legend element
-                        legendContainer.appendChild(legend) // Append the legend to the filter container
-                    }
-                }
-            }
             // Fill drop down windows
             const regionDropDown = sidePanelRegionFilter.children[1]
-            //const fuelDropDown = sidePanelFuelFilter.children[1]
 
-            fillDropDowns(regionDropDown, "region", regionFilter)
-            //fillDropDowns(fuelDropDown, "fuel", fuelFilter)
+            fillDropDowns(regionDropDown, regionFilter, setRegionFilter, regionFilterRef, true)
 
             // Add navigation and colour correct icon
             const navigationBar = pages.querySelector("#navigationBarContainer")
@@ -936,16 +951,19 @@ function PrimaryPanels() {
     }
 
     // Handle clicks on the seperate legends
-    function handleFueLegClick(clickedFuel){
-        if (clickedFuel === "all") {
-            setBarChartFilter(null)
-        } else {
-            setBarChartFilter(prev => {
-                if (!prev) return prev
-                return prev.filter(f => f !== clickedFuel)
-            })
+    function handleFueLegClick(clickedFuel,setBarChartFilter,setFilter){
+        console.log(clickedFuel)
+        if(setBarChartFilter){
+            if (clickedFuel === "all") {
+                setBarChartFilter(null)
+            } else {
+                setBarChartFilter(prev => {
+                    if (!prev) return prev
+                    return prev.filter(f => f !== clickedFuel)
+                })
+            }
         }
-        setFuelFilter(prev => { // prev, previous filter
+        setFilter(prev => { // prev, previous filter
             //const selectAllOption = sidePanel.children[0].children[4].querySelectorAll(".filterLegend")[0]; // Easy acess to the select all fuels option
             const toggled = checkAndSetFilter(null, prev, clickedFuel, "fuel")
             return toggled;
@@ -1014,8 +1032,8 @@ function PrimaryPanels() {
         if (sliders && sliders[1] && sliders[1].set) sliders[1].set(minGen, maxGen)
     }
 
-    function handleRegLegClick(clickedCountry){
-        const prev = regionFilterRef.current
+    function handleRegLegClick(clickedCountry, filterRef, setFilter, zoomTo){
+        const prev = filterRef.current
         const shown = prev.filter(r => r.show)
         const isOnlyShown = shown.length === 1 && shown[0].country === clickedCountry
 
@@ -1027,8 +1045,60 @@ function PrimaryPanels() {
             // Radio-button logic: select only the clicked region
             toggled = prev.map(r => ({ ...r, show: r.country === clickedCountry }))
         }
-        setRegionFilter(toggled)
-        zoomToRegionFilter(toggled)
+        setFilter(toggled)
+        if(zoomTo){
+            zoomToRegionFilter(toggled)
+        }
+    }
+
+    // Fills the provided region drop down with the corresponding filter contents
+    function fillDropDowns(dropDownE, filter, setFilter, filterRef, zoomTo){
+        const legendContainer = dropDownE.querySelector(".sidePanelLegendContainer")
+        if(legendContainer.children.length == 0){
+            for(let i = 0; i < filter.length; i++){
+                const item = filter[i] // Used for easier access
+
+                // Create legend element
+                const legend = document.createElement("div")
+                legend.classList.add("filterLegend")
+
+                // Create colour legend / radio circle
+                const colour = document.createElement("div")
+                colour.classList.add("legendColour", "sidePanelFilterColour", "legendRadio")
+                colour.style.backgroundColor = "rgba(0,0,0,0.0)"
+
+                const radioCircle = document.createElement("img")
+                radioCircle.classList.add("selectAllCheck")
+                radioCircle.src = assetSources.sidePanelSelectAllCircle
+
+                colour.appendChild(radioCircle)
+                legend.onclick = () => handleRegLegClick(item.country, filterRef, setFilter, zoomTo); // Select only this region (radio-button logic)
+
+                const name = document.createElement("p")
+                name.classList.add("legendName", "sidePanelFilterName")
+                name.textContent = item.country_long
+
+                legend.appendChild(colour)
+                legend.appendChild(name) // Append the text to the legend element
+                legendContainer.appendChild(legend) // Append the legend to the filter container
+            }
+        }
+    }
+
+    function handleCompRegClick(clickedCountry){
+        const prev=compRegionFilterRef.current
+        const shown = prev.filter(r=>r.show)
+        const isOnlyShown = shown.length === 1 && shown[0].country === clickedCountry
+        
+        let toggled
+        if (isOnlyShown) {
+            // Clicking the only selected region deselects it (show all regions)
+            toggled = prev.map(r => ({ ...r, show: true }))
+        } else {
+            // Radio-button logic: select only the clicked region
+            toggled = prev.map(r => ({ ...r, show: r.country === clickedCountry }))
+        }
+        setComparisonRegionFilter(toggled)
     }
 
     // Handle navigationClick
@@ -1086,6 +1156,7 @@ function PrimaryPanels() {
 
     // Handle toggle click in line plot
     function handleLinePlotToggle(element){
+        const container = element.parentElement.parentElement.parentElement.parentElement.parentElement
         if(element.style.backgroundColor == "rgb(170, 211, 222)") return;
         const otherButton = (element == element.parentElement.children[0])? element.parentElement.children[1] : element.parentElement.children[0]
         gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)" }, 
@@ -1099,17 +1170,29 @@ function PrimaryPanels() {
             } } 
         );
 
-        const linePlot = document.getElementById("linePlotSVG")
-        const barChart = document.getElementById("barChartSVG")
+        let linePlot, barChart, boldText, standardText
 
-        const boldText = document.getElementById("linePlotExBoldText")
-        const standardText = document.getElementById("linePlotExStandardText")
+        if(container.id == "sidePanelLinePlot"){
+            linePlot = document.getElementById("linePlotSVG")
+            barChart = document.getElementById("barChartSVG")
 
-        const capacityValues = document.querySelectorAll(".ffCapacity")
-        const generationValues = document.querySelectorAll(".ffGeneration")
+            boldText = document.getElementById("linePlotExBoldText")
+            standardText = document.getElementById("linePlotExStandardText")
+        }
+
+        if(container.id == "sidePanelComparisonLinePlot"){
+            linePlot = document.getElementById("compLinePlotSVG")
+            barChart = document.getElementById("compBarChartSVG")
+
+            boldText = document.getElementById("compLinePlotExBoldText")
+            standardText = document.getElementById("compLinePlotExStandardText")
+        }
+
+        const capacityValues = container.querySelectorAll(".ffCapacity")
+        const generationValues = container.querySelectorAll(".ffGeneration")
 
         // Get selected continent name
-        const continent = document.querySelector(".continentSelected").querySelector("span").textContent
+        const continent = container.querySelector(".continentSelected").querySelector("span").textContent
 
         if(linePlot.classList.contains("hide")){
             gsap.fromTo(linePlot, { opacity: 0 }, 
@@ -1164,9 +1247,9 @@ function PrimaryPanels() {
         );
     }
 
-    function handleContinentClick(element, continent){
+    function handleContinentClick(element, continent, filterRef, setFilter, dontZoomTo){
         // Get previous selection, return if identical click
-        const prev = document.querySelector(".continentSelected")
+        const prev = element.parentElement.querySelector(".continentSelected")
         if(element == prev) return;
         
         // Remove selected class from previous button, add class to clicked element
@@ -1182,17 +1265,28 @@ function PrimaryPanels() {
         );
 
         // Set region filter
-        const prevFilter = regionFilterRef.current
+        const prevFilter = filterRef.current
+
+        let linePlotTitle, linePlotBold, linePlotSVG
 
         // Get lineplot titles
-        const linePlotTitle = document.querySelector("#linePlotTitle")
-        const linePlotBold = document.querySelector("#linePlotExBoldText")
+        if(element.parentElement.parentElement.id == "sidePanelLinePlot"){
+            linePlotTitle = element.parentElement.parentElement.querySelector("#linePlotTitle")
+            linePlotBold = element.parentElement.parentElement.querySelector("#linePlotExBoldText")
+            linePlotSVG = element.parentElement.parentElement.querySelector("#linePlotSVG")
+        }
+
+        if(element.parentElement.parentElement.id == "sidePanelComparisonLinePlot"){
+            linePlotTitle = element.parentElement.parentElement.querySelector("#compLinePlotTitle")
+            linePlotBold = element.parentElement.parentElement.querySelector("#compLinePlotExBoldText")
+            linePlotSVG = element.parentElement.parentElement.querySelector("#compLinePlotSVG")
+        }
 
         let toggled
         if(continent == "Global"){
             toggled = prevFilter.map(r => ({ ...r, show: true }))
             linePlotTitle.textContent = "Global Electricity Source Trends"
-            if(document.getElementById("linePlotSVG").classList.contains("hide")){
+            if(linePlotSVG.classList.contains("hide")){
                 linePlotBold.textContent = "Global power plant capacity by source "
             }else{
                 linePlotBold.textContent = "Global electric generation per year "
@@ -1200,15 +1294,17 @@ function PrimaryPanels() {
         }else{
             toggled = prevFilter.map(r => ({ ...r, show: r.continent === continent }))
             linePlotTitle.textContent = continent + "'s Electricity Source Trends"
-            if(document.getElementById("linePlotSVG").classList.contains("hide")){
+            if(linePlotSVG.classList.contains("hide")){
                 linePlotBold.textContent = continent + "'s power plant capacity by source "
             }else{
-                linePlotBold.textContent = continent+ "'s electric generation per year "
+                linePlotBold.textContent = continent + "'s electric generation per year "
             }
         }
 
-        setRegionFilter(toggled)
-        zoomToRegionFilter(toggled)
+        setFilter(toggled)
+        if(!dontZoomTo){
+            zoomToRegionFilter(toggled)
+        }
     }
 
     function handleMapModeToggle(element){
@@ -1283,7 +1379,7 @@ function PrimaryPanels() {
         const diagramWrapper = document.querySelector("#allDiagramContainer");
 
         // Used for height assignment
-        const firstDiagramHeight = diagramWrapper.firstChild.offsetHeight
+        //const firstDiagramHeight = diagramWrapper.firstChild.offsetHeight
 
         const promptText = diagramWrapper.querySelector("#additionalDiagramPromptContainer").querySelector("span");
         const promptIcon = diagramWrapper.querySelector("#additionalDiagramPromptContainer").querySelector("img");
@@ -1292,7 +1388,7 @@ function PrimaryPanels() {
         if(prev != null){
             // Remove present comparison diagram
             gsap.fromTo(prev,
-                { height: firstDiagramHeight + "px", opacity: 1, },
+                { height: prev.offsetHeight, opacity: 1, },
                 { height: 0, opacity: 0, duration: 0.15, ease: "power2.out",
                     onComplete: () =>{
                         prev.remove()
@@ -1317,8 +1413,31 @@ function PrimaryPanels() {
         };
 
         // Create new diagram
-        const newDiagram = document.createElement("div");
-        newDiagram.id = "sidePanelComparisonLinePlot";
+        const newDiagram = createDiagram({
+            assetSources,
+            fuels: comparisonFuelFilter,
+            regionalData,
+            regionFilter: comparisonRegionFilter,
+            regionFilterRef: compRegionFilterRef,
+            setRegionFilter: setComparisonRegionFilter,
+            setFuelFilter: setComparisonFuelFilter,
+            setBarChartFilter: null,
+            onIndexClick: handleIndexClick,
+            onContinentClick: handleContinentClick,
+            onToggleClick: handleLinePlotToggle,
+            onLegendClick: handleFueLegClick,
+            comparison: true,
+        })
+
+        // Add click functionality to dropDowns
+        const compRegionFilter = newDiagram.querySelector("#compRegionFilter");
+
+        const header = compRegionFilter.querySelector(".sidePanelDropDownHeader")
+
+        header.onclick = () => handleRollupClick(compRegionFilter.querySelector(".sidePanelFilterDropDown"))
+
+        fillDropDowns(compRegionFilter.querySelector(".sidePanelDropDownField"), comparisonRegionFilter, setComparisonRegionFilter, compRegionFilterRef, false)
+
         newDiagram.style.opacity = 0
 
         gsap.fromTo(diagramWrapper.querySelector("#additionalDiagramPromptContainer"),
@@ -1339,7 +1458,7 @@ function PrimaryPanels() {
         // Open animation and height assignment
         gsap.fromTo(diagramWrapper.lastChild,
             { height: 0, opacity: 0 },
-            { height: firstDiagramHeight + "px", opacity: 1, duration: 0.15, ease: "power2.in"}
+            { height: "auto", opacity: 1, duration: 0.15, ease: "power2.in"}
         )
     }
 
@@ -1507,86 +1626,6 @@ function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){ //powerpl
     return shownPowerPlants
 }
 
-// Aggregate generation data from regionalInformation.json for the currently shown regions,
-// producing the same per-fuel shape that drawLinePlot / drawBarChart expect.
-function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, filterByShow = true){
-    const shownCountries = regionFilter.filter(r => r.show).map(r => r.country)
-    const shownRegions = regionalData.filter(d => shownCountries.includes(d.country))
-
-    // Sum a given generation field across shown regions for a set of raw fuel names
-    const sumFuelField = (field, rawFuels) => {
-        let total = 0
-        let hasValue = false
-        shownRegions.forEach(d => {
-            const map = d.annual_output_by_fuel[field]
-            if (!map) return
-            rawFuels.forEach(fuel => {
-                const v = map[fuel]
-                if (v != null) { total += v; hasValue = true }
-            })
-        })
-        return hasValue ? total : null
-    }
-
-    const fuels = filterByShow ? fuelFilter.filter(f => f.show) : fuelFilter
-
-    return fuels
-        .map(f => {
-            // The "Other" category aggregates several raw fuels
-            const rawFuels = f.fuel === "Other" ? otherFuels : [f.fuel]
-            const result = { fuel: f.fuel, colour: f.colour }
-
-            for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
-                result["sum_generation_" + year] = sumFuelField("generation_gwh_" + year, rawFuels)
-            }
-            for(let year = _firstYearOfEstimatedGenerationData; year <= _latestYearOfEstimatedGenerationData; year++){
-                result["sum_estimated_generation_" + year] = sumFuelField("estimated_generation_gwh_" + year, rawFuels)
-            }
-
-            // Sum capacity across shown regions for the raw fuel names
-            let capacity = 0
-            let hasCapacity = false
-            shownRegions.forEach(d => {
-                rawFuels.forEach(fuel => {
-                    const v = d.sum_capacity_mw[fuel]
-                    if (v != null) { capacity += v; hasCapacity = true }
-                })
-            })
-            result["sum_capacity_mw"] = hasCapacity ? capacity : null
-
-            return result
-        })
-}
-
-function formatPowerOf10(num){
-    if (num == null) return "N/A";
-    if (num === 0) return `0`.trim();
-
-    // Define metric prefixes mapping to powers of 10
-    const prefixes = [
-        { value: 1e3,  symbol: 'k' }, // kilo
-        { value: 1,    symbol: ''  },
-    ];
-
-    // Find the closest matching tier
-    const tier = prefixes.find(p => num >= p.value) || prefixes[prefixes.length - 1];
-
-    // Round to nearest whole number relative to the tier
-    const rounded = Math.round((num / tier.value));
-
-    return `${rounded} ${tier.symbol}`.trim();
-}
-
-// Find the latest year (checking backwards) where a fuel has reported generation data
-function getLatestGenerationValue(fuelData){
-    for(let year = _latestYearOfGenerationData; year >= _firstYearOfGenerationData; year--){
-        var value = fuelData["sum_generation_" + year]
-        if(value == null && year <=_latestYearOfEstimatedGenerationData) value = fuelData["sum_estimated_generation_"+year]
-        if (value != null) return value
-    }
-    return null
-}
-
 function getSliderBounds(filter, regionalData){
     let minVal = 0, maxVal = 100
     if (regionalData.length) {
@@ -1626,7 +1665,8 @@ function getSliderBounds(filter, regionalData){
     return { minVal, maxVal }
 }
 
-function createPages(pageContent, powerPlants, regionalData, regionFilterData, fuels,
+function createPages(pageContent, powerPlants, regionalData, regionFilterData, regionFilterRef, fuels,
+                                  setFuelFilter, setRegionFilter, setBarChartFilter,
                                   onYearChange, onGenerationChange, onReset, onIndexClick,
                                   onToggleClick, onLegendClick, onContinentClick, onAddDiagramClick){
     const pageContainer = document.createElement("div")
@@ -1768,219 +1808,11 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, f
     const allDiagramContainer = document.createElement("div");
     allDiagramContainer.id = "allDiagramContainer"
 
-    // Generation by fuel line plot
-    const linePlotContainer = document.createElement("div")
-    linePlotContainer.id = "sidePanelLinePlot"
-
-    // Region filter in line plot
-    const regionFilter = document.createElement("div");
-    regionFilter.id = "linePlotRegionFilter"
-    regionFilter.appendChild(getDropDown("region", onIndexClick))
-
-    linePlotContainer.appendChild(regionFilter)
-
-    // Continent buttons
-    const continentFilter = document.createElement("div");
-    continentFilter.id = "linePlotContinentFilter"
-
-    const continents = ["Global", "Africa", "Asia","Europe","North America", "Oceania", "South America"]
-    for(let i = 0; i<continents.length; i++){
-        let continentButton = document.createElement("div");
-        continentButton.classList.add("linePlotContinentButton");
-        if(i == 0){ // First entry, selected by default
-            continentButton.classList.toggle("continentSelected");
-        }
-
-        let continentName = document.createElement("span");
-        continentName.textContent = continents[i];
-
-        continentButton.onclick = () => onContinentClick(continentButton, continents[i])
-
-        continentButton.appendChild(continentName)
-        continentFilter.appendChild(continentButton)
-    }
-
-    linePlotContainer.appendChild(continentFilter)
-
-    // Header for line plot
-    const linePlotHeader = document.createElement("div");
-    linePlotHeader.id = "linePlotHeader"
-
-    // Title and data toggle wrapper
-    const titleAndDataWrapper = document.createElement("div");
-    titleAndDataWrapper.id = "linePlotTitleWrapper"
-
-    const linePlotTitle = document.createElement("span");
-    linePlotTitle.id = "linePlotTitle";
-    linePlotTitle.textContent = "Global Electricity Source Trends"
-
-    const toggleWrapper = document.createElement("div");
-    toggleWrapper.id = "dataToggleWrapper";
-
-    const toggleTitle = document.createElement("span");
-    toggleTitle.id = "dataToggleTitle";
-    toggleTitle.textContent = "Show: ";
-
-    const toggleButtons = document.createElement("div");
-    toggleButtons.id = "dataToggleButtonContainer"
-
-    const buttonText = (text) =>{
-        let textElement = document.createElement("span");
-        textElement.classList.add("dataToggleButtonText")
-        textElement.textContent = text
-        return textElement
-    }
-
-    const capacityButton = document.createElement("div");
-    capacityButton.classList.add("dataToggleButton")
-    capacityButton.style.backgroundColor = "rgba(0,0,0,0.0)";
-    capacityButton.onclick = () => onToggleClick(capacityButton)
-    capacityButton.appendChild(buttonText("Capacity"))
-
-    const outputButton = document.createElement("div");
-    outputButton.classList.add("dataToggleButton")
-    outputButton.style.backgroundColor = "#AAD3DE";
-    outputButton.onclick = () => onToggleClick(outputButton)
-    outputButton.appendChild(buttonText("Output"))
-
-    toggleButtons.appendChild(capacityButton)
-    toggleButtons.appendChild(outputButton)
-
-    toggleWrapper.appendChild(toggleTitle)
-    toggleWrapper.appendChild(toggleButtons)
-
-    titleAndDataWrapper.appendChild(linePlotTitle)
-    titleAndDataWrapper.appendChild(toggleWrapper)
-    linePlotHeader.appendChild(titleAndDataWrapper)
-
-    // Explanation text
-    const linePlotTextCollector = document.createElement("div");
-    linePlotTextCollector.id = "linePlotTextCollector"
-
-    const linePlotExBold = document.createElement("span");
-    linePlotExBold.id = "linePlotExBoldText"
-    linePlotExBold.textContent = "Global electric generation by source"
-
-    const linePlotExStandard = document.createElement("span");
-    linePlotExStandard.id = "linePlotExStandardText"
-    linePlotExStandard.textContent = "(GWh)"
-
-    linePlotTextCollector.appendChild(linePlotExBold)
-    linePlotTextCollector.appendChild(linePlotExStandard)
-    linePlotHeader.appendChild(linePlotTextCollector)
-
-    linePlotContainer.appendChild(linePlotHeader)
-
-    // Body of line plot (the graph and filter buttons)
-    const linePlotBody = document.createElement("div");
-    linePlotBody.id = "linePlotBody";
-
-    // SVG for actual line plot
-    const dataVisualization = document.createElement("svg");
-
-    // Container for fuelFilter
-    const fuelFilterContainer = document.createElement("div");
-    fuelFilterContainer.id = "fuelFilterContainer"
-
-    // Check if the fuel values are available
-    if(fuels){
-        // Pixel dimensions for the side panel
-        const sidePanelWidth =  Math.floor(window.innerWidth * 0.30);
-        const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? window.innerWidth* 0.02 : window.innerWidth * 0.01)
-        const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
-
-        // Pixel dimensions for the bar chart container
-        const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
-        const linePlotHeight = Math.floor((window.innerHeight * 0.35) * 0.72)
-
-        const shownRegionFuels = getShownRegionFuelData(regionalData, regionFilterData, fuels)
-        const allRegionFuels = getShownRegionFuelData(regionalData, regionFilterData, fuels, false)
-        drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, shownRegionFuels, true)
-        drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, shownRegionFuels, false)
-
-        // Select all option
-        const selectAllEntry = document.createElement("div");
-        selectAllEntry.classList.add("fuelFilterEntry");
-        selectAllEntry.style.justifyContent = "flex-end";
-
-        const selectAllName = document.createElement("span");
-        selectAllName.id = "fuelFilterSelectAllName"
-        selectAllName.textContent = "Deselect All"
-
-        const selectAllCheckBox = document.createElement("div")
-        selectAllCheckBox.id = "fuelFilterSelectAllCircle"
-        selectAllCheckBox.style.backgroundColor = "rgba(0,0,0,0.0)"
-
-        const selectAllCheck = document.createElement("img")
-        selectAllCheck.id = "fuelFilterSelectAllCheck"
-        selectAllCheck.src = assetSources.sidePanelSelectAllCircle
-
-        selectAllCheckBox.onclick = () => onLegendClick("all")
-        selectAllCheckBox.appendChild(selectAllCheck)
-        selectAllEntry.appendChild(selectAllName)
-        selectAllEntry.appendChild(selectAllCheckBox)
-        fuelFilterContainer.appendChild(selectAllEntry)
-
-        // Fuel filter entries
-        fuels.forEach(f =>{
-            const regionFuel = allRegionFuels.find(rf => rf.fuel === f.fuel)
-            const filterEntry = document.createElement("div");
-            filterEntry.classList.add("fuelFilterEntry");
-
-            const leftDiv = document.createElement("div");
-            leftDiv.style.display = "flex";
-            leftDiv.style.alignItems = "center"
-
-            const filterColour = document.createElement("div");
-            filterColour.classList.add("fuelFilterLegendColour");
-            filterColour.style.backgroundColor = f.colour;
-
-            // Add icon to colour box
-            if(f.fuel != "Other"){
-                const icon = document.createElement("img")
-                icon.classList.add("legendIcon")
-                icon.src = eval("assetSources.fuelIcon"+f.fuel)
-                filterColour.appendChild(icon)
-            }
-
-            const filterName = document.createElement("span");
-            filterName.textContent = f.fuel
-
-            leftDiv.appendChild(filterColour)
-            leftDiv.appendChild(filterName)
-
-            const rightDiv = document.createElement("div");
-            rightDiv.style.display = "flex";
-            rightDiv.style.alignItems = "center"
-
-            const filterCapacity = document.createElement("span");
-            filterCapacity.classList.add("fuelFilterValue", "hide", "ffCapacity");
-            filterCapacity.textContent = formatPowerOf10(regionFuel ? regionFuel.sum_capacity_mw : f.sum_capacity_mw);
-
-            const filterGeneration = document.createElement("span");
-            filterGeneration.classList.add("fuelFilterValue", "ffGeneration");
-            filterGeneration.textContent = formatPowerOf10(getLatestGenerationValue(regionFuel || f));
-
-            const checkBox = document.createElement("div");
-            checkBox.style.backgroundColor = "rgba(0,0,0,0.0)"
-            checkBox.classList.add("fuelFilterCheckBox")
-
-            const checkMark = document.createElement("img")
-            checkMark.classList.add("fuelFilterCheckMark")
-            checkMark.src = assetSources.sidePanelCheckMark
-
-            checkBox.onclick = () => onLegendClick(f.fuel)
-            checkBox.appendChild(checkMark)
-
-            rightDiv.appendChild(filterCapacity)
-            rightDiv.appendChild(filterGeneration)
-            rightDiv.appendChild(checkBox)
-
-            filterEntry.appendChild(leftDiv)
-            filterEntry.appendChild(rightDiv)
-            fuelFilterContainer.appendChild(filterEntry)
-        })
-    }
+    // Generation by fuel line plot (built by sidePanelUtilities.createDiagram)
+    const linePlotContainer = createDiagram({
+        assetSources, fuels, regionalData, regionFilter: regionFilterData, regionFilterRef,setRegionFilter, setFuelFilter, setBarChartFilter,
+        onIndexClick, onContinentClick, onToggleClick, onLegendClick,
+    })
 
     // Additional diagram prompt
     const additionalDiagramPromptContainer = document.createElement("div");
@@ -1996,10 +1828,6 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, f
     additionalDiagramPromptContainer.appendChild(additionalDiagramIcon)
 
     additionalDiagramPromptContainer.onclick = () => onAddDiagramClick()
-
-    linePlotBody.appendChild(dataVisualization)
-    linePlotBody.appendChild(fuelFilterContainer)
-    linePlotContainer.appendChild(linePlotBody)
     allDiagramContainer.appendChild(linePlotContainer)
     allDiagramContainer.appendChild(additionalDiagramPromptContainer)
     pageContainer.appendChild(allDiagramContainer)
@@ -2011,61 +1839,6 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, f
     }
 
     return pageContainer
-}
-
-// Creates the drop downs found in the side panel
-function getDropDown(filter, onIndexClick){
-    const dropDown = document.createElement("div")
-    dropDown.classList.add("sidePanelFilterDropDown")
-
-    const header = document.createElement("div")
-    header.classList.add("sidePanelDropDownHeader")
-
-    const title = document.createElement("h2")
-    title.classList.add("sidePanelFilterTitle")
-
-    const rollupIcon = document.createElement("img")
-    rollupIcon.classList.add("sidePanelFilterIcon")
-    rollupIcon.src = assetSources.sidePanelRollupOpen
-
-    const dropDownField = document.createElement("div");
-    dropDownField.classList.add("sidePanelDropDownField", "hide");
-
-    const legendContainer = document.createElement("div");
-    legendContainer.classList.add("sidePanelLegendContainer")
-
-    const alphabetIndexContainer = document.createElement("div");
-    alphabetIndexContainer.classList.add("dropDownIndexContainer");
-
-    if(filter == "region"){
-        title.textContent = "All Regions"
-
-        const alphabetArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-        alphabetArray.forEach(c =>{
-            const index = document.createElement("div");
-            index.classList.add("dropDownIndex");
-
-            const indexChar = document.createElement("span");
-            indexChar.classList.add("dropDownIndexChar");
-            indexChar.textContent = c;
-
-            index.appendChild(indexChar)
-            index.onclick = () => onIndexClick(index, c)
-            alphabetIndexContainer.appendChild(index)
-        })
-
-    }else{ // fuel
-        title.textContent = "All Power Sources"
-    }
-
-    dropDownField.appendChild(legendContainer)
-    dropDownField.appendChild(alphabetIndexContainer)
-
-    header.appendChild(title)
-    header.appendChild(rollupIcon)
-    dropDown.appendChild(header)
-    dropDown.appendChild(dropDownField)
-    return dropDown
 }
 
 // Creates the range based filters found in the side panel
@@ -2442,203 +2215,4 @@ function getInstructions(pageContent, id){
         }
     })
     return container
-}
-
-function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot){
-    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)}
-    if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(45*scale), left: Math.floor(15*scale)}}
-    var width = linePlotWidth - margin.left - margin.right,
-    height = linePlotHeight - margin.top - margin.bottom;
-
-    var svg = d3.select(svgE)
-        .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("class", showPlot? null : "hide")
-            .attr("id", "linePlotSVG")
-        .append("g")
-            .attr("transform","translate(" + margin.left + "," + margin.top + ")");
-
-    var sumstat = d3.index(data, (d) => d.fuel)
-
-    // Create x-axis
-    var x = d3.scaleLinear()
-    .domain([_firstYearOfGenerationData-0.2, _latestYearOfGenerationData])
-    .range([ 0, width ])
-
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).ticks(_latestYearOfGenerationData-_firstYearOfGenerationData).tickFormat(d3.format("d")))
-        .call(g => g.select(".domain").remove())
-        .call(g => g.selectAll(".tick").selectAll("line").remove())
-        .selectAll("text")
-            .attr("transform", "translate(-5,0)rotate(-45)")
-            .style("text-anchor", "end")
-            .style("font-size", "1vmin")
-            .style("font-family", "'Lato', sans-serif");
-
-    const maxValue = (d) =>{
-        var max = Number.NEGATIVE_INFINITY
-        for(let i = _firstYearOfGenerationData; i <= _latestYearOfGenerationData; i++){
-            let reported = eval("d.sum_generation_"+i)
-            if(reported >= max){max = reported}
-            if(i <= _latestYearOfEstimatedGenerationData && reported == null){
-                let estimated = eval("d.sum_estimated_generation_"+i)
-                if(estimated >= max){max = estimated}
-            }
-        }
-        return max
-    }
-
-    // Create y-axis
-    var y = d3.scaleLinear()
-        .domain([0, d3.max(data, function(d) { return maxValue(d) })])
-        .range([ height, 0 ]);
-
-    svg.append("g")
-        .attr("transform", "translate("+ width + ", 0)")
-        .call(d3.axisRight(y).tickFormat(d => d === 0 ? 0 : d3.format('.2s')(d)))
-        .call(g => g.select(".domain").remove())
-        .selectAll(".tick text")
-            .style("font-size", "1vmin")
-            .style("font-family", "'Lato', sans-serif");
-
-    // Append the grid lines group
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("stroke-width", 0.5) 
-        .style("stroke-dasharray", ("3, 3"))
-        .call(d3.axisLeft(y)
-            .tickSize(-width)  // Stretches lines across the width of the chart
-            .tickFormat("")    // Removes text labels from the grid lines
-        )
-        .call(g => g.select(".domain").remove());
-    
-    svg.append("g")
-    .attr("class", "grid")
-    .attr("transform", `translate(0, ${height})`)
-    .attr("stroke-width", 0.5) 
-    .style("stroke-dasharray", ("3, 3"))
-    .call(d3.axisTop(x)
-        .ticks(_latestYearOfGenerationData-_firstYearOfGenerationData)
-        .tickSize(height) // Stretches lines up across the height of the chart
-        .tickFormat("")    // Removes text labels
-    )
-    .call(g => g.select(".domain").remove());
-
-    svg.selectAll(".line")
-      .data(Array.from(sumstat.values()))
-      .enter()
-      .append("path")
-        .attr("fill", "none")
-        .attr("stroke", function(d){ return d.colour })
-        .attr("stroke-width", 2.5)
-        .attr("d", function(d){
-          const points = []
-          for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
-            if(d["sum_generation_" + year] != null){
-                points.push({ year: year, value: d["sum_generation_" + year] })
-            }else if(year <= _latestYearOfEstimatedGenerationData){
-                points.push({ year: year, value: d["sum_estimated_generation_" + year] })
-            }
-          }
-          const filtered = points.filter(p => p.value !== null);
-          if(filtered.length == 1){
-            const point = filtered[0]
-            svg.append("circle")
-                .attr("class", "lone-point")
-                .attr("cx", x(point.year))
-                .attr("cy", (point.value == null || point.value < 0) ? y(0.0) : y(point.value))
-                .attr("r", 5)
-                .attr("fill", d.colour);
-          }
-          return d3.line()
-            .x(function(p) { return x(p.year); })
-            .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
-            (filtered)
-        })
-}
-
-function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot){
-    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(8*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
-    if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(55*scale), left: Math.floor(15*scale)}}
-    var width = barChartWidth - margin.left - margin.right,
-    height = barChartHeight - margin.top - margin.bottom;
-
-    var svg = d3.select(svgE)
-        .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("class", showPlot? null : "hide")
-            .attr("id", "barChartSVG")
-        .append("g")
-            .attr("transform","translate(" + margin.left + "," + margin.top + ")");
-
-    var sumstat = d3.index(data, (d) => d.fuel)
-
-    // Create x-axis
-    var x = d3.scaleBand()
-        .range([ 0, width ])
-        .domain(sumstat.keys())
-        .padding(0.2);
-
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
-        .call(g => g.select(".domain").remove())
-        .call(g => g.selectAll(".tick").selectAll("line").remove())
-        .selectAll("text")
-            .attr("transform", "translate(-5,0)rotate(-45)")
-            .style("text-anchor", "end")
-            .style("font-size", "1vmin")
-            .style("font-family", "'Lato', sans-serif");
-
-    var y = d3.scaleLinear()
-        .domain([0, d3.max(data, function(d) { return d.sum_capacity_mw })])
-        .range([ height, 0]);
-
-    svg.append("g")
-        .attr("transform", "translate("+ width + ", 0)")
-        .call(d3.axisRight(y).tickFormat(d => d === 0 ? 0 : d3.format('.2s')(d)))
-        .call(g => g.select(".domain").remove())
-        .selectAll(".tick text")
-            .style("font-size", "1vmin")
-            .style("font-family", "'Lato', sans-serif");
-
-    // Append the grid lines group
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("stroke-width", 0.5) 
-        .style("stroke-dasharray", ("3, 3"))
-        .call(d3.axisLeft(y)
-            .tickSize(-width)  // Stretches lines across the width of the chart
-            .tickFormat("")    // Removes text labels from the grid lines
-        )
-        .call(g => g.select(".domain").remove());
-    
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", `translate(0, ${height})`)
-        .attr("stroke-width", 0.5) 
-        .style("stroke-dasharray", ("3, 3"))
-        .call(d3.axisTop(x)
-            .ticks(sumstat.length)
-            .tickSize(height) // Stretches lines up across the height of the chart
-            .tickFormat("")    // Removes text labels
-        )
-        .call(g => g.select(".domain").remove());
-
-    svg.selectAll("mybar")
-        .data(Array.from(sumstat.values()))
-        .enter()
-        .append("rect")
-            .attr("x", function(d) { return x(d.fuel); })
-            .attr("y", function(d) { return y(d.sum_capacity_mw); })
-            .attr("width", x.bandwidth())
-            .attr("height", function(d) {
-                return (d.sum_capacity_mw==null || d.sum_capacity_mw<0)? 0.0 : height - y(d.sum_capacity_mw);
-             })
-            .attr("fill", function(d) {return d.colour})
 }

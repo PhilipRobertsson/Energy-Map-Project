@@ -244,7 +244,6 @@
 
 #sidePanelLinePlot{
     width: 100%;
-    /*height: 40dvh;*/
     display: flex;
     flex-direction: column;
     background-color: #f7f7f7;
@@ -269,7 +268,13 @@
     padding: 0 0 1dvh 0;
 }
 
-#linePlotContinentFilter{
+#compRegionFilter{
+    margin: 1dvh 0 1dvh 0;
+    border-bottom: #004B70 solid 0.2dvh;
+    padding: 0 0 1dvh 0;
+}
+
+#linePlotContinentFilter, #compLinePlotContinentFilter{
     margin: 0.15dvh 0 0.15dvh 0;
     display: flex;
     flex-direction: row;
@@ -299,7 +304,7 @@
     color: #FCFCFC;
 }
 
-#linePlotHeader{
+#linePlotHeader, #compLinePlotHeader{
     height: 18%;
     display: flex;
     flex-direction: row;
@@ -311,25 +316,25 @@
     user-select: none; /* Standard */
 }
 
-#linePlotTitleWrapper{
+#linePlotTitleWrapper, #compLinePlotTitleWrapper{
     width: 65%;
 }
 
-#linePlotTitle{
+#linePlotTitle, #compLinePlotTitle{
     font-size: 1.6vmin;
     font-family: "Lato", sans-serif;
     font-weight: 800;
     font-style: normal;
 }
 
-#dataToggleWrapper{
+#dataToggleWrapper, #compDataToggleWrapper{
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-top: 0.32dvh;
 }
 
-#dataToggleTitle{
+#dataToggleTitle, #compDataToggleTitle{
     margin-right: 0.16dvw;
     font-size: 1.5vmin;
     font-family: "Lato", sans-serif;
@@ -337,7 +342,7 @@
     font-style: normal;
 }
 
-#dataToggleButtonContainer{
+#dataToggleButtonContainer, #compDataToggleButtonContainer{
     display: flex;
     border: 0.1vmin solid #AAD3DE;
     border-radius: 0.2vmin;
@@ -351,22 +356,22 @@
     font-style: normal;
 }
 
-#linePlotTextCollector{
+#linePlotTextCollector, #compLinePlotTextCollector{
     width: 45%;
     font-family: "Lato", sans-serif;
     font-size: 1.4vmin;
     font-style: normal;
 }
 
-#linePlotExBoldText{
+#linePlotExBoldText, #compLinePlotExBoldText{
     font-weight: 600;
 }
 
-#linePlotExStandardText{
+#linePlotExStandardText, #compLinePlotExStandardText{
     font-weight: 400;
 }
 
-#linePlotBody{
+#linePlotBody, #compLinePlotBody{
     display: flex;
     flex-direction: row;
     margin: 0 1dvw 1dvh 1dvw;
@@ -377,7 +382,7 @@
     user-select: none; /* Standard */
 }
 
-#fuelFilterContainer{
+#fuelFilterContainer, #compFuelFilterContainer{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -429,12 +434,12 @@
     margin-left: unset;
 }
 
-#fuelFilterSelectAllName{
+#fuelFilterSelectAllName, #compFuelFilterSelectAllName{
     font-weight: 400;
     margin-right: 0.32dvw;
 }
 
-#fuelFilterSelectAllCircle{
+#fuelFilterSelectAllCircle, #compFuelFilterSelectAllCircle{
     background-color: rgba(0, 0, 0, 0);
     border: 0.25vmin solid #004B70;
     border-radius: 50%;
@@ -445,7 +450,7 @@
     align-items: center;
 }
 
-#fuelFilterSelectAllCheck{
+#fuelFilterSelectAllCheck, #compFuelFilterSelectAllCheck{
     width: 0.8dvh;
     height: auto;
     margin-left: unset;
@@ -1046,6 +1051,6 @@
     #sidePanelFilterAndResetWrapper{flex-direction: row;}
     #filterCounter{font-size: 1vmin;}
     .sidePanelResetButton{padding: 0.5dvh; margin: 0 0.5dvw 0 0.5dvw;}
-    #fuelFilterContainer{padding-left: 0.4dvw; font-size: 1.2vmin;}
-    #fuelFilterSelectAllCheck{width: 0.7dvh;}
+    #fuelFilterContainer, #compFuelFilterContainer{padding-left: 0.4dvw; font-size: 1.2vmin;}
+    #fuelFilterSelectAllCheck, #compFuelFilterSelectAllCheck{width: 0.7dvh;}
 }
