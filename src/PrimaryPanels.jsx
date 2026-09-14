@@ -690,13 +690,10 @@ function PrimaryPanels() {
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]
-            //const sidePanelFuelFilter = pages.children[4].children[0]
 
             const sidePanelRegionHeader = sidePanelRegionFilter.children[0]
-            //const sidePanelFuelHeader = sidePanelFuelFilter.children[0]
 
-            sidePanelRegionHeader.onclick = () => handleRollupClick(sidePanelRegionFilter/*, [sidePanelFuelFilter]*/)
-            //sidePanelFuelHeader.onclick = () => handleRollupClick(sidePanelFuelFilter, [sidePanelRegionFilter])
+            sidePanelRegionHeader.onclick = () => handleRollupClick(sidePanelRegionFilter)
 
             // Fills the provided drop down with the corresponding filter contents
             const fillDropDowns = (dropDownE,type,filter) =>{
@@ -1083,13 +1080,7 @@ function PrimaryPanels() {
     }
 
     // Handle rollupClick
-    function handleRollupClick(element /*, otherElements*/){
-        // Any other dropdowns open?
-        /* for(var i = 0; i < otherElements.length; i++){
-            if(!otherElements[i].children[1].classList.contains("hide")){
-                toggleDropDown(otherElements[i])
-            }
-        } */
+    function handleRollupClick(element){
         toggleDropDown(element)
     }
 
