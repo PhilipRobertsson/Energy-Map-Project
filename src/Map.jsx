@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 
 import './Map.css'
 
-export const MapContext = createContext({ mapRef: null, powerPlants: null, barChartFilter: null, setBarChartFilter: null, popupCount: 0 });
+export const MapContext = createContext({ mapRef: null, powerPlants: null, barChartFilter: null, setBarChartFilter: null, popupCount: 0, reportedYears: { first: 0, last: 0 }, estimatedYears: { first: 0, last: 0 } });
 
 // Previous mapStyle version
   /*
@@ -194,12 +194,6 @@ const assetSources ={
     alertIcon: "./sidePanel/sidePanelInfoIcon.svg"
 }
 
-// Update based on "global_power_plant_database.geojson"
-const _firstYearOfGenerationData = 2013;
-const _latestYearOfGenerationData = 2019;
-const _firstYearOfEstimatedGenerationData = 2013;
-const _latestYearOfEstimatedGenerationData = 2017;
-
 // Variables for the timer
 // Convert to seconds: 60, Desired reset time in minutes: 5 (default), Convert to miliseconds: 1000
 const TIME_IN_MILISECONDS_TO_EXHIBITION_RESET = 60*5*1000;
@@ -212,6 +206,8 @@ function Map({ children }) {
   const [popupCount, setPopupCount] = useState(0);
   const [colourData, setColourData] = useState(null);
   const [regionalData, setRegionalData] = useState(null);
+  const [reportedYears, setReportedYears] = useState({ first: 0, last: 0 });
+  const [estimatedYears, setEstimatedYears] = useState({ first: 0, last: 0 });
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
   const [time, setTime] = useState(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET);
@@ -244,6 +240,17 @@ function Map({ children }) {
       .then((response) => response.json())
       .then((data) => {
         setRegionalData(data);
+        // Extract first and last years from reported and estimated data
+        const reportedCols = Object.keys(data[0].annual_output_by_fuel).filter(
+          (str) => str.indexOf("estimated") === -1
+        );
+        const estimatedCols = Object.keys(data[0].annual_output_by_fuel).filter(
+          (str) => str.indexOf("estimated") >= 0
+        );
+        const reportedYearValues = reportedCols.map((s) => parseInt(s.replace(/^\D+/g, "")));
+        const estimatedYearValues = estimatedCols.map((s) => parseInt(s.replace(/^\D+/g, "")));
+        setReportedYears({ first: Math.min(...reportedYearValues), last: Math.max(...reportedYearValues) });
+        setEstimatedYears({ first: Math.min(...estimatedYearValues), last: Math.max(...estimatedYearValues) });
       });
   }, []);
 
@@ -351,7 +358,7 @@ function Map({ children }) {
           // Power plant information
           var consiseInformation = document.createElement("div")
           consiseInformation.classList.add("pop-up-info")
-          consiseInformation = getPowerPlantInfo(properties, consiseInformation)
+          consiseInformation = getPowerPlantInfo(properties, consiseInformation, reportedYears, estimatedYears)
 
           // Get regionalInfoIcon
           if(consiseInformation.children[3].children[2]){
@@ -375,7 +382,7 @@ function Map({ children }) {
           overviewOpen.src = assetSources.popupRollupClosed
 
           // Get the regional information about the corresponding country
-          const regionalInformation = getRegionalInfo(properties, regionalData, colourData)
+          const regionalInformation = getRegionalInfo(properties, regionalData, colourData, reportedYears, estimatedYears)
           
           // Handle clicks on the rollup icon
           overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
@@ -641,7 +648,8 @@ function Map({ children }) {
   return (
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data,
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
-                                                    popupCount, timeRef: time, resetTimer }}>
+                                                    popupCount, timeRef: time, resetTimer,
+                                                    reportedYears, estimatedYears }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>
@@ -653,7 +661,7 @@ function Map({ children }) {
 }
 
 // Function to get relevant information about a given powerplant
-function getPowerPlantInfo(feature, htmlElement){
+function getPowerPlantInfo(feature, htmlElement, reportedYears, estimatedYears){
     // Commisioning year
     const yearStartedField = document.createElement("span")
     const yearStartedTitle = document.createElement("strong")
@@ -693,7 +701,7 @@ function getPowerPlantInfo(feature, htmlElement){
     var latestDataYear = 0
     var latestDataValue = 0
     var reported = false
-    for(var i = _latestYearOfGenerationData; i >=_firstYearOfGenerationData; i--){
+    for(var i = reportedYears.last; i >=reportedYears.first; i--){
         var tempReported = eval("feature.generation_gwh_" + i)
         var tempEstimated = eval("feature.estimated_generation_gwh_" + i)
         if(tempReported != null){
@@ -701,7 +709,7 @@ function getPowerPlantInfo(feature, htmlElement){
             latestDataValue = tempReported
             reported = true
             break;
-        }else if(i <= _latestYearOfEstimatedGenerationData && tempEstimated){
+        }else if(i <= estimatedYears.last && tempEstimated){
             latestDataYear = i
             latestDataValue = tempEstimated
             reported = false
@@ -747,7 +755,7 @@ function getPowerPlantInfo(feature, htmlElement){
 }
 
 // Function to generate the regional information stored in each pop-up
-function getRegionalInfo(feature, data, colours){
+function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
     const region = data.find((c) => c.country == feature.country)
     const htmlElement = document.createElement("div")
     htmlElement.classList.add("regional-overview-info", "hide")
@@ -760,7 +768,7 @@ function getRegionalInfo(feature, data, colours){
     var latestDataYear = 0
     var latestDataValue = 0
     var reported = false
-    for(var i = _latestYearOfGenerationData; i >=_firstYearOfGenerationData; i--){
+    for(var i = reportedYears.last; i >=reportedYears.first; i--){
         var tempReported = eval("region.regional_annual_output.generation_gwh_" + i)
         var tempEstimated = eval("region.regional_annual_output.estimated_generation_gwh_" + i)
         if(tempReported != null){
@@ -768,7 +776,7 @@ function getRegionalInfo(feature, data, colours){
             latestDataValue = tempReported
             reported = true
             break;
-        }else if(i <= _latestYearOfEstimatedGenerationData && tempEstimated != null){
+        }else if(i <= estimatedYears.last && tempEstimated != null){
             latestDataYear = i
             latestDataValue = tempEstimated
             reported = false
@@ -807,7 +815,7 @@ function getRegionalInfo(feature, data, colours){
     }
 
     var latestData = {}
-    for(var i = _latestYearOfGenerationData; i >=_firstYearOfGenerationData; i--){
+    for(var i = reportedYears.last; i >=reportedYears.first; i--){
         var tempReported = eval("region.annual_output_by_fuel.generation_gwh_" + i)
         var tempEstimated = eval("region.annual_output_by_fuel.estimated_generation_gwh_" + i)
 
@@ -818,7 +826,7 @@ function getRegionalInfo(feature, data, colours){
         var gotReported = Object.keys(tempReported).filter((key) => tempReported[key] != null)
 
         // Missing values / total values in estimated data
-        if(i<=_latestYearOfEstimatedGenerationData){
+        if(i<=estimatedYears.last){
             var numNullEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] === null).length
             var totalEstimated = Object.keys(tempEstimated).length
             var missingEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] === null)
@@ -848,9 +856,9 @@ function getRegionalInfo(feature, data, colours){
         }
 
         // No reported values are found and estimated does not exist
-        if(gotReported.length == 0 && i>_latestYearOfEstimatedGenerationData){
+        if(gotReported.length == 0 && i>estimatedYears.last){
             continue
-        }else if(i > _latestYearOfEstimatedGenerationData){ // There are some reported values, but estimated does not exist
+        }else if(i > estimatedYears.last){ // There are some reported values, but estimated does not exist
             gotReported.forEach((fuel)=>{
                 if (!(fuel in latestData)){
                     latestData[fuel] = {}

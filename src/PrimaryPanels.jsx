@@ -62,7 +62,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer } = useContext(MapContext);
+    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -88,6 +88,7 @@ function PrimaryPanels() {
     const fuelFilterRef = useRef([]);
     const regionalDataRef = useRef([]);
     const sidePanelOpenRef = useRef(true);
+    const yearsRef = useRef({ reported: { first: 0, last: 0 }, estimated: { first: 0, last: 0 } });
 
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
@@ -104,7 +105,8 @@ function PrimaryPanels() {
         compRegionFilterRef.current = comparisonRegionFilter
         compFuelFilterRef.current = comparisonFuelFilter
         regionalDataRef.current = regionalData
-    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter]);
+        yearsRef.current = { reported: reportedYears, estimated: estimatedYears }
+    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -169,8 +171,8 @@ function PrimaryPanels() {
             linePlotSVG?.remove()
             barChartSVG?.remove()
 
-            const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current)
-            drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
+            const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current, true, yearsRef.current)
+            drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden, "linePlotSVG", yearsRef.current)
             drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
         }
 
@@ -351,8 +353,8 @@ function PrimaryPanels() {
             linePlotSVG?.remove()
             barChartSVG?.remove()
 
-            const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current)
-            drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden)
+            const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current, true, yearsRef.current)
+            drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden, "linePlotSVG", yearsRef.current)
             drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
         }
 
@@ -377,8 +379,8 @@ function PrimaryPanels() {
             compLinePlotSVG?.remove()
             compBarChartSVG?.remove()
 
-            const compFuels = getShownRegionFuelData(regionalDataRef.current, compRegionFilterRef.current, compFuelFilterRef.current)
-            drawLinePlot(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compLinePlotHidden, "compLinePlotSVG")
+            const compFuels = getShownRegionFuelData(regionalDataRef.current, compRegionFilterRef.current, compFuelFilterRef.current, true, yearsRef.current)
+            drawLinePlot(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compLinePlotHidden, "compLinePlotSVG", yearsRef.current)
             drawBarChart(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compBarChartHidden, "compBarChartSVG")
         }
 
@@ -397,7 +399,7 @@ function PrimaryPanels() {
                 zoomSelectionState.current.isSelection = true
             }
         }
-    }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants, comparisonRegionFilter, comparisonFuelFilter])
+    }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears])
 
     // Check the context filter for any updates
     useEffect(()=>{
@@ -543,7 +545,7 @@ function PrimaryPanels() {
         const linePlotFuelContainer = sidePanel.querySelector("#fuelFilterContainer")
         if (linePlotFuelContainer) {
             const linePlotEntries = linePlotFuelContainer.querySelectorAll(".fuelFilterEntry")
-            const allRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuelFilter, false)
+            const allRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuelFilter, false, yearsRef.current)
             fuelFilter.forEach((fuel, i) => {
                 const entry = linePlotEntries[i+1] // +1 to skip the select all entry
                 if (entry) {
@@ -553,7 +555,7 @@ function PrimaryPanels() {
 
                     const regionFuel = allRegionFuels.find(rf => rf.fuel === fuel.fuel)
                     const capacityValue = regionFuel ? regionFuel.sum_capacity_mw : fuel.sum_capacity_mw
-                    const generationValue = getLatestGenerationValue(regionFuel || fuel)
+                    const generationValue = getLatestGenerationValue(regionFuel || fuel, yearsRef.current)
                     const capacityEl = entry.querySelector(".ffCapacity")
                     const generationEl = entry.querySelector(".ffGeneration")
                     if (capacityEl) capacityEl.textContent = formatPowerOf10(capacityValue)
@@ -587,7 +589,7 @@ function PrimaryPanels() {
                 }
             })
         }
-    }, [fuelFilter,regionFilter,regionalData,popupCount, comparisonRegionFilter, comparisonFuelFilter]);
+    }, [fuelFilter,regionFilter,regionalData,popupCount, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears]);
 
     // Update map layer filter
     useEffect(() => {
@@ -666,7 +668,7 @@ function PrimaryPanels() {
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
             const newPages = createPages(pageContent, powerPlants, regionalData, regionFilter, regionFilterRef, fuelFilter,
-                setFuelFilter, setRegionFilter, setBarChartFilter,
+                setFuelFilter, setRegionFilter, setBarChartFilter, yearsRef.current,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 (button, option) => handleResetClick(button, option, resetAllFilters),
@@ -674,7 +676,7 @@ function PrimaryPanels() {
                 handleLinePlotToggle,
                 (clickedFuel, setBarChartFilter, setFilter) => handleFueLegClick(clickedFuel, setBarChartFilter, setFilter, checkAndSetFilter),
                 (element, continent, filterRef, setFilter, dontZoomTo) => handleContinentClick(element, continent, filterRef, setFilter, dontZoomTo, zoomToRegionFilter),
-                () => handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData, comparisonRegionFilter, compRegionFilterRef, setComparisonRegionFilter, setComparisonFuelFilter, fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter)
+                () => handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData, comparisonRegionFilter, compRegionFilterRef, setComparisonRegionFilter, setComparisonFuelFilter, fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter, yearsRef.current)
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -1086,7 +1088,7 @@ function getSliderBounds(filter, regionalData){
 }
 
 function createPages(pageContent, powerPlants, regionalData, regionFilterData, regionFilterRef, fuels,
-                                  setFuelFilter, setRegionFilter, setBarChartFilter,
+                                  setFuelFilter, setRegionFilter, setBarChartFilter, years,
                                   onYearChange, onGenerationChange, onReset, onIndexClick,
                                   onToggleClick, onLegendClick, onContinentClick, onAddDiagramClick){
     const pageContainer = document.createElement("div")
@@ -1232,6 +1234,7 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, r
     const linePlotContainer = createDiagram({
         assetSources, fuels, regionalData, regionFilter: regionFilterData, regionFilterRef,setRegionFilter, setFuelFilter, setBarChartFilter,
         onIndexClick, onContinentClick, onToggleClick, onLegendClick,
+        years,
     })
 
     // Additional diagram prompt

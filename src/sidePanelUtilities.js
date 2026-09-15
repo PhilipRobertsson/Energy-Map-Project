@@ -1,10 +1,5 @@
 import * as d3 from "d3";
 
-export const _firstYearOfGenerationData = 2013;
-export const _latestYearOfGenerationData = 2019;
-export const _firstYearOfEstimatedGenerationData = 2013;
-export const _latestYearOfEstimatedGenerationData = 2017;
-
 // Used to filter out fuels which either are too uncommon or unimportant for the visualization
 export const otherFuels = [
     "Petcoke", "Wave and Tidal", "Tidal",
@@ -14,7 +9,7 @@ export const otherFuels = [
 
 // Aggregate generation data from regionalInformation.json for the currently shown regions,
 // producing the same per-fuel shape that drawLinePlot / drawBarChart expect.
-export function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, filterByShow = true){
+export function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, filterByShow = true, years){
     const shownCountries = regionFilter.filter(r => r.show).map(r => r.country)
     const shownRegions = regionalData.filter(d => shownCountries.includes(d.country))
 
@@ -41,10 +36,10 @@ export function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, f
             const rawFuels = f.fuel === "Other" ? otherFuels : [f.fuel]
             const result = { fuel: f.fuel, colour: f.colour }
 
-            for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
+            for(let year = years.reported.first; year <= years.reported.last; year++){
                 result["sum_generation_" + year] = sumFuelField("generation_gwh_" + year, rawFuels)
             }
-            for(let year = _firstYearOfEstimatedGenerationData; year <= _latestYearOfEstimatedGenerationData; year++){
+            for(let year = years.estimated.first; year <= years.estimated.last; year++){
                 result["sum_estimated_generation_" + year] = sumFuelField("estimated_generation_gwh_" + year, rawFuels)
             }
 
@@ -83,16 +78,16 @@ export function formatPowerOf10(num){
 }
 
 // Find the latest year (checking backwards) where a fuel has reported generation data
-export function getLatestGenerationValue(fuelData){
-    for(let year = _latestYearOfGenerationData; year >= _firstYearOfGenerationData; year--){
+export function getLatestGenerationValue(fuelData, years){
+    for(let year = years.reported.last; year >= years.reported.first; year--){
         var value = fuelData["sum_generation_" + year]
-        if(value == null && year <=_latestYearOfEstimatedGenerationData) value = fuelData["sum_estimated_generation_"+year]
+        if(value == null && year <= years.estimated.last) value = fuelData["sum_estimated_generation_"+year]
         if (value != null) return value
     }
     return null
 }
 
-export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot, svgId = "linePlotSVG"){
+export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot, svgId = "linePlotSVG", years){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
     var margin = {top: Math.floor(5*scale), right: Math.floor(40*scale), bottom: Math.floor(30*scale), left: Math.floor(10*scale)}
     if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(45*scale), left: Math.floor(15*scale)}}
@@ -112,12 +107,12 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
 
     // Create x-axis
     var x = d3.scaleLinear()
-    .domain([_firstYearOfGenerationData-0.2, _latestYearOfGenerationData])
+    .domain([years.reported.first-0.2, years.reported.last])
     .range([ 0, width ])
 
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).ticks(_latestYearOfGenerationData-_firstYearOfGenerationData).tickFormat(d3.format("d")))
+        .call(d3.axisBottom(x).ticks(years.reported.last-years.reported.first).tickFormat(d3.format("d")))
         .call(g => g.select(".domain").remove())
         .call(g => g.selectAll(".tick").selectAll("line").remove())
         .selectAll("text")
@@ -128,10 +123,10 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
 
     const maxValue = (d) =>{
         var max = Number.NEGATIVE_INFINITY
-        for(let i = _firstYearOfGenerationData; i <= _latestYearOfGenerationData; i++){
+        for(let i = years.reported.first; i <= years.reported.last; i++){
             let reported = d["sum_generation_" + i]
             if(reported >= max){max = reported}
-            if(i <= _latestYearOfEstimatedGenerationData && reported == null){
+            if(i <= years.estimated.last && reported == null){
                 let estimated = d["sum_estimated_generation_" + i]
                 if(estimated >= max){max = estimated}
             }
@@ -171,7 +166,7 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
     .attr("stroke-width", 0.5) 
     .style("stroke-dasharray", ("3, 3"))
     .call(d3.axisTop(x)
-        .ticks(_latestYearOfGenerationData-_firstYearOfGenerationData)
+        .ticks(years.reported.last-years.reported.first)
         .tickSize(height) // Stretches lines up across the height of the chart
         .tickFormat("")    // Removes text labels
     )
@@ -186,10 +181,10 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
         .attr("stroke-width", 2.5)
         .attr("d", function(d){
           const points = []
-          for(let year = _firstYearOfGenerationData; year <= _latestYearOfGenerationData; year++){
+          for(let year = years.reported.first; year <= years.reported.last; year++){
             if(d["sum_generation_" + year] != null){
                 points.push({ year: year, value: d["sum_generation_" + year] })
-            }else if(year <= _latestYearOfEstimatedGenerationData){
+            }else if(year <= years.estimated.last){
                 points.push({ year: year, value: d["sum_estimated_generation_" + year] })
             }
           }
@@ -349,7 +344,7 @@ export function getDropDown(onIndexClick, assetSources){
 export function createDiagram({
     assetSources, fuels, regionalData, regionFilter,regionFilterRef,setRegionFilter,setFuelFilter, setBarChartFilter,
     onIndexClick, onContinentClick, onToggleClick, onLegendClick,
-    comparison = false,
+    comparison = false, years,
 }){
     const ids = comparison ? {
         container: "sidePanelComparisonLinePlot",
@@ -513,9 +508,9 @@ export function createDiagram({
         const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
         const linePlotHeight = Math.floor((window.innerHeight * 0.35) * 0.72)
 
-        const shownRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuels)
-        const allRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuels, false)
-        drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, shownRegionFuels, true, ids.linePlotSvg)
+        const shownRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuels, true, years)
+        const allRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuels, false, years)
+        drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, shownRegionFuels, true, ids.linePlotSvg, years)
         drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, shownRegionFuels, false, ids.barChartSvg)
 
         // Select all option
@@ -579,7 +574,7 @@ export function createDiagram({
 
             const filterGeneration = document.createElement("span");
             filterGeneration.classList.add("fuelFilterValue", "ffGeneration");
-            filterGeneration.textContent = formatPowerOf10(getLatestGenerationValue(regionFuel || f));
+            filterGeneration.textContent = formatPowerOf10(getLatestGenerationValue(regionFuel || f, years));
 
             const checkBox = document.createElement("div");
             checkBox.style.backgroundColor = "rgba(0,0,0,0.0)"

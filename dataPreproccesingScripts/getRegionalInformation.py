@@ -14,6 +14,13 @@ def sum_by_fuel(country_df, col):
     return result
 
 def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonUsage):
+    # Determine the available reported and estimated generation years from the columns
+    reported_years = sorted({int(c.replace('generation_gwh_', '')) for c in dataframe.columns if c.startswith('generation_gwh_')})
+    estimated_years = sorted({int(c.replace('estimated_generation_gwh_', '')) for c in dataframe.columns if c.startswith('estimated_generation_gwh_')})
+
+    # Determine the available usage years from the fossil fuel and low carbon datasets
+    usage_years = sorted({int(y) for usage_data in (fossilFuelUsage, lowCarbonUsage) for y in usage_data['Year'].dropna().unique()})
+
     entries = []
     for x in countries:
         data = {}
@@ -46,7 +53,7 @@ def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonU
         data['regional_min_output'] = {}
         data['regional_max_output'] = {}
 
-        for i in range(2013, 2020):
+        for i in range(reported_years[0], reported_years[-1] + 1):
             col_reported = 'generation_gwh_' + str(i)
             reported = countryDataframe[col_reported]
             rep_total = reported.dropna().sum()
@@ -57,7 +64,7 @@ def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonU
             data['regional_min_output'][col_reported] = reportedMin if not math.isnan(reportedMin) and reportedMin > 0  else None
             data['regional_max_output'][col_reported] = reportedMax if not math.isnan(reportedMax) and reportedMax > 0 else None
 
-            if i < 2018:
+            if i <= estimated_years[-1]:
                 col_estimated = 'estimated_generation_gwh_' + str(i)
                 estimated = countryDataframe[col_estimated]
                 est_total = estimated.dropna().sum()
@@ -74,7 +81,7 @@ def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonU
         countryFossilUsage = fossilFuelUsage[(fossilFuelUsage['Code'] == x)]
         countryLowUsage = lowCarbonUsage[(lowCarbonUsage['Code'] == x)]
         
-        for i in range(1965, 2026):
+        for i in range(usage_years[0], usage_years[-1] + 1):
             valueFF = countryFossilUsage['Fossil fuels'][(fossilFuelUsage['Year'] == i)].values
             valueLC = countryLowUsage['Low-carbon energy'][(countryLowUsage['Year'] == i)].values
             col = 'usage_' + str(i)
