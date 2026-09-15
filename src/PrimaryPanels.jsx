@@ -660,7 +660,7 @@ function PrimaryPanels() {
             if (filterCounterStatic){
                 filterCounterStatic.textContent = "No power plants found, reset filters";
                 gsap.fromTo(filterCounterStatic,
-                    {color: "#030303", fontSize: "1.4vmin"},
+                    {color: "#f7f7f7", fontSize: "1.4vmin"},
                     {color: "#8f0c0c", fontSize: "1.6vmin",
                         duration: 0.15, yoyo: true, repeat: 1, overwrite: true 
                     }
