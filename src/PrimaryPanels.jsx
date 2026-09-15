@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useContext, createElement } from 'react'
 import { gsap } from "gsap";
 
 import { MapContext } from './Map.jsx'
-import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue, otherFuels, drawLinePlot, drawBarChart, getDropDown } from './sidePanelUtilities.js'
+import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue,
+              otherFuels, drawLinePlot, drawBarChart, getDropDown, createUsageGradient } from './sidePanelUtilities.js'
 import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleIndexClick, handleFueLegClick, handleRegLegClick, handleNavigationClick,
               handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick,
@@ -273,10 +274,12 @@ function PrimaryPanels() {
         const legendContainer = document.createElement("div")
         legendContainer.classList.add("fuelFilterContent")
 
-        const lowCarbonContainer = document.createElement("div")
+        let lowCarbonContainer = document.createElement("div")
+        lowCarbonContainer = createUsageGradient(lowCarbonContainer, ["rgba(29, 62, 0, 1)", "rgba(1, 255, 18, 1)"], regionalData, "LC")
         lowCarbonContainer.classList.add("fuelFilterContent", "hide")
 
-        const fossilFuelContainer = document.createElement("div")
+        let fossilFuelContainer = document.createElement("div")
+        fossilFuelContainer = createUsageGradient(fossilFuelContainer, ["rgba(82, 0, 0, 1)", "rgba(255, 25, 0, 1)"], regionalData, "FF")
         fossilFuelContainer.classList.add("fuelFilterContent", "hide")
 
         // Create colour legends for each fuel available
@@ -311,18 +314,6 @@ function PrimaryPanels() {
             legend.appendChild(label) // Append the text to the legend element
             legendContainer.appendChild(legend) // Append the legend to the filter container
         }
-
-        // Creat low carbon colour gradient, append to lowCarbonContainer
-        const lowCarbonLegend = document.createElement("div");
-        lowCarbonLegend.classList.add("gradientLegend")
-        lowCarbonLegend.style.background = "linear-gradient(0deg,rgba(29, 62, 0, 1) 0%, rgba(1, 255, 18, 1) 100%)"
-        lowCarbonContainer.appendChild(lowCarbonLegend)
-
-        // Create fossil fuel colour gradient, append to fossilFuelContainer
-        const fossilFuelLegend = document.createElement("div");
-        fossilFuelLegend.classList.add("gradientLegend")
-        fossilFuelLegend.style.background = "linear-gradient(0deg,rgba(82, 0, 0, 1) 0%, rgba(255, 25, 0, 1) 100%)"
-        fossilFuelContainer.appendChild(fossilFuelLegend)
 
         filter.appendChild(legendContainer)
         filter.appendChild(lowCarbonContainer)
