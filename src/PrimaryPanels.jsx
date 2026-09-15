@@ -3,7 +3,11 @@ import { gsap } from "gsap";
 
 import { MapContext } from './Map.jsx'
 import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue, otherFuels, drawLinePlot, drawBarChart, getDropDown } from './sidePanelUtilities.js'
-import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick, handleIndexClick, handleFueLegClick, handleRegLegClick, handleNavigationClick, handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick, handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds } from './eventHandlers.js'
+import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
+              handleIndexClick, handleFueLegClick, handleRegLegClick, handleNavigationClick,
+              handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick,
+              handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
+              handlePlayBackClick } from './eventHandlers.js'
 
 import './PrimaryPanels.css'
 
@@ -401,6 +405,14 @@ function PrimaryPanels() {
         }
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears])
 
+    // Keep the year slider thumb positions in sync with the year filter state
+    useEffect(() => {
+        if (yearFilter.length !== 2) return
+        const [values] = yearFilter
+        const sliders = sidePanelContainer.current?.querySelectorAll(".sidePanelFilterSliderContainer")
+        if (sliders && sliders[0] && sliders[0].sync) sliders[0].sync(values[0], values[1])
+    }, [yearFilter])
+
     // Check the context filter for any updates
     useEffect(()=>{
         if(!fuelFilter.length) return
@@ -749,6 +761,11 @@ function PrimaryPanels() {
                         }
                 }
             }
+
+            // Add playback eventlistener
+            const playBackParent = pages.querySelector("#sliderPlaybackField")
+
+            playBackParent.onclick = () => handlePlayBackClick(playBackParent.children[1], yearFilter, setYearFilter, 20000);
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]
@@ -1512,6 +1529,12 @@ function getSliders(filter, regionalData, onChange){
         valueMax = Math.max(minVal, Math.min(max, maxVal))
         updateSlider()
         if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+    }
+
+    sliderContainer.sync = (min, max) => {
+        valueMin = Math.max(minVal, Math.min(min, maxVal))
+        valueMax = Math.max(minVal, Math.min(max, maxVal))
+        updateSlider()
     }
 
     return sliderContainer

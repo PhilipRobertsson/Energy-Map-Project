@@ -554,3 +554,64 @@ export function handleAddDiagramClick(assetSources, comparisonFuelFilter, region
         { height: "auto", opacity: 1, duration: 0.15, ease: "power2.in"}
     )
 }
+
+export function handlePlayBackClick(element,filter, setFilter,playTime){
+    if(element.classList.contains("runningPlayBack")) return;
+    element.classList.add("runningPlayBack")
+
+    gsap.fromTo(element, 
+        { opacity: 1 }, 
+        { 
+            opacity: 0.5, 
+            duration: 0.15,
+            yoyo: true, 
+            repeat: 1, 
+            overwrite: true 
+        }
+    );
+
+    const text = element.querySelector("span")
+
+    // Reset to content-driven width so measurements are correct on repeated clicks
+    // (a previous run leaves an explicit inline width behind).
+    element.style.width = "auto"
+    const originalWidth = element.getBoundingClientRect().width
+
+    // Shrink to the width of the "Playing..." label
+    text.textContent = "Playing..."
+    const newWidth = element.getBoundingClientRect().width
+
+    gsap.fromTo(element, 
+        { width: originalWidth }, 
+        { width: newWidth, duration: 0.10 }
+    );
+
+    // Animate the year filter from the earliest to the latest bound year,
+    // stepping one year at a time over the playback duration.
+    const bounds = filter.length === 2 ? filter[1] : null
+    if (bounds && bounds[1] > bounds[0]) {
+        const [minYear, maxYear] = bounds
+        const totalSteps = maxYear - minYear
+        const stepDuration = playTime / totalSteps
+
+        // Start at the earliest year, then increment the max value each step
+        setFilter([[minYear, minYear], bounds])
+        for(let step = 1; step <= totalSteps; step++){
+            setTimeout(() => {
+                setFilter([[minYear, minYear + step], bounds])
+            }, step * stepDuration)
+        }
+    }
+
+    // When the playback time has elapsed, restore the original label and width
+    setTimeout(() =>{
+        gsap.fromTo(element, 
+            { width: newWidth }, 
+            { width: originalWidth, duration: 0.10, onComplete: () =>{
+                element.classList.remove("runningPlayBack")
+                text.textContent = "Animated historical playback"
+                gsap.set(element, { clearProps: "width" })
+            }}
+        );
+    }, playTime);
+}
