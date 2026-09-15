@@ -66,7 +66,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears } = useContext(MapContext);
+    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears, mapReady } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -96,6 +96,7 @@ function PrimaryPanels() {
 
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
+    const defaultRegionSet = useRef(false);
 
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -145,9 +146,10 @@ function PrimaryPanels() {
     useEffect(() =>{
         if(timeRef <= 0){
             resetAllFilters()
+            setRegionFilterTo(["SWE"])
             mapRef.current?.flyTo({
-                center: [9.902056, 49.843],
-                zoom: 3.2,
+                center: [24.325556, 62.3875],
+                zoom: 4.5,
                 speed: 0.8,
                 curve: 1.4
             });
@@ -639,7 +641,7 @@ function PrimaryPanels() {
         } else {
             toFilter.setFilter("powerplants-layer", filters);
         }
-    }, [fuelFilter, regionFilter, yearFilter, generationFilter, mapRef]);
+    }, [fuelFilter, regionFilter, yearFilter, generationFilter, mapRef, mapReady]);
 
     // Compute shown and total power plant counts
     useEffect(() => {
@@ -673,7 +675,7 @@ function PrimaryPanels() {
     // Update side panel when it is changed
     useEffect(() =>{
         const sidePanel = sidePanelContainer.current; // Get the current sidePanel component
-
+        
         if (!sidePanel) return;
         if (!pageContent) return;
 
@@ -752,9 +754,10 @@ function PrimaryPanels() {
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
                             resetAllFilters()
+                            setRegionFilterTo(["SWE"])
                             mapRef.current?.flyTo({
-                                center: [35.902056, 49.843],
-                                zoom: 3.2,
+                                center: [24.325556, 62.3875],
+                                zoom: 4.5,
                                 speed: 0.8,
                                 curve: 1.4
                             });
@@ -831,6 +834,12 @@ function PrimaryPanels() {
 
             if(sidePanel.children.length == 0){
                 sidePanel.appendChild(pages)
+            }
+
+            // Set the default region filter to only show Sweden on initial load
+            if(!defaultRegionSet.current && powerPlants?.features?.length){
+                defaultRegionSet.current = true
+                setRegionFilterTo(["SWE"])
             }
         }
         

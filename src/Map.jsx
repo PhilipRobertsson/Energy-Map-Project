@@ -208,6 +208,7 @@ function Map({ children }) {
   const [regionalData, setRegionalData] = useState(null);
   const [reportedYears, setReportedYears] = useState({ first: 0, last: 0 });
   const [estimatedYears, setEstimatedYears] = useState({ first: 0, last: 0 });
+  const [mapReady, setMapReady] = useState(false);
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
   const [time, setTime] = useState(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET);
@@ -264,8 +265,8 @@ function Map({ children }) {
         mapInstance.current = new maplibregl.Map({
           container: mapContainer.current,
           style: data, //mapStyle,
-          center: [35.902056, 49.843],
-          zoom: 3.2,
+          center: [24.325556, 62.3875],
+          zoom: 4.5,
         });
 
         // disable map rotation using right click + drag
@@ -558,6 +559,7 @@ function Map({ children }) {
       map.on('mouseleave', 'powerplants-layer', () => { // Relevant for screens with mouse input, remove cursor style when mouse leaves feature
             map.getCanvas().style.cursor = '';
       });
+      setMapReady(true);
     };
 
     // Add the source layer if map is loaded, else load the map
@@ -649,7 +651,7 @@ function Map({ children }) {
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data,
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
-                                                    reportedYears, estimatedYears }}>
+                                                    reportedYears, estimatedYears, mapReady }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>
