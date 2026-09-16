@@ -433,19 +433,27 @@ export function handleMapModeToggle(element, mapRef){
         })
     }
 
+    const filterContainers = document.querySelectorAll(".sidePanelFilterContainer")
+
     // Hide previous mode's layers
     switch(prevMode){
         case "Power Plants":
             setVisibility(["powerplants-layer"], "none")
             fuelFilterContents[0].classList.toggle("hide")
+            filterContainers[0].classList.toggle("hide")
+            filterContainers[2].classList.toggle("hide")
             break;
         case "Low Carbon Usage":
             setVisibility(["lowCarbon-fill", "lowCarbon-border"], "none")
             fuelFilterContents[1].classList.toggle("hide")
+            filterContainers[1].classList.toggle("hide")
+            filterContainers[3].classList.toggle("hide")
             break;
         case "Fossil Fuel Usage":
             setVisibility(["fossilFuel-fill", "fossilFuel-border"], "none")
             fuelFilterContents[2].classList.toggle("hide")
+            filterContainers[1].classList.toggle("hide")
+            filterContainers[4].classList.toggle("hide")
             break;
     }
 
@@ -454,14 +462,20 @@ export function handleMapModeToggle(element, mapRef){
         case "Power Plants":
             setVisibility(["powerplants-layer"], "visible")
             fuelFilterContents[0].classList.toggle("hide")
+            filterContainers[0].classList.toggle("hide")
+            filterContainers[2].classList.toggle("hide")
             break;
         case "Low Carbon Usage":
             setVisibility(["lowCarbon-fill", "lowCarbon-border"], "visible")
             fuelFilterContents[1].classList.toggle("hide")
+            filterContainers[1].classList.toggle("hide")
+            filterContainers[3].classList.toggle("hide")
             break;
         case "Fossil Fuel Usage":
             setVisibility(["fossilFuel-fill", "fossilFuel-border"], "visible")
             fuelFilterContents[2].classList.toggle("hide")
+            filterContainers[1].classList.toggle("hide")
+            filterContainers[4].classList.toggle("hide")
             break;
     }
 }

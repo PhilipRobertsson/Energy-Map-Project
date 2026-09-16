@@ -67,34 +67,43 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears, mapReady } = useContext(MapContext);
+    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
+    // Filter states
     const [fuelFilter, setFuelFilter] = useState([]);
     const [regionFilter, setRegionFilter] = useState([]);
     const [yearFilter, setYearFilter] = useState([]);
     const [generationFilter, setGenerationFilter] = useState([]);
+    const [LCShareFilter, setLCShareFilter] = useState([]); // similar to generation filter
+    const [FFShareFilter, setFFShareFilter] = useState([]); // similar to generation filter
+    const [shareYearFilter, setShareYearFilter] = useState([]); // similar to year filter
 
     // Used by the possible "additional diagram" feature
     const [comparisonFuelFilter, setComparisonFuelFilter] = useState([]);
     const [comparisonRegionFilter, setComparisonRegionFilter] = useState([]);
 
+    // Regional data
     const [regionalData, setRegionalData] = useState([]);
 
+    // Panel related states (both fuel filter and side panel)
     const [sidePanelPage, setSidePanelPage] = useState(allPages[0]);
     const [pages, setPages] = useState(null);
     const [pageContent, setPageContent] = useState(null);
     const zoomSelectionState = useRef({ isSelection: true });
     const prevBarChartFilter = useRef([]);
 
+    // General references
     const prevPageRef = useRef(null);
-    const regionFilterRef = useRef([]);
-    const fuelFilterRef = useRef([]);
     const regionalDataRef = useRef([]);
     const sidePanelOpenRef = useRef(true);
     const yearsRef = useRef({ reported: { first: 0, last: 0 }, estimated: { first: 0, last: 0 } });
+    const shareYearsRef = useRef({first: 0, last: 0}); // similar to yearsRef
 
+    // Filter references
+    const regionFilterRef = useRef([]);
+    const fuelFilterRef = useRef([]);
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
     const defaultRegionSet = useRef(false);
@@ -112,7 +121,8 @@ function PrimaryPanels() {
         compFuelFilterRef.current = comparisonFuelFilter
         regionalDataRef.current = regionalData
         yearsRef.current = { reported: reportedYears, estimated: estimatedYears }
-    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears]);
+        shareYearsRef.current = shareYears
+    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -1067,38 +1077,73 @@ export default PrimaryPanels
 
 function getSliderBounds(filter, regionalData){
     let minVal = 0, maxVal = 100
+    var largest = Number.NEGATIVE_INFINITY;
+    var smallest = Number.POSITIVE_INFINITY;
     if (regionalData.length) {
-        if (filter === "year") {
-            const minYears = regionalData.map(y => y.oldest_power_plant).filter(y => y != null)
-            const maxYears = regionalData.map(y => y.newest_power_plant).filter(y => y != null)
-            if (minYears.length && maxYears.length) { minVal = Math.floor(Math.min(...minYears) / 10) * 10; maxVal = Math.floor(Math.max(...maxYears)) }
-        } else {
-            var largest = Number.NEGATIVE_INFINITY;
-            var smallest = Number.POSITIVE_INFINITY;
+        const usageKeys = Object.keys(regionalData[0].usage_shares)
+        const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
+        switch(filter){
+            case "year":
+                const minYears = regionalData.map(y => y.oldest_power_plant).filter(y => y != null)
+                const maxYears = regionalData.map(y => y.newest_power_plant).filter(y => y != null)
+                if (minYears.length && maxYears.length) { minVal = Math.floor(Math.min(...minYears) / 10) * 10; maxVal = Math.floor(Math.max(...maxYears)) }
+                break;
+            case "generated":
+                const minGeneration = regionalData.map(y => y.regional_min_output)
+                const maxGeneration = regionalData.map(y => y.regional_max_output)
 
-            const minGeneration = regionalData.map(y => y.regional_min_output)
-            const maxGeneration = regionalData.map(y => y.regional_max_output)
+                minGeneration.forEach((c) =>{
+                    let values = Object.values(c).filter(g => g != null)
+                    let min = 0;
+                    if(values.length){
+                        min = Math.min(...values)
+                        if(min < smallest){ smallest = min }
+                    }
+                })
+                maxGeneration.forEach((c) =>{
+                    let values = Object.values(c).filter(g => g != null)
+                    let max = 0;
+                    if(values.length){
+                        max = Math.max(...values)
+                        if(max > largest){ largest = max }
+                    }
+                })
 
-            minGeneration.forEach((c) =>{
-                let values = Object.values(c).filter(g => g != null)
-                let min = 0;
-                if(values.length){
-                    min = Math.min(...values)
-                    if(min < smallest){ smallest = min }
-                }
-            })
+                minVal = Math.floor(smallest)
+                maxVal = Math.floor(largest)
+                break;
+            case "shareYear":
+                minVal = Math.min(...dataYears)
+                maxVal = Math.max(...dataYears)
+                break;
+            case "LCShare":
+                regionalData.forEach(r => {
+                    for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
+                        let usage = r.usage_shares?.[i]?.LC
 
-            maxGeneration.forEach((c) =>{
-                let values = Object.values(c).filter(g => g != null)
-                let max = 0;
-                if(values.length){
-                    max = Math.max(...values)
-                    if(max > largest){ largest = max }
-                }
-            })
+                        if (usage != null) {
+                            if (usage < smallest) smallest = usage
+                            if (usage > largest) largest = usage
+                        }
+                    }
+                })
+                minVal = smallest
+                maxVal = largest
+                break;
+            case "FFShare":
+                regionalData.forEach(r => {
+                    for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
+                        let usage = r.usage_shares?.[i]?.FF
 
-            minVal = Math.floor(smallest)
-            maxVal = Math.floor(largest)
+                        if (usage != null) {
+                            if (usage < smallest) smallest = usage
+                            if (usage > largest) largest = usage
+                        }
+                    }
+                })
+                minVal = smallest
+                maxVal = largest
+                break;
         }
     }
     return { minVal, maxVal }
@@ -1230,18 +1275,46 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, r
     filterAndResetWrapper.appendChild(resetButtonField)
     pageContainer.appendChild(filterAndResetWrapper)
 
+    const multiYearFilterContainer = document.createElement("div");
+    const multiValueFilterContainer = document.createElement("div");
     // Filter drop downs and sliders
-    for(var i = 0; i < 2; i++){
+    for(var i = 0; i < 5; i++){
         let filterContainer = document.createElement("div")
         filterContainer.classList.add('sidePanelFilterContainer')
         switch (i) {
             //case 0: filterContainer.appendChild(getDropDown("region", onIndexClick)); break;
             //case 1: filterContainer.appendChild(getDropDown("fuel", onIndexClick)); break;
-            case 0: filterContainer.appendChild(getSliders("year", regionalData, onYearChange)); break;
-            case 1: filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange)); break;
+            case 0: 
+                filterContainer.appendChild(getSliders("year", regionalData, onYearChange));
+                multiYearFilterContainer.appendChild(filterContainer)
+                break;
+            case 1: 
+                filterContainer.appendChild(getSliders("generated", regionalData, onGenerationChange));
+                multiValueFilterContainer.appendChild(filterContainer)
+                break;
+            case 2:
+                // shareYear
+                filterContainer.appendChild(getSliders("shareYear", regionalData, null));
+                filterContainer.classList.toggle("hide")
+                multiYearFilterContainer.appendChild(filterContainer)
+                break;
+            case 3:
+                // LCShare
+                filterContainer.appendChild(getSliders("LCShare", regionalData, null));
+                filterContainer.classList.toggle("hide")
+                multiValueFilterContainer.appendChild(filterContainer)
+                break;
+            case 4:
+                // FFShare
+                filterContainer.appendChild(getSliders("FFShare", regionalData, null));
+                filterContainer.classList.toggle("hide")
+                multiValueFilterContainer.appendChild(filterContainer)
+                break;
         }
-        pageContainer.appendChild(filterContainer)
     }
+
+    pageContainer.appendChild(multiYearFilterContainer)
+    pageContainer.appendChild(multiValueFilterContainer)
 
     // Diagram wrapper (for the initial one + additional ones)
     const allDiagramContainer = document.createElement("div");
@@ -1283,6 +1356,8 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, r
 
 // Creates the range based filters found in the side panel
 function getSliders(filter, regionalData, onChange){
+    const singleThumb = filter === "shareYear"
+
     const sliderContainer = document.createElement("div")
     sliderContainer.classList.add("sidePanelFilterSliderContainer")
 
@@ -1309,7 +1384,9 @@ function getSliders(filter, regionalData, onChange){
     thumbMin.appendChild(thumbMinText)
     thumbMax.appendChild(thumbMaxText)
     sliderContainer.appendChild(thumbMin)
-    sliderContainer.appendChild(thumbMax)
+    if(!singleThumb){
+        sliderContainer.appendChild(thumbMax)
+    }
     
 
     const textField = document.createElement("div")
@@ -1327,66 +1404,82 @@ function getSliders(filter, regionalData, onChange){
     textMax.style.transform = "translateX(50%)";
 
     textField.appendChild(textMin)
+    switch(filter){
+        case "year":
+        case "shareYear":
+            const decadeBounds = (filter == "year")? getSliderBounds("year", regionalData) : getSliderBounds("shareYear", regionalData)
+            const span = decadeBounds.maxVal - decadeBounds.minVal
+            const nDecades = Math.floor(span/10)
+            for(let i = 1; i<nDecades; i++){
+                const value = decadeBounds.minVal + (i*10)
+                const percentage = ((value - decadeBounds.minVal) / span) * 100
+                const textDecade = document.createElement("span")
+                textDecade.classList.add("sliderEdgeText")
+                textDecade.style.position = "absolute"
+                textDecade.style.left = percentage + "%"
+                textDecade.style.top = "0"
+                textDecade.style.transform = "translateX(-50%)"
+                textDecade.textContent = value
+                textField.appendChild(textDecade)
+            }
+            break;
+        case "generated":
+        case "LCShare":
+        case "FFShare":
+            // Wrapper for text and info icon
+            const titleAndIconWrapper = document.createElement("span")
+            titleAndIconWrapper.className = "sliderTitleWrapper"
 
-    if(filter=="year"){
-        const decadeBounds = getSliderBounds("year", regionalData)
-        const span = decadeBounds.maxVal - decadeBounds.minVal
-        const nDecades = Math.floor(span/10)
-        for(let i = 1; i<nDecades; i++){
-            const value = decadeBounds.minVal + (i*10)
-            const percentage = ((value - decadeBounds.minVal) / span) * 100
-            const textDecade = document.createElement("span")
-            textDecade.classList.add("sliderEdgeText")
-            textDecade.style.position = "absolute"
-            textDecade.style.left = percentage + "%"
-            textDecade.style.top = "0"
-            textDecade.style.transform = "translateX(-50%)"
-            textDecade.textContent = value
-            textField.appendChild(textDecade)
-        }
-    }else{
-        // Wrapper for text and info icon
-        const titleAndIconWrapper = document.createElement("span")
-        titleAndIconWrapper.className = "sliderTitleWrapper"
+            // The text displayed below the slider
+            switch(filter){
+                case "generated":
+                    textSliderTitle.textContent = "Annual Generation (GWh)"
+                    break;
+                case "LCShare":
+                case "FFShare":
+                    textSliderTitle.textContent = (filter == "LCShare")? "Share of Low Carbon Usage" : "Share of Fossil Fuel Usage"
+                    break;
+            }
 
-        // The text displayed below the slider
-        textSliderTitle.textContent = "Annual Generation (GWh)"
+            titleAndIconWrapper.appendChild(textSliderTitle)
 
-        // The icon displayed next to the text
-        const sliderIcon = document.createElement("img")
-        sliderIcon.className = "sliderIcon"
-        sliderIcon.src = assetSources.infoIcon
+            if(filter == "generated"){
+                // The icon displayed next to the text
+                const sliderIcon = document.createElement("img")
+                sliderIcon.className = "sliderIcon"
+                sliderIcon.src = assetSources.infoIcon
 
-        // Tool tip when icon is hovered
-        const generationToolTip = document.createElement("div")
-        generationToolTip.className = "sliderTooltipTooltip"
-        const generationToolTipText = document.createElement("span")
-        generationToolTipText.className = "sliderTooltipTooltipText"
-        generationToolTipText.textContent  = "Annual generation in gigawatt hours (GWhs)"
+                // Tool tip when icon is hovered
+                const generationToolTip = document.createElement("div")
+                generationToolTip.className = "sliderTooltipTooltip"
+                const generationToolTipText = document.createElement("span")
+                generationToolTipText.className = "sliderTooltipTooltipText"
+                generationToolTipText.textContent  = "Annual generation in gigawatt hours (GWhs)"
 
-        generationToolTip.appendChild(generationToolTipText)
+                generationToolTip.appendChild(generationToolTipText)
 
-        sliderIcon.onmouseover = () => generationToolTipText.style.visibility = "visible"
-        sliderIcon.onmouseout = () => generationToolTipText.style.visibility = "hidden"
+                sliderIcon.onmouseover = () => generationToolTipText.style.visibility = "visible"
+                sliderIcon.onmouseout = () => generationToolTipText.style.visibility = "hidden"
 
-        titleAndIconWrapper.appendChild(textSliderTitle)
-        titleAndIconWrapper.appendChild(sliderIcon)
-        titleAndIconWrapper.appendChild(generationToolTip)
+                titleAndIconWrapper.appendChild(sliderIcon)
+                titleAndIconWrapper.appendChild(generationToolTip)
+            }
         
-        textField.appendChild(titleAndIconWrapper)
+            textField.appendChild(titleAndIconWrapper)
+            break;
     }
 
     textField.appendChild(textMax)
 
     sliderContainer.appendChild(textField)
 
-    if(filter=="year"){
+    if(filter=="year" || filter =="shareYear"){
         const playbackField = document.createElement("div");
         playbackField.id = "sliderPlaybackField";
 
         const playbackSliderTitle = document.createElement("strong")
         playbackSliderTitle.classList.add("sliderTitle")
-        playbackSliderTitle.textContent = "Year Started"
+        playbackSliderTitle.textContent = (filter == "year")? "Year Started" : "Year of data"
 
         const playbackSliderButton = document.createElement("div");
         playbackSliderButton.id = "sliderPlaybackButton"
@@ -1407,23 +1500,40 @@ function getSliders(filter, regionalData, onChange){
     let valueMin = minMax.minVal
     let valueMax = minMax.maxVal
 
-    if(minVal == 0){
-        textMin.textContent = "0 / no data"
+    if(filter != "LCShare" && filter != "FFShare"){
+        if(minVal == 0){
+            textMin.textContent = "0 / no data"
+        }else{
+            textMin.textContent = (minVal<10000)? minVal : ((minVal / 100) / 10.0).toFixed(0) + " k"
+        }
+        textMax.textContent = (maxVal<10000)? maxVal : ((maxVal / 100) / 10.0).toFixed(0) + " k"
     }else{
-        textMin.textContent = (minVal<10000)? minVal : ((minVal / 100) / 10.0).toFixed(0) + " k"
+        textMin.textContent = minVal.toFixed(0) + "%"
+        textMax.textContent = maxVal.toFixed(0) + "%"
     }
-    textMax.textContent = (maxVal<10000)? maxVal : ((maxVal / 100) / 10.0).toFixed(0) + " k"
 
     const updateSlider = () => {
         const span = maxVal - minVal
         const percentageMin = ((valueMin - minVal) / span) * 100
         const percentageMax = ((valueMax - minVal) / span) * 100
-        thumbMin.style.left = percentageMin + "%"
-        thumbMinText.textContent = (valueMin<10000)? valueMin : ((valueMin / 100) / 10.0).toFixed(0) + " k"
-        thumbMaxText.textContent = (valueMax<10000)? valueMax : ((valueMax / 100) / 10.0).toFixed(0) + " k"
-        thumbMax.style.left = percentageMax + "%"
-        range.style.left = percentageMin + "%"
-        range.style.width = (percentageMax - percentageMin) + "%"
+        if(singleThumb){
+            thumbMin.style.left = percentageMax + "%"
+            thumbMinText.textContent = (valueMax<10000)? valueMax : ((valueMax / 100) / 10.0).toFixed(0) + " k"
+            range.style.left = "0%"
+            range.style.width = percentageMax + "%"
+        }else{
+            thumbMin.style.left = percentageMin + "%"
+            if(filter != "LCShare" && filter != "FFShare"){
+                thumbMinText.textContent = (valueMin<10000)? valueMin : ((valueMin / 100) / 10.0).toFixed(0) + " k"
+                thumbMaxText.textContent = (valueMax<10000)? valueMax : ((valueMax / 100) / 10.0).toFixed(0) + " k"
+            }else{
+                thumbMinText.textContent = valueMin.toFixed(0) + "%"
+                thumbMaxText.textContent = valueMax.toFixed(0) + "%"
+            }
+            thumbMax.style.left = percentageMax + "%"
+            range.style.left = percentageMin + "%"
+            range.style.width = (percentageMax - percentageMin) + "%"
+        }
     }
 
     function addRemoveListeners(e,type="", onMove, onEnd, onStart){
@@ -1471,6 +1581,30 @@ function getSliders(filter, regionalData, onChange){
         addRemoveListeners(thumb,"start",null,null, onStart)
     }
 
+    function makeDraggableSingle(thumb) {
+        const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX
+
+        const onStart = (e) => {
+            e.preventDefault()
+            const trackRect = track.getBoundingClientRect()
+            const trackWidth = trackRect.width
+
+            const onMove = (ev) => {
+                const px = getClientX(ev) - trackRect.left
+                const percentage = Math.max(0, Math.min(100, (px / trackWidth) * 100))
+                valueMax = Math.round(minVal + (percentage / 100) * (maxVal - minVal))
+                updateSlider()
+            }
+
+            const onEnd = () => {
+                addRemoveListeners(document,"remove", onMove, onEnd)
+                // onChange for the shareYear slider is not implemented yet
+            }
+            addRemoveListeners(document, "add", onMove, onEnd)
+        }
+        addRemoveListeners(thumb,"start",null,null, onStart)
+    }
+
     function makeDraggableRange(rangeElement) {
         const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX
 
@@ -1511,12 +1645,15 @@ function getSliders(filter, regionalData, onChange){
         addRemoveListeners(rangeElement, "start", null, null, onStart)
     }
 
-    makeDraggable(thumbMin, true)
-    makeDraggable(thumbMax, false)
-    makeDraggableRange(range)
+    if(singleThumb){
+        makeDraggableSingle(thumbMin)
+    }else{
+        makeDraggable(thumbMin, true)
+        makeDraggable(thumbMax, false)
+        makeDraggableRange(range)
+    }
     updateSlider()
     if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
-
     sliderContainer.reset = () => {
         valueMin = minVal
         valueMax = maxVal

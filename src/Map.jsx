@@ -208,6 +208,7 @@ function Map({ children }) {
   const [regionalData, setRegionalData] = useState(null);
   const [reportedYears, setReportedYears] = useState({ first: 0, last: 0 });
   const [estimatedYears, setEstimatedYears] = useState({ first: 0, last: 0 });
+  const [shareYears, setShareYears] = useState({ first: 0, last: 0 })
   const [mapReady, setMapReady] = useState(false);
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
@@ -252,6 +253,10 @@ function Map({ children }) {
         const estimatedYearValues = estimatedCols.map((s) => parseInt(s.replace(/^\D+/g, "")));
         setReportedYears({ first: Math.min(...reportedYearValues), last: Math.max(...reportedYearValues) });
         setEstimatedYears({ first: Math.min(...estimatedYearValues), last: Math.max(...estimatedYearValues) });
+
+        const usageKeys = Object.keys(data[0].usage_shares)
+        const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
+        setShareYears({first: Math.min(...dataYears), last: Math.max(...dataYears)})
       });
   }, []);
 
@@ -658,7 +663,7 @@ function Map({ children }) {
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data,
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
-                                                    reportedYears, estimatedYears, mapReady }}>
+                                                    reportedYears, estimatedYears, shareYears, mapReady }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>

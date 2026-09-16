@@ -623,7 +623,7 @@ export function createUsageGradient(container, colours, regionalData, mapMode){
         }
     })
 
-    console.log(mapMode + ": (Min: " + minUsage + ", Max: " + maxUsage + ")")
+    //console.log(mapMode + ": (Min: " + minUsage + ", Max: " + maxUsage + ")")
 
     const gradientHeight = "24dvh"
     const pixelHeight = Math.floor((window.innerHeight*0.24))
