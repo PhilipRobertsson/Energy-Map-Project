@@ -67,7 +67,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady } = useContext(MapContext);
+    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -644,6 +644,98 @@ function PrimaryPanels() {
         }
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, mapRef, mapReady]);
 
+    // Update alternative map layer filters
+    useEffect(() =>{
+        const toFilter = mapRef.current;
+        if (
+            !toFilter ||
+            !toFilter.getLayer("lowCarbon-fill") ||
+            !toFilter.getLayer("lowCarbon-border") ||
+            !toFilter.getLayer("fossilFuel-fill") ||
+            !toFilter.getLayer("fossilFuel-border") ||
+            !shareYearFilter.length || !LCShareFilter.length || !FFShareFilter.length
+        ) return;
+
+        const LCfilters = ["all"];
+        const FFfilters = ["all"];
+
+        if (LCShareFilter.length === 2) {
+            const [values, bounds] = LCShareFilter
+            if (values[0] !== bounds[0] || values[1] !== bounds[1]) {
+                LCfilters.push([">=", ["to-number", ["get", "lowCarbonUsage"]], values[0]]);
+                LCfilters.push(["<=", ["to-number", ["get", "lowCarbonUsage"]], values[1]]);
+            }
+        }
+
+        if (FFShareFilter.length === 2) {
+            const [values, bounds] = FFShareFilter
+            if (values[0] !== bounds[0] || values[1] !== bounds[1]) {
+                FFfilters.push([">=", ["to-number", ["get", "fossilFuelUsage"]], values[0]]);
+                FFfilters.push(["<=", ["to-number", ["get", "fossilFuelUsage"]], values[1]]);
+            }
+        }
+
+        if (LCfilters.length === 1) {
+            toFilter.setFilter("lowCarbon-fill", null);
+            toFilter.setFilter("lowCarbon-border", null);
+        } else {
+            toFilter.setFilter("lowCarbon-fill", LCfilters);
+            toFilter.setFilter("lowCarbon-border", LCfilters);
+        }
+
+        if(FFfilters.length === 1){
+            toFilter.setFilter("fossilFuel-fill", null);
+            toFilter.setFilter("fossilFuel-border", null);
+        }else{
+            toFilter.setFilter("fossilFuel-fill", FFfilters);
+            toFilter.setFilter("fossilFuel-border", FFfilters);
+        }
+
+        // Recolour the low carbon / fossil fuel layers based on the selected share year.
+        // The year is not used to filter countries, only to pick which usage values colour them.
+        if (shareYearFilter.length === 2 && boundaryData && regionalData.length) {
+            const year = shareYearFilter[0]
+
+            // Country -> usage lookup for the selected year, plus the year's min/max usage values
+            const usageByCountry = {}
+            let LCMin = Infinity, LCMax = -Infinity
+            let FFMin = Infinity, FFMax = -Infinity
+            regionalData.forEach(r => {
+                const usage = r.usage_shares?.[year]
+                usageByCountry[r.country] = usage
+                const LC = usage?.LC
+                const FF = usage?.FF
+                if (LC != null) { LCMin = Math.min(LCMin, LC); LCMax = Math.max(LCMax, LC) }
+                if (FF != null) { FFMin = Math.min(FFMin, FF); FFMax = Math.max(FFMax, FF) }
+            })
+
+            // Write the selected year's usage onto each boundary feature
+            boundaryData.features.forEach(f => {
+                const usage = usageByCountry[f.properties.iso_a3]
+                f.properties.lowCarbonUsage = usage?.LC ?? null
+                f.properties.fossilFuelUsage = usage?.FF ?? null
+            })
+            toFilter.getSource("countryboundaries").setData(boundaryData)
+
+            const lowCarbonColor = (LCMin !== LCMax && LCMax !== -Infinity)
+                ? ['case',
+                    ['==', ['get', 'lowCarbonUsage'], null], '#00000000',
+                    ['interpolate', ['linear'], ['get', 'lowCarbonUsage'], LCMin, '#1d3e00', LCMax, '#01ff12']]
+                : '#00000000'
+
+            const fossilFuelColor = (FFMin !== FFMax && FFMax !== -Infinity)
+                ? ['case',
+                    ['==', ['get', 'fossilFuelUsage'], null], '#00000000',
+                    ['interpolate', ['linear'], ['get', 'fossilFuelUsage'], FFMin, '#520000', FFMax, '#ff1900']]
+                : '#00000000'
+
+            toFilter.setPaintProperty("lowCarbon-fill", "fill-color", lowCarbonColor)
+            toFilter.setPaintProperty("lowCarbon-border", "line-color", lowCarbonColor)
+            toFilter.setPaintProperty("fossilFuel-fill", "fill-color", fossilFuelColor)
+            toFilter.setPaintProperty("fossilFuel-border", "line-color", fossilFuelColor)
+        }
+    }, [shareYearFilter, LCShareFilter, FFShareFilter, mapRef, mapReady, boundaryData, regionalData])
+
     // Compute shown and total power plant counts
     useEffect(() => {
         const sidePanel = sidePanelContainer.current;
@@ -679,6 +771,7 @@ function PrimaryPanels() {
         
         if (!sidePanel) return;
         if (!pageContent) return;
+        if (!regionalData.length) return;
 
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
@@ -686,6 +779,9 @@ function PrimaryPanels() {
                 setFuelFilter, setRegionFilter, setBarChartFilter, yearsRef.current,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
+                (value, bounds) => setShareYearFilter([value, bounds]),
+                (values, bounds) => setLCShareFilter([values,bounds]),
+                (values, bounds) => setFFShareFilter([values,bounds]),
                 (button, option) => handleResetClick(button, option, resetAllFilters),
                 (element, index) => handleIndexClick(element, index, regionFilterRef),
                 handleLinePlotToggle,
@@ -1151,8 +1247,8 @@ function getSliderBounds(filter, regionalData){
 
 function createPages(pageContent, powerPlants, regionalData, regionFilterData, regionFilterRef, fuels,
                                   setFuelFilter, setRegionFilter, setBarChartFilter, years,
-                                  onYearChange, onGenerationChange, onReset, onIndexClick,
-                                  onToggleClick, onLegendClick, onContinentClick, onAddDiagramClick){
+                                  onYearChange, onGenerationChange, onShareYearChange, onLCChange, onFFChange,
+                                  onReset, onIndexClick, onToggleClick, onLegendClick, onContinentClick, onAddDiagramClick){
     const pageContainer = document.createElement("div")
     pageContainer.classList.add('sidePanelPageContainer')
 
@@ -1294,19 +1390,19 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, r
                 break;
             case 2:
                 // shareYear
-                filterContainer.appendChild(getSliders("shareYear", regionalData, null));
+                filterContainer.appendChild(getSliders("shareYear", regionalData, onShareYearChange));
                 filterContainer.classList.toggle("hide")
                 multiYearFilterContainer.appendChild(filterContainer)
                 break;
             case 3:
                 // LCShare
-                filterContainer.appendChild(getSliders("LCShare", regionalData, null));
+                filterContainer.appendChild(getSliders("LCShare", regionalData, onLCChange));
                 filterContainer.classList.toggle("hide")
                 multiValueFilterContainer.appendChild(filterContainer)
                 break;
             case 4:
                 // FFShare
-                filterContainer.appendChild(getSliders("FFShare", regionalData, null));
+                filterContainer.appendChild(getSliders("FFShare", regionalData, onFFChange));
                 filterContainer.classList.toggle("hide")
                 multiValueFilterContainer.appendChild(filterContainer)
                 break;
@@ -1574,7 +1670,8 @@ function getSliders(filter, regionalData, onChange){
 
             const onEnd = () => {
                 addRemoveListeners(document,"remove", onMove, onEnd)
-                if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+                if (onChange && !singleThumb) onChange([valueMin, valueMax], [minVal, maxVal])
+                if (onChange && singleThumb) onChange(valueMax, [minVal, maxVal])
             }
             addRemoveListeners(document, "add", onMove, onEnd)
         }
@@ -1598,7 +1695,7 @@ function getSliders(filter, regionalData, onChange){
 
             const onEnd = () => {
                 addRemoveListeners(document,"remove", onMove, onEnd)
-                // onChange for the shareYear slider is not implemented yet
+                if (onChange) onChange(valueMax, [minVal, maxVal])
             }
             addRemoveListeners(document, "add", onMove, onEnd)
         }
@@ -1638,7 +1735,8 @@ function getSliders(filter, regionalData, onChange){
 
             const onEnd = () => {
                 addRemoveListeners(document, "remove", onMove, onEnd)
-                if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+                if (onChange && !singleThumb) onChange([valueMin, valueMax], [minVal, maxVal])
+                if (onChange && singleThumb) onChange(valueMax, [minVal, maxVal])
             }
             addRemoveListeners(document, "add", onMove, onEnd)
         }
@@ -1653,19 +1751,22 @@ function getSliders(filter, regionalData, onChange){
         makeDraggableRange(range)
     }
     updateSlider()
-    if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+    if (onChange && !singleThumb) onChange([valueMin, valueMax], [minVal, maxVal])
+    if (onChange && singleThumb) onChange(valueMax, [minVal, maxVal])
     sliderContainer.reset = () => {
         valueMin = minVal
         valueMax = maxVal
         updateSlider()
-        if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+        if (onChange && !singleThumb) onChange([valueMin, valueMax], [minVal, maxVal])
+        if (onChange && singleThumb) onChange(valueMax, [minVal, maxVal])
     }
 
     sliderContainer.set = (min, max) => {
         valueMin = Math.max(minVal, Math.min(min, maxVal))
         valueMax = Math.max(minVal, Math.min(max, maxVal))
         updateSlider()
-        if (onChange) onChange([valueMin, valueMax], [minVal, maxVal])
+        if (onChange && !singleThumb) onChange([valueMin, valueMax], [minVal, maxVal])
+        if (onChange && singleThumb) onChange(valueMax, [minVal, maxVal])
     }
 
     sliderContainer.sync = (min, max) => {

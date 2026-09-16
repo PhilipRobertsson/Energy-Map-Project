@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 
 import './Map.css'
 
-export const MapContext = createContext({ mapRef: null, powerPlants: null, barChartFilter: null, setBarChartFilter: null, popupCount: 0, reportedYears: { first: 0, last: 0 }, estimatedYears: { first: 0, last: 0 } });
+export const MapContext = createContext({ mapRef: null, powerPlants: null, boundaryData: null, barChartFilter: null, setBarChartFilter: null, popupCount: 0, reportedYears: { first: 0, last: 0 }, estimatedYears: { first: 0, last: 0 } });
 
 // Previous mapStyle version
   /*
@@ -660,7 +660,7 @@ function Map({ children }) {
   }
 
   return (
-    <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data,
+    <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data, boundaryData,
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
                                                     reportedYears, estimatedYears, shareYears, mapReady }}>
