@@ -435,34 +435,44 @@ function Map({ children }) {
       if (map.getSource("countryboundaries")) return; // If the country boundaries layer already has been added, return
       if (!boundaryData || !regionalData) return; // Wait until all data is loaded
 
+      // Assumes the low carbon and fossil fuel usage data has the same lenghts
+      const usageKeys = Object.keys(regionalData[0].usage_shares)
+      const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
+
+      //console.log(dataYears)
+
       // Build a mapping from country code to usage percentages (low carbon and fossil fuel)
-      const usageMap = {}
+      // Might need to be replaced with preprocessing to save computation times
       let LCMinUsage = Infinity
       let LCMaxUsage = -Infinity
       let FFMinUsage = Infinity
       let FFMaxUsage = -Infinity
       regionalData.forEach(r => {
-        const LCUsage = r.low_carbon_usage && r.low_carbon_usage.usage_2025
-        const FFUsage = r.fossil_fuel_usage && r.fossil_fuel_usage.usage_2025
+        for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
+          const LCUsage = r.usage_shares?.[i]?.LC
+          const FFUsage = r.usage_shares?.[i]?.FF
 
-        usageMap[r.country] = { LCUsage, FFUsage }
-
-        if (LCUsage != null) {
-          if (LCUsage < LCMinUsage) LCMinUsage = LCUsage
-          if (LCUsage > LCMaxUsage) LCMaxUsage = LCUsage
-        }
-        if (FFUsage != null) {
-          if (FFUsage < FFMinUsage) FFMinUsage = FFUsage
-          if (FFUsage > FFMaxUsage) FFMaxUsage = FFUsage
+          if (LCUsage != null) {
+            if (LCUsage < LCMinUsage) LCMinUsage = LCUsage
+            if (LCUsage > LCMaxUsage) LCMaxUsage = LCUsage
+          }
+          if (FFUsage != null) {
+            if (FFUsage < FFMinUsage) FFMinUsage = FFUsage
+            if (FFUsage > FFMaxUsage) FFMaxUsage = FFUsage
+          }
         }
       })
+
+      //console.log("LC: (Min: " + LCMinUsage + ", Max: " + LCMaxUsage + ")");
+      //console.log("FF: (Min: " + FFMinUsage + ", Max: " + FFMaxUsage + ")");
 
       // Attach the usage values to each boundary feature (matched by iso_a3)
       boundaryData.features.forEach(f => {
         const iso = f.properties.iso_a3
-        const entry = usageMap[iso]
-        f.properties.lowCarbonUsage = entry && entry.LCUsage != null ? entry.LCUsage : null
-        f.properties.fossilFuelUsage = entry && entry.FFUsage != null ? entry.FFUsage : null
+        const entry = regionalData.find(r => r.country == iso)
+        const usage = entry?.usage_shares?.[dataYears[dataYears.length - 1]]
+        f.properties.lowCarbonUsage = usage?.LC ?? null
+        f.properties.fossilFuelUsage = usage?.FF ?? null
       })
 
       // Interpolate low carbon colour between the min and max usage values,

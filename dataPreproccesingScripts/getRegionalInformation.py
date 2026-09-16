@@ -75,8 +75,9 @@ def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonU
                 data['regional_min_output'][col_estimated] = estMin if not math.isnan(estMin) and estMin > 0 else None
                 data['regional_max_output'][col_estimated] = estMax if not math.isnan(estMax) and estMax > 0 else None
 
-        data['fossil_fuel_usage'] = {}
-        data['low_carbon_usage'] = {}
+        #data['fossil_fuel_usage'] = {}
+        #data['low_carbon_usage'] = {}
+        data['usage_shares'] = {}
 
         countryFossilUsage = fossilFuelUsage[(fossilFuelUsage['Code'] == x)]
         countryLowUsage = lowCarbonUsage[(lowCarbonUsage['Code'] == x)]
@@ -84,9 +85,13 @@ def createJSON(path, dataframe, countries,continets, fossilFuelUsage, lowCarbonU
         for i in range(usage_years[0], usage_years[-1] + 1):
             valueFF = countryFossilUsage['Fossil fuels'][(fossilFuelUsage['Year'] == i)].values
             valueLC = countryLowUsage['Low-carbon energy'][(countryLowUsage['Year'] == i)].values
-            col = 'usage_' + str(i)
-            data['fossil_fuel_usage'][col] = None if not valueFF.size else valueFF[0]
-            data['low_carbon_usage'][col] = None if not valueLC.size else valueLC[0]
+            #col = 'usage_' + str(i)
+            usageCol = str(i)
+            #data['fossil_fuel_usage'][col] = None if not valueFF.size else valueFF[0]
+            #data['low_carbon_usage'][col] = None if not valueLC.size else valueLC[0]
+            data['usage_shares'][usageCol] = {}
+            data['usage_shares'][usageCol]['LC'] = None if not valueLC.size else valueLC[0]
+            data['usage_shares'][usageCol]['FF'] = None if not valueFF.size else valueFF[0]
 
         entries.append(data)
     with open(path, "w") as f:

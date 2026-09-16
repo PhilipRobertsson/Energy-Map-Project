@@ -605,26 +605,8 @@ export function createDiagram({
 }
 
 export function createUsageGradient(container, colours, regionalData, mapMode){
-    
-    // Find highest and lowest low carbon and fossil fuel shares
-    const usageMap = {}
-    let minUsage = Infinity
-    let maxUsage = -Infinity
-    regionalData.forEach(r => {
-        // Should be redone so that it works for all years
-        const usage =(mapMode == "LC")?
-             r.low_carbon_usage && r.low_carbon_usage.usage_2025 : r.fossil_fuel_usage && r.fossil_fuel_usage.usage_2025
 
-        usageMap[r.country] = {usage}
-
-        if (usage != null) {
-            if (usage < minUsage) minUsage = usage
-            if (usage > maxUsage) maxUsage = usage
-        }
-    })
-
-    console.log(mapMode + ": (min:" + minUsage.toFixed(2) + ", max: " + maxUsage.toFixed(2) + ")")
-
+    console.log(regionalData)
 
     const legend = document.createElement("div");
     legend.classList.add("gradientLegend")
