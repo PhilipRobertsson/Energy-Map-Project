@@ -439,10 +439,7 @@ function Map({ children }) {
       const usageKeys = Object.keys(regionalData[0].usage_shares)
       const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
 
-      //console.log(dataYears)
-
-      // Build a mapping from country code to usage percentages (low carbon and fossil fuel)
-      // Might need to be replaced with preprocessing to save computation times
+      // Find min and max usage values
       let LCMinUsage = Infinity
       let LCMaxUsage = -Infinity
       let FFMinUsage = Infinity

@@ -50,12 +50,31 @@
     margin-left: unset;
 }
 
+.gradientContainer{
+    display: flex;
+    flex-direction: row;
+}
+
 .gradientLegend{
     width: 2.5dvh;
-    height: 24dvh;
     margin: 0.16dvh 0 0.16dvh 0;
     border: 0.1vmin solid #AAD3DE;
     border-radius: 0.2vmin;
+}
+
+.gradientTickContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.gradientTick{
+    padding: 0;
+    margin: 0;
+    font-size: 2vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 #mapToggleContainer{

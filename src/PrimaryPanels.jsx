@@ -276,11 +276,11 @@ function PrimaryPanels() {
 
         let lowCarbonContainer = document.createElement("div")
         lowCarbonContainer = createUsageGradient(lowCarbonContainer, ["rgba(29, 62, 0, 1)", "rgba(1, 255, 18, 1)"], regionalData, "LC")
-        lowCarbonContainer.classList.add("fuelFilterContent", "hide")
+        lowCarbonContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
 
         let fossilFuelContainer = document.createElement("div")
         fossilFuelContainer = createUsageGradient(fossilFuelContainer, ["rgba(82, 0, 0, 1)", "rgba(255, 25, 0, 1)"], regionalData, "FF")
-        fossilFuelContainer.classList.add("fuelFilterContent", "hide")
+        fossilFuelContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
 
         // Create colour legends for each fuel available
         for(let i = 0; i < fuelFilter.length; i++){
