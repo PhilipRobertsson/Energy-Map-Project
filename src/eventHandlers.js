@@ -435,6 +435,16 @@ export function handleMapModeToggle(element, mapRef){
 
     const filterContainers = document.querySelectorAll(".sidePanelFilterContainer")
 
+    const diagramHeader = document.querySelector("#linePlotHeader")
+    const compDiagramHeader = document.querySelector("#compLinePlotHeader")
+
+    const diagramBody = document.querySelector("#linePlotBody")
+    const compDiagramBody = document.querySelector("#compLinePlotBody")
+    const altDiagramBody = document.querySelector("#altLinePlotBody")
+    const compaAltDiagramBody = document.querySelector("#compAltLinePlotBody")
+
+    // Alt bodies will be added
+
     // Hide previous mode's layers
     switch(prevMode){
         case "Power Plants":
@@ -442,18 +452,47 @@ export function handleMapModeToggle(element, mapRef){
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")
+
+            // Diagram specific elements
+            diagramHeader.querySelector("#linePlotTitleWrapper").classList.toggle("hide")
+            diagramHeader.querySelector("#linePlotTextCollector").classList.toggle("hide")
+            diagramBody.style.display = "none"
+            if(compDiagramHeader){
+                compDiagramHeader.querySelector("#compLinePlotTitleWrapper").classList.toggle("hide")
+                compDiagramHeader.querySelector("#compLinePlotTextCollector").classList.toggle("hide")
+                compDiagramBody.style.display = "none"
+            }
+
             break;
         case "Low Carbon Usage":
             setVisibility(["lowCarbon-fill", "lowCarbon-border"], "none")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")
+
+            // Diagram specific elements
+            diagramHeader.querySelector("#linePlotAltHeader").style.display = "none"
+            altDiagramBody.style.display = "none"
+            if(compDiagramHeader){
+                compDiagramHeader.querySelector("#compLinePlotAltHeader").style.display = "none"
+                compaAltDiagramBody.style.display = "none"
+            }
+
             break;
         case "Fossil Fuel Usage":
             setVisibility(["fossilFuel-fill", "fossilFuel-border"], "none")
             fuelFilterContents[2].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[4].classList.toggle("hide")
+
+            // Diagram specific elements
+            diagramHeader.querySelector("#linePlotAltHeader").style.display = "none"
+            altDiagramBody.style.display = "none"
+            if(compDiagramHeader){
+                compDiagramHeader.querySelector("#compLinePlotAltHeader").style.display = "none"
+                compaAltDiagramBody.style.display = "none"
+            }
+
             break;
     }
 
@@ -464,18 +503,47 @@ export function handleMapModeToggle(element, mapRef){
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")
+
+            // Diagram specific elements
+            diagramHeader.querySelector("#linePlotTitleWrapper").classList.toggle("hide")
+            diagramHeader.querySelector("#linePlotTextCollector").classList.toggle("hide")
+            diagramBody.style.display = "flex"
+            if(compDiagramHeader){
+                compDiagramHeader.querySelector("#compLinePlotTitleWrapper").classList.toggle("hide")
+                compDiagramHeader.querySelector("#compLinePlotTextCollector").classList.toggle("hide")
+                compDiagramBody.style.display = "flex"
+            }
+
             break;
         case "Low Carbon Usage":
             setVisibility(["lowCarbon-fill", "lowCarbon-border"], "visible")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")
+
+            // Diagram specific elements
+            diagramHeader.querySelector("#linePlotAltHeader").style.display = "flex"
+            altDiagramBody.style.display = "flex"
+            if(compDiagramHeader){
+                compDiagramHeader.querySelector("#compLinePlotAltHeader").style.display = "flex"
+                compaAltDiagramBody.style.display = "flex"
+            }
+
             break;
         case "Fossil Fuel Usage":
             setVisibility(["fossilFuel-fill", "fossilFuel-border"], "visible")
             fuelFilterContents[2].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[4].classList.toggle("hide")
+
+            // Diagram specific elements
+            diagramHeader.querySelector("#linePlotAltHeader").style.display = "flex"
+            altDiagramBody.style.display = "flex"
+            if(compDiagramHeader){
+                compDiagramHeader.querySelector("#compLinePlotAltHeader").style.display = "flex"
+                compaAltDiagramBody.style.display = "flex"
+            }
+
             break;
     }
 }
@@ -533,7 +601,7 @@ export function handleAddDiagramClick(assetSources, comparisonFuelFilter, region
         onToggleClick: handleLinePlotToggle,
         onLegendClick: (clickedFuel, setBarChartFilter, setFilter) => handleFueLegClick(clickedFuel, setBarChartFilter, setFilter, checkAndSetFilter),
         comparison: true,
-        years,
+        years
     })
 
     // Add click functionality to dropDowns

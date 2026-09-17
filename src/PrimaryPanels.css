@@ -335,11 +335,54 @@
     user-select: none; /* Standard */
 }
 
+#linePlotAltHeader, #compLinePlotAltHeader{
+    height: 18%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /*Added to remove selection from texts*/
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+#linePlotUsageLegends, #compLinePlotUsageLegends{
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 1dvh;
+}
+
+.usageLegend{
+    display: flex;
+    align-items: center;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+    margin: 0 0.16dvw 0 0;
+    padding: 0.4dvh;
+    font-size: 1.4vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.usageLegend div{
+    width: 2dvh;
+    height: 2dvh;
+    margin-right: 0.32dvw;
+    padding: 0.1dvh;
+    border-radius: 0.2vmin;
+}
+
+#altLinePlotBody, #compAltLinePlotBody{
+    display: flex;
+}
+
 #linePlotTitleWrapper, #compLinePlotTitleWrapper{
     width: 65%;
 }
 
-#linePlotTitle, #compLinePlotTitle{
+#linePlotTitle, #compLinePlotTitle, #linePlotAltTitle, #compLinePlotAltTitle{
     font-size: 1.6vmin;
     font-family: "Lato", sans-serif;
     font-weight: 800;

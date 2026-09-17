@@ -295,6 +295,22 @@ export function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot
             .attr("fill", function(d) {return d.colour})
 }
 
+export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svgId = "usagePlotSVG", years){
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    var margin = {top: Math.floor(8*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
+    if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(55*scale), left: Math.floor(15*scale)}}
+    var width = barChartWidth - margin.left - margin.right,
+    height = barChartHeight - margin.top - margin.bottom;
+
+    var svg = d3.select(svgE)
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("id", svgId)
+        .append("g")
+            .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+}
+
 // Creates the region drop down (with alphabet index)
 export function getDropDown(onIndexClick, assetSources){
     const dropDown = document.createElement("div")
@@ -349,15 +365,18 @@ export function getDropDown(onIndexClick, assetSources){
 export function createDiagram({
     assetSources, fuels, regionalData, regionFilter,regionFilterRef,setRegionFilter,setFuelFilter, setBarChartFilter,
     onIndexClick, onContinentClick, onToggleClick, onLegendClick,
-    comparison = false, years,
+    comparison = false, years
 }){
     const ids = comparison ? {
         container: "sidePanelComparisonLinePlot",
         regionFilter: "compRegionFilter",
         continentFilter: "compLinePlotContinentFilter",
         header: "compLinePlotHeader",
+        altHeader: "compLinePlotAltHeader",
+        usageLegends: "compLinePlotUsageLegends",
         titleWrapper: "compLinePlotTitleWrapper",
         title: "compLinePlotTitle",
+        altTitle: "compLinePlotAltTitle",
         toggleWrapper: "compDataToggleWrapper",
         toggleTitle: "compDataToggleTitle",
         toggleButtons: "compDataToggleButtonContainer",
@@ -365,19 +384,24 @@ export function createDiagram({
         exBold: "compLinePlotExBoldText",
         exStandard: "compLinePlotExStandardText",
         body: "compLinePlotBody",
+        altBody: "compAltLinePlotBody",
         fuelFilterContainer: "compFuelFilterContainer",
         selectAllName: "compFuelFilterSelectAllName",
         selectAllCircle: "compFuelFilterSelectAllCircle",
         selectAllCheck: "compFuelFilterSelectAllCheck",
         linePlotSvg: "compLinePlotSVG",
         barChartSvg: "compBarChartSVG",
+        usagePlotSvg: "compUsagePlotSVG"
     } : {
         container: "sidePanelLinePlot",
         regionFilter: "linePlotRegionFilter",
         continentFilter: "linePlotContinentFilter",
         header: "linePlotHeader",
+        altHeader: "linePlotAltHeader",
+        usageLegends: "linePlotUsageLegends",
         titleWrapper: "linePlotTitleWrapper",
         title: "linePlotTitle",
+        altTitle: "linePlotAltTitle",
         toggleWrapper: "dataToggleWrapper",
         toggleTitle: "dataToggleTitle",
         toggleButtons: "dataToggleButtonContainer",
@@ -385,16 +409,21 @@ export function createDiagram({
         exBold: "linePlotExBoldText",
         exStandard: "linePlotExStandardText",
         body: "linePlotBody",
+        altBody: "altLinePlotBody",
         fuelFilterContainer: "fuelFilterContainer",
         selectAllName: "fuelFilterSelectAllName",
         selectAllCircle: "fuelFilterSelectAllCircle",
         selectAllCheck: "fuelFilterSelectAllCheck",
         linePlotSvg: "linePlotSVG",
         barChartSvg: "barChartSVG",
+        usagePlotSvg: "usagePlotSVG"
     }
 
     const container = document.createElement("div")
     container.id = ids.container
+
+    // Used to display the correct elements upon creation, if mapMode == undefined, power plants is assumed
+    const mapMode = document.getElementById("mapToggleContainer")?.querySelector(".selectedMapMode").querySelector("span").textContent
 
     // Region filter
     const regionFilterEl = document.createElement("div");
@@ -430,6 +459,9 @@ export function createDiagram({
 
     const titleAndDataWrapper = document.createElement("div");
     titleAndDataWrapper.id = ids.titleWrapper
+    if(mapMode && mapMode!="Power Plants"){
+        titleAndDataWrapper.classList.toggle("hide")
+    }
 
     const linePlotTitle = document.createElement("span");
     linePlotTitle.id = ids.title;
@@ -477,6 +509,9 @@ export function createDiagram({
     // Explanation text
     const linePlotTextCollector = document.createElement("div");
     linePlotTextCollector.id = ids.textCollector
+    if(mapMode && mapMode!="Power Plants"){
+        linePlotTextCollector.classList.toggle("hide")
+    }
 
     const linePlotExBold = document.createElement("span");
     linePlotExBold.id = ids.exBold
@@ -490,11 +525,64 @@ export function createDiagram({
     linePlotTextCollector.appendChild(linePlotExStandard)
     linePlotHeader.appendChild(linePlotTextCollector)
 
+    // Alternative linePlot header (for the alternative map modes)
+    const linePlotAlternativeHeader = document.createElement("div");
+    linePlotAlternativeHeader.id = ids.altHeader;
+    if(!mapMode || mapMode=="Power Plants"){
+        linePlotAlternativeHeader.style.display = "none"
+    }
+
+    const linePlotAlternativeTitle = document.createElement("span");
+    linePlotAlternativeTitle.id = ids.altTitle;
+    linePlotAlternativeTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
+
+    const linePlotUsageLegends = document.createElement("div");
+    linePlotUsageLegends.id = ids.usageLegends
+    const LCLegend = document.createElement("div");
+    LCLegend.classList.add("usageLegend")
+    const FFLegend = document.createElement("div");
+    FFLegend.classList.add("usageLegend")
+
+    const LCLegendColour = document.createElement("div");
+    LCLegendColour.style.background = "#00c20d"
+    const FFLegendColour = document.createElement("div");
+    FFLegendColour.style.background = "#c01603"
+
+    const LCLegendText = document.createElement("span");
+    LCLegendText.textContent = "Share of Low Carbon Usage"
+    const FFLegendText = document.createElement("span");
+    FFLegendText.textContent = "Share of Fossil Fuel Usage"
+
+
+    LCLegend.appendChild(LCLegendColour)
+    LCLegend.appendChild(LCLegendText)
+    FFLegend.appendChild(FFLegendColour)
+    FFLegend.appendChild(FFLegendText)
+
+    linePlotUsageLegends.appendChild(LCLegend)
+    linePlotUsageLegends.appendChild(FFLegend)
+
+
+
+    linePlotAlternativeHeader.appendChild(linePlotAlternativeTitle)
+    linePlotAlternativeHeader.appendChild(linePlotUsageLegends)
+    linePlotHeader.appendChild(linePlotAlternativeHeader)
+
     container.appendChild(linePlotHeader)
 
     // Body of line plot (the graph and filter buttons)
     const linePlotBody = document.createElement("div");
     linePlotBody.id = ids.body;
+    if(mapMode && mapMode!="Power Plants"){
+        linePlotBody.style.display = "none"
+    }
+
+    // Alternative line plot body
+    const altLinePlotBody = document.createElement("div");
+    altLinePlotBody.id = ids.altBody;
+    if(!mapMode || mapMode=="Power Plants"){
+        altLinePlotBody.style.display = "none"
+    }
 
     // SVG for actual line plot
     const dataVisualization = document.createElement("svg");
@@ -605,6 +693,7 @@ export function createDiagram({
     linePlotBody.appendChild(dataVisualization)
     linePlotBody.appendChild(fuelFilterContainer)
     container.appendChild(linePlotBody)
+    container.appendChild(altLinePlotBody)
 
     return container
 }
