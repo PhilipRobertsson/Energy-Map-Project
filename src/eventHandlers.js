@@ -603,17 +603,27 @@ export function handlePlayBackClick(element,filter, setFilter,playTime){
     // Animate the year filter from the earliest to the latest bound year,
     // stepping one year at a time over the playback duration.
     const bounds = filter.length === 2 ? filter[1] : null
+
     if (bounds && bounds[1] > bounds[0]) {
         const [minYear, maxYear] = bounds
         const totalSteps = maxYear - minYear
         const stepDuration = playTime / totalSteps
 
         // Start at the earliest year, then increment the max value each step
-        setFilter([[minYear, minYear], bounds])
-        for(let step = 1; step <= totalSteps; step++){
-            setTimeout(() => {
-                setFilter([[minYear, minYear + step], bounds])
-            }, step * stepDuration)
+        if(filter[0].length == 2){
+            setFilter([[minYear, minYear], bounds])
+            for(let step = 1; step <= totalSteps; step++){
+                setTimeout(() => {
+                    setFilter([[minYear, minYear + step], bounds])
+                }, step * stepDuration)
+            }
+        }else{
+            setFilter([minYear,bounds])
+            for(let step = 1; step <= totalSteps; step++){
+                setTimeout(()=>{
+                    setFilter([minYear+step,bounds])
+                }, step * stepDuration)
+            }
         }
     }
 

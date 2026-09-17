@@ -444,58 +444,23 @@ function Map({ children }) {
       const usageKeys = Object.keys(regionalData[0].usage_shares)
       const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
 
-      // Find min and max usage values
-      let LCMinUsage = Infinity
-      let LCMaxUsage = -Infinity
-      let FFMinUsage = Infinity
-      let FFMaxUsage = -Infinity
-      regionalData.forEach(r => {
-        for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
-          const LCUsage = r.usage_shares?.[i]?.LC
-          const FFUsage = r.usage_shares?.[i]?.FF
-
-          if (LCUsage != null) {
-            if (LCUsage < LCMinUsage) LCMinUsage = LCUsage
-            if (LCUsage > LCMaxUsage) LCMaxUsage = LCUsage
-          }
-          if (FFUsage != null) {
-            if (FFUsage < FFMinUsage) FFMinUsage = FFUsage
-            if (FFUsage > FFMaxUsage) FFMaxUsage = FFUsage
-          }
-        }
-      })
-
-      //console.log("LC: (Min: " + LCMinUsage + ", Max: " + LCMaxUsage + ")");
-      //console.log("FF: (Min: " + FFMinUsage + ", Max: " + FFMaxUsage + ")");
-
       // Attach the usage values to each boundary feature (matched by iso_a3)
       boundaryData.features.forEach(f => {
         const iso = f.properties.iso_a3
         const entry = regionalData.find(r => r.country == iso)
-        const usage = entry?.usage_shares?.[dataYears[dataYears.length - 1]]
-        f.properties.lowCarbonUsage = usage?.LC ?? null
-        f.properties.fossilFuelUsage = usage?.FF ?? null
+        f.properties.usageShares = {}
+        for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
+          f.properties.usageShares[i] = {}
+          let usage = entry?.usage_shares?.[i]
+          f.properties.usageShares[i]['LC'] = usage?.LC ?? null
+          f.properties.usageShares[i]['FF'] = usage?.FF ?? null
+        }
       })
 
-      // Interpolate low carbon colour between the min and max usage values,
-      // leaving countries with no data (null) transparent
-      const lowCarbonColor = (LCMinUsage !== LCMaxUsage && LCMaxUsage !== -Infinity)
-        ? [
-            'case',
-            ['==', ['get', 'lowCarbonUsage'], null],
-            '#00000000',
-            ['interpolate', ['linear'], ['get', 'lowCarbonUsage'], LCMinUsage, '#1d3e00', LCMaxUsage, '#01ff12']
-          ]
-        : '#00000000'
-
-        const fossilFuelColor = (FFMinUsage !== FFMaxUsage && FFMaxUsage !== -Infinity)
-        ? [
-            'case',
-            ['==', ['get', 'fossilFuelUsage'], null],
-            '#00000000',
-            ['interpolate', ['linear'], ['get', 'fossilFuelUsage'], FFMinUsage, '#520000', FFMaxUsage, '#ff1900']
-          ]
-        : '#00000000'
+      // Colour the countries based on the latest year of data by default
+      const latestYear = dataYears[dataYears.length - 1]
+      const lowCarbonColor = lowCarbonColorForYear(latestYear, boundaryData)
+      const fossilFuelColor = fossilFuelColorForYear(latestYear, boundaryData)
 
       // Add the power plant data as a source to the map
       map.addSource("powerplants", {
@@ -1168,5 +1133,41 @@ function addRemoveListeners(e,type="", onMove, onEnd, onStart){
     }
 
 
+// Build a paint expression that colours each country by its low-carbon usage
+// for the given year, interpolating between that year's min and max values.
+export function lowCarbonColorForYear(year, boundaryData){
+    if (!boundaryData) return '#00000000'
+    const key = String(year)
+    let min = Infinity, max = -Infinity
+    boundaryData.features.forEach(f => {
+        const LC = f.properties.usageShares?.[key]?.LC
+        if (LC != null) { min = Math.min(min, LC); max = Math.max(max, LC) }
+    })
+    if (min === max || max === -Infinity) return '#00000000'
+    return [
+        'case',
+        ['==', ['get', 'LC', ['get', key, ['get', 'usageShares']]], null],
+        '#00000000',
+        ['interpolate', ['linear'], ['get', 'LC', ['get', key, ['get', 'usageShares']]], min, '#1d3e00', max, '#01ff12']
+    ]
+}
+
+// Same as above, but for fossil fuel usage.
+export function fossilFuelColorForYear(year, boundaryData){
+    if (!boundaryData) return '#00000000'
+    const key = String(year)
+    let min = Infinity, max = -Infinity
+    boundaryData.features.forEach(f => {
+        const FF = f.properties.usageShares?.[key]?.FF
+        if (FF != null) { min = Math.min(min, FF); max = Math.max(max, FF) }
+    })
+    if (min === max || max === -Infinity) return '#00000000'
+    return [
+        'case',
+        ['==', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null],
+        '#00000000',
+        ['interpolate', ['linear'], ['get', 'FF', ['get', key, ['get', 'usageShares']]], min, '#520000', max, '#ff1900']
+    ]
+}
 
 export default Map;

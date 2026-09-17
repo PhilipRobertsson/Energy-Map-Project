@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext, createElement } from 'react'
 import { gsap } from "gsap";
 
-import { MapContext } from './Map.jsx'
+import { MapContext, lowCarbonColorForYear, fossilFuelColorForYear } from './Map.jsx'
 import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue,
               otherFuels, drawLinePlot, drawBarChart, getDropDown, createUsageGradient } from './sidePanelUtilities.js'
 import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
@@ -416,6 +416,14 @@ function PrimaryPanels() {
         if (sliders && sliders[0] && sliders[0].sync) sliders[0].sync(values[0], values[1])
     }, [yearFilter])
 
+    // Keep the year slider thumb positions in sync with the share year filter state
+    useEffect(() => {
+        if (shareYearFilter.length !== 2) return
+        const [value,bounds] = shareYearFilter
+        const sliders = sidePanelContainer.current?.querySelectorAll(".sidePanelFilterSliderContainer")
+        if (sliders && sliders[1] && sliders[1].sync) sliders[1].sync(bounds[0], value)
+    }, [shareYearFilter])
+
     // Check the context filter for any updates
     useEffect(()=>{
         if(!fuelFilter.length) return
@@ -658,20 +666,21 @@ function PrimaryPanels() {
 
         const LCfilters = ["all"];
         const FFfilters = ["all"];
+        const key = String(shareYearFilter[0])
 
         if (LCShareFilter.length === 2) {
             const [values, bounds] = LCShareFilter
             if (values[0] !== bounds[0] || values[1] !== bounds[1]) {
-                LCfilters.push([">=", ["to-number", ["get", "lowCarbonUsage"]], values[0]]);
-                LCfilters.push(["<=", ["to-number", ["get", "lowCarbonUsage"]], values[1]]);
+                LCfilters.push([">=", ["to-number", ['get', 'LC', ['get', key, ['get', 'usageShares']]]], values[0]]);
+                LCfilters.push(["<=", ["to-number", ['get', 'LC', ['get', key, ['get', 'usageShares']]]], values[1]]);
             }
         }
 
         if (FFShareFilter.length === 2) {
             const [values, bounds] = FFShareFilter
             if (values[0] !== bounds[0] || values[1] !== bounds[1]) {
-                FFfilters.push([">=", ["to-number", ["get", "fossilFuelUsage"]], values[0]]);
-                FFfilters.push(["<=", ["to-number", ["get", "fossilFuelUsage"]], values[1]]);
+                FFfilters.push([">=", ["to-number", ['get', 'FF', ['get', key, ['get', 'usageShares']]]], values[0]]);
+                FFfilters.push(["<=", ["to-number", ['get', 'FF', ['get', key, ['get', 'usageShares']]]], values[1]]);
             }
         }
 
@@ -693,48 +702,17 @@ function PrimaryPanels() {
 
         // Recolour the low carbon / fossil fuel layers based on the selected share year.
         // The year is not used to filter countries, only to pick which usage values colour them.
-        if (shareYearFilter.length === 2 && boundaryData && regionalData.length) {
+        if (shareYearFilter.length === 2 && boundaryData) {
             const year = shareYearFilter[0]
-
-            // Country -> usage lookup for the selected year, plus the year's min/max usage values
-            const usageByCountry = {}
-            let LCMin = Infinity, LCMax = -Infinity
-            let FFMin = Infinity, FFMax = -Infinity
-            regionalData.forEach(r => {
-                const usage = r.usage_shares?.[year]
-                usageByCountry[r.country] = usage
-                const LC = usage?.LC
-                const FF = usage?.FF
-                if (LC != null) { LCMin = Math.min(LCMin, LC); LCMax = Math.max(LCMax, LC) }
-                if (FF != null) { FFMin = Math.min(FFMin, FF); FFMax = Math.max(FFMax, FF) }
-            })
-
-            // Write the selected year's usage onto each boundary feature
-            boundaryData.features.forEach(f => {
-                const usage = usageByCountry[f.properties.iso_a3]
-                f.properties.lowCarbonUsage = usage?.LC ?? null
-                f.properties.fossilFuelUsage = usage?.FF ?? null
-            })
-            toFilter.getSource("countryboundaries").setData(boundaryData)
-
-            const lowCarbonColor = (LCMin !== LCMax && LCMax !== -Infinity)
-                ? ['case',
-                    ['==', ['get', 'lowCarbonUsage'], null], '#00000000',
-                    ['interpolate', ['linear'], ['get', 'lowCarbonUsage'], LCMin, '#1d3e00', LCMax, '#01ff12']]
-                : '#00000000'
-
-            const fossilFuelColor = (FFMin !== FFMax && FFMax !== -Infinity)
-                ? ['case',
-                    ['==', ['get', 'fossilFuelUsage'], null], '#00000000',
-                    ['interpolate', ['linear'], ['get', 'fossilFuelUsage'], FFMin, '#520000', FFMax, '#ff1900']]
-                : '#00000000'
+            const lowCarbonColor = lowCarbonColorForYear(year, boundaryData)
+            const fossilFuelColor = fossilFuelColorForYear(year, boundaryData)
 
             toFilter.setPaintProperty("lowCarbon-fill", "fill-color", lowCarbonColor)
             toFilter.setPaintProperty("lowCarbon-border", "line-color", lowCarbonColor)
             toFilter.setPaintProperty("fossilFuel-fill", "fill-color", fossilFuelColor)
             toFilter.setPaintProperty("fossilFuel-border", "line-color", fossilFuelColor)
         }
-    }, [shareYearFilter, LCShareFilter, FFShareFilter, mapRef, mapReady, boundaryData, regionalData])
+    }, [shareYearFilter, LCShareFilter, FFShareFilter, mapRef, mapReady, boundaryData])
 
     // Compute shown and total power plant counts
     useEffect(() => {
@@ -862,10 +840,11 @@ function PrimaryPanels() {
                 }
             }
 
-            // Add playback eventlistener
-            const playBackParent = pages.querySelector("#sliderPlaybackField")
+            // Add playback eventlisteners
+            const playBackParents = pages.querySelectorAll("#sliderPlaybackField")
 
-            playBackParent.onclick = () => handlePlayBackClick(playBackParent.children[1], yearFilter, setYearFilter, 20000);
+            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilter, setYearFilter, 20000);
+            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilter, setShareYearFilter, 20000);
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]
