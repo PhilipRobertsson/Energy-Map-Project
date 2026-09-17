@@ -36,7 +36,7 @@ export function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, f
             const rawFuels = f.fuel === "Other" ? otherFuels : [f.fuel]
             const result = { fuel: f.fuel, colour: f.colour }
 
-            for(let year = years.reported.first; year <= years.reported.last; year++){
+            for(let year = years.estimated.first; year <= years.estimated.last; year++){
                 result["sum_generation_" + year] = sumFuelField("generation_gwh_" + year, rawFuels)
             }
             for(let year = years.estimated.first; year <= years.estimated.last; year++){
@@ -79,11 +79,15 @@ export function formatPowerOf10(num){
 
 // Find the latest year (checking backwards) where a fuel has reported generation data
 export function getLatestGenerationValue(fuelData, years){
-    for(let year = years.reported.last; year >= years.reported.first; year--){
+    /* for(let year = years.reported.last; year >= years.reported.first; year--){
         var value = fuelData["sum_generation_" + year]
         if(value == null && year <= years.estimated.last) value = fuelData["sum_estimated_generation_"+year]
         if (value != null) return value
-    }
+    } */
+   for(let year = years.estimated.last; year >= years.estimated.first; year--){
+        var value = fuelData["sum_estimated_generation_"+year]
+        if(value != null) return value
+   }
     return null
 }
 
@@ -107,12 +111,12 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
 
     // Create x-axis
     var x = d3.scaleLinear()
-    .domain([years.reported.first-0.2, years.reported.last])
+    .domain([years.estimated.first-0.2, years.estimated.last])
     .range([ 0, width ])
 
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).ticks(years.reported.last-years.reported.first).tickFormat(d3.format("d")))
+        .call(d3.axisBottom(x).ticks(years.estimated.last-years.estimated.first).tickFormat(d3.format("d")))
         .call(g => g.select(".domain").remove())
         .call(g => g.selectAll(".tick").selectAll("line").remove())
         .selectAll("text")
@@ -123,13 +127,13 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
 
     const maxValue = (d) =>{
         var max = Number.NEGATIVE_INFINITY
-        for(let i = years.reported.first; i <= years.reported.last; i++){
-            let reported = d["sum_generation_" + i]
-            if(reported >= max){max = reported}
-            if(i <= years.estimated.last && reported == null){
+        for(let i = years.estimated.first; i <= years.estimated.last; i++){
+            let estimated = d["sum_estimated_generation_" + i]
+            if(estimated >= max){max = estimated}
+            /* if(i <= years.estimated.last && estimated == null){
                 let estimated = d["sum_estimated_generation_" + i]
                 if(estimated >= max){max = estimated}
-            }
+            } */
         }
         return max
     }
@@ -166,7 +170,7 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
     .attr("stroke-width", 0.5) 
     .style("stroke-dasharray", ("3, 3"))
     .call(d3.axisTop(x)
-        .ticks(years.reported.last-years.reported.first)
+        .ticks(years.estimated.last-years.estimated.first)
         .tickSize(height) // Stretches lines up across the height of the chart
         .tickFormat("")    // Removes text labels
     )
@@ -181,12 +185,13 @@ export function drawLinePlot(svgE, linePlotWidth, linePlotHeight, data, showPlot
         .attr("stroke-width", 2.5)
         .attr("d", function(d){
           const points = []
-          for(let year = years.reported.first; year <= years.reported.last; year++){
-            if(d["sum_generation_" + year] != null){
+          for(let year = years.estimated.first; year <= years.estimated.last; year++){
+            /* if(d["sum_generation_" + year] != null){
                 points.push({ year: year, value: d["sum_generation_" + year] })
             }else if(year <= years.estimated.last){
                 points.push({ year: year, value: d["sum_estimated_generation_" + year] })
-            }
+            } */
+           points.push({year:year, value: d["sum_estimated_generation_" + year]})
           }
           const filtered = points.filter(p => p.value !== null);
           if(filtered.length == 1){

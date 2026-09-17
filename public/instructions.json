@@ -12,10 +12,12 @@
             [
                 "This PhD research project visualizes the distribution and capacity of power plants worldwide. It transforms complex energy data into an interactive map, revealing how our planet stays powered. Explore the hidden infrastructure that sustains modern society across every continent.",
                 "By tapping individual data points, you can access specific details about any plant on the map. Use the built-in filters to compare different energy sources. \n",
-                "The Story Mode will walk you through the tool’s features while highlighting key trends in global energy. Discover the balance of power that shapes our international communities today. \n"
+                "The Story Mode will walk you through the tool’s features while highlighting key trends in global energy. Discover the balance of power that shapes our international communities today. \n",
+                "This tool relies on data from the Global Power Plant Database, which includes both reported and estimated values for power plant generation. Only 11,400 power plants (33%) have reported data, thus, we are using estimated values to maximize coverage to 33,470 plants (96%).\n",
+                "These estimates are based on methodologies documented by the dataset provider in its technical note and README file. However, they should not be interpreted as directly observed generation data, and results may be subject to uncertainty arising from the estimation methods and underlying data limitations.\n"
             ],
             [
-                "https://dl.acm.org/doi/full\n/10.1145/3769534.3769541"
+                "https://dl.acm.org/doi/full/10.1145/3769534.3769541"
             ],
             [
                 "https://www.wri.org/research/global-database-power-plants"

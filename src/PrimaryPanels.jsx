@@ -685,8 +685,6 @@ function PrimaryPanels() {
             }
         }
 
-        console.log(shownRegions)
-
         if (shownRegions.length < regionFilter.length) {
             LCfilters.push(["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]);
             FFfilters.push(["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]);

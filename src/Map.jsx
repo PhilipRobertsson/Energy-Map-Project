@@ -680,10 +680,10 @@ function getPowerPlantInfo(feature, htmlElement, reportedYears, estimatedYears){
     var latestDataYear = 0
     var latestDataValue = 0
     var reported = false
-    for(var i = reportedYears.last; i >=reportedYears.first; i--){
-        var tempReported = eval("feature.generation_gwh_" + i)
+    for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
+        //var tempReported = eval("feature.generation_gwh_" + i)
         var tempEstimated = eval("feature.estimated_generation_gwh_" + i)
-        if(tempReported != null){
+        /* if(tempReported != null){
             latestDataYear = i
             latestDataValue = tempReported
             reported = true
@@ -693,7 +693,12 @@ function getPowerPlantInfo(feature, htmlElement, reportedYears, estimatedYears){
             latestDataValue = tempEstimated
             reported = false
             break;
-        }
+        } */
+       if(tempEstimated != null){
+          latestDataYear = i
+          latestDataValue = tempEstimated
+          break;
+       }
     }
 
     generationTitle.textContent = "Generation " + `${(latestDataYear==0)? "Data Not available" :":"}`
@@ -747,10 +752,10 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
     var latestDataYear = 0
     var latestDataValue = 0
     var reported = false
-    for(var i = reportedYears.last; i >=reportedYears.first; i--){
-        var tempReported = eval("region.regional_annual_output.generation_gwh_" + i)
+    for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
+        //var tempReported = eval("region.regional_annual_output.generation_gwh_" + i)
         var tempEstimated = eval("region.regional_annual_output.estimated_generation_gwh_" + i)
-        if(tempReported != null){
+        /* if(tempReported != null){
             latestDataYear = i
             latestDataValue = tempReported
             reported = true
@@ -760,7 +765,12 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
             latestDataValue = tempEstimated
             reported = false
             break;
-        }
+        } */
+       if(tempEstimated != null){
+        latestDataYear = i
+        latestDataValue = tempEstimated
+        break;
+       }
     }
 
     infoTitle.textContent = "Generation " + `${(latestDataYear==0)? "Data Not available" :":"}`
@@ -794,23 +804,21 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
     }
 
     var latestData = {}
-    for(var i = reportedYears.last; i >=reportedYears.first; i--){
-        var tempReported = eval("region.annual_output_by_fuel.generation_gwh_" + i)
+    for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
+        //var tempReported = eval("region.annual_output_by_fuel.generation_gwh_" + i)
         var tempEstimated = eval("region.annual_output_by_fuel.estimated_generation_gwh_" + i)
 
         // Missing values / total values in reported data
-        var numNullReported = Object.keys(tempReported).filter((key) => tempReported[key] === null).length;
+        /* var numNullReported = Object.keys(tempReported).filter((key) => tempReported[key] === null).length;
         var totalReported = Object.keys(tempReported).length
         var missingReported = Object.keys(tempReported).filter((key) => tempReported[key] === null)
-        var gotReported = Object.keys(tempReported).filter((key) => tempReported[key] != null)
+        var gotReported = Object.keys(tempReported).filter((key) => tempReported[key] != null) */
 
         // Missing values / total values in estimated data
-        if(i<=estimatedYears.last){
-            var numNullEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] === null).length
-            var totalEstimated = Object.keys(tempEstimated).length
-            var missingEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] === null)
-            var gotEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] != null)
-        }
+        //var numNullEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] === null).length
+        //var totalEstimated = Object.keys(tempEstimated).length
+        //var missingEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] === null)
+        //var gotEstimated = Object.keys(tempEstimated).filter((key) => tempEstimated[key] != null)
 
         // Removes null items from the object
         const cleanObject = (object) =>
@@ -834,42 +842,17 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
             latestData[fuel]['reported'] = rep
         }
 
-        // No reported values are found and estimated does not exist
-        if(gotReported.length == 0 && i>estimatedYears.last){
-            continue
-        }else if(i > estimatedYears.last){ // There are some reported values, but estimated does not exist
-            gotReported.forEach((fuel)=>{
-                if (!(fuel in latestData)){
-                    latestData[fuel] = {}
-                    insertLastDataYear(fuel,i)
-                    insertLastDataValue(fuel,tempReported[fuel])
-                    insertReported(fuel, true)
-                }
-            })
-            break
-        }else{ // There are estimated values
-            // Get the available reported values
-            gotReported.forEach((fuel)=>{
-                    if (!(fuel in latestData)){
-                        latestData[fuel] = {}
-                        insertLastDataYear(fuel,i)
-                        insertLastDataValue(fuel,tempReported[fuel])
-                        insertReported(fuel, true)
-                    }
-            })
-            // Find which estimated values that can be used
-            var estimatedValuesLeft = Object.keys(cleanObject(tempEstimated)).filter(item => !Object.keys(cleanObject(latestData)).includes(item))
-            estimatedValuesLeft.forEach((fuel)=>{
-                if (!(fuel in latestData)){
-                    latestData[fuel] = {}
-                    insertLastDataYear(fuel,i)
-                    insertLastDataValue(fuel,tempEstimated[fuel])
-                    insertReported(fuel, false)
-                }
-            })
-            // All fuel types were found
-            if(Object.keys(latestData).length == totalReported){break;}
-        }
+
+
+        // Only save estimated values; reported is always false for these entries
+        Object.keys(cleanObject(tempEstimated)).forEach((fuel)=>{
+            if (!(fuel in latestData)) {
+                latestData[fuel] = {}
+                insertLastDataYear(fuel, i)
+                insertLastDataValue(fuel, tempEstimated[fuel])
+                insertReported(fuel, false)
+            }
+        })
     }
 
     // Convert latestData object to array for D3
