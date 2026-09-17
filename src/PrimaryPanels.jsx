@@ -285,11 +285,11 @@ function PrimaryPanels() {
         legendContainer.classList.add("fuelFilterContent")
 
         let lowCarbonContainer = document.createElement("div")
-        lowCarbonContainer = createUsageGradient(lowCarbonContainer, ["rgba(29, 62, 0, 1)", "rgba(1, 255, 18, 1)"], regionalData, "LC")
+        lowCarbonContainer = createUsageGradient(lowCarbonContainer, ["#0c1900", "#01ff12"], regionalData, "LC")
         lowCarbonContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
 
         let fossilFuelContainer = document.createElement("div")
-        fossilFuelContainer = createUsageGradient(fossilFuelContainer, ["rgba(82, 0, 0, 1)", "rgba(255, 25, 0, 1)"], regionalData, "FF")
+        fossilFuelContainer = createUsageGradient(fossilFuelContainer, ["#200000", "#ff1900"], regionalData, "FF")
         fossilFuelContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
 
         // Create colour legends for each fuel available
@@ -667,6 +667,7 @@ function PrimaryPanels() {
         const LCfilters = ["all"];
         const FFfilters = ["all"];
         const key = String(shareYearFilter[0])
+        const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
 
         if (LCShareFilter.length === 2) {
             const [values, bounds] = LCShareFilter
@@ -682,6 +683,13 @@ function PrimaryPanels() {
                 FFfilters.push([">=", ["to-number", ['get', 'FF', ['get', key, ['get', 'usageShares']]]], values[0]]);
                 FFfilters.push(["<=", ["to-number", ['get', 'FF', ['get', key, ['get', 'usageShares']]]], values[1]]);
             }
+        }
+
+        console.log(shownRegions)
+
+        if (shownRegions.length < regionFilter.length) {
+            LCfilters.push(["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]);
+            FFfilters.push(["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]);
         }
 
         if (LCfilters.length === 1) {
@@ -712,7 +720,7 @@ function PrimaryPanels() {
             toFilter.setPaintProperty("fossilFuel-fill", "fill-color", fossilFuelColor)
             toFilter.setPaintProperty("fossilFuel-border", "line-color", fossilFuelColor)
         }
-    }, [shareYearFilter, LCShareFilter, FFShareFilter, mapRef, mapReady, boundaryData])
+    }, [regionFilter, shareYearFilter, LCShareFilter, FFShareFilter, mapRef, mapReady, boundaryData])
 
     // Compute shown and total power plant counts
     useEffect(() => {

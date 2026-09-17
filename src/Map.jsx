@@ -1148,7 +1148,7 @@ export function lowCarbonColorForYear(year, boundaryData){
         'case',
         ['==', ['get', 'LC', ['get', key, ['get', 'usageShares']]], null],
         '#00000000',
-        ['interpolate', ['linear'], ['get', 'LC', ['get', key, ['get', 'usageShares']]], min, '#1d3e00', max, '#01ff12']
+        ['interpolate', ['linear'], ['get', 'LC', ['get', key, ['get', 'usageShares']]], min, '#0c1900', max, '#01ff12']
     ]
 }
 
@@ -1166,7 +1166,7 @@ export function fossilFuelColorForYear(year, boundaryData){
         'case',
         ['==', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null],
         '#00000000',
-        ['interpolate', ['linear'], ['get', 'FF', ['get', key, ['get', 'usageShares']]], min, '#520000', max, '#ff1900']
+        ['interpolate', ['linear'], ['get', 'FF', ['get', key, ['get', 'usageShares']]], min, '#200000', max, '#ff1900']
     ]
 }
 
