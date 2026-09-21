@@ -208,7 +208,7 @@ function Map({ children }) {
   const [regionalData, setRegionalData] = useState(null);
   const [reportedYears, setReportedYears] = useState({ first: 0, last: 0 });
   const [estimatedYears, setEstimatedYears] = useState({ first: 0, last: 0 });
-  const [shareYears, setShareYears] = useState({ first: 0, last: 0 })
+  const [shareYears, setShareYears] = useState({ first: 0, last: 0 });
   const [mapReady, setMapReady] = useState(false);
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
@@ -446,12 +446,13 @@ function Map({ children }) {
 
       // Attach the usage values to each boundary feature (matched by iso_a3)
       boundaryData.features.forEach(f => {
-        const iso = f.properties.iso_a3
+        const iso = f.properties.adm0_iso
         const entry = regionalData.find(r => r.country == iso)
         f.properties.usageShares = {}
         for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
           f.properties.usageShares[i] = {}
           let usage = entry?.usage_shares?.[i]
+
           f.properties.usageShares[i]['LC'] = usage?.LC ?? null
           f.properties.usageShares[i]['FF'] = usage?.FF ?? null
         }
@@ -459,8 +460,8 @@ function Map({ children }) {
 
       // Colour the countries based on the latest year of data by default
       const latestYear = dataYears[dataYears.length - 1]
-      const lowCarbonColor = lowCarbonColorForYear(latestYear, boundaryData)
-      const fossilFuelColor = fossilFuelColorForYear(latestYear, boundaryData)
+      const lowCarbonColor = lowCarbonColorForYear(latestYear,dataYears, boundaryData)
+      const fossilFuelColor = fossilFuelColorForYear(latestYear,dataYears, boundaryData)
 
       // Add the power plant data as a source to the map
       map.addSource("powerplants", {
@@ -1118,13 +1119,15 @@ function addRemoveListeners(e,type="", onMove, onEnd, onStart){
 
 // Build a paint expression that colours each country by its low-carbon usage
 // for the given year, interpolating between that year's min and max values.
-export function lowCarbonColorForYear(year, boundaryData){
+export function lowCarbonColorForYear(year, years, boundaryData){
     if (!boundaryData) return '#00000000'
     const key = String(year)
     let min = Infinity, max = -Infinity
     boundaryData.features.forEach(f => {
-        const LC = f.properties.usageShares?.[key]?.LC
-        if (LC != null) { min = Math.min(min, LC); max = Math.max(max, LC) }
+        years.forEach(y=>{
+          const LC = f.properties.usageShares?.[String(y)]?.LC
+          if (LC != null) { min = Math.min(min, LC); max = Math.max(max, LC) }
+        })
     })
     if (min === max || max === -Infinity) return '#00000000'
     return [
@@ -1136,13 +1139,15 @@ export function lowCarbonColorForYear(year, boundaryData){
 }
 
 // Same as above, but for fossil fuel usage.
-export function fossilFuelColorForYear(year, boundaryData){
+export function fossilFuelColorForYear(year, years, boundaryData){
     if (!boundaryData) return '#00000000'
     const key = String(year)
     let min = Infinity, max = -Infinity
     boundaryData.features.forEach(f => {
-        const FF = f.properties.usageShares?.[key]?.FF
-        if (FF != null) { min = Math.min(min, FF); max = Math.max(max, FF) }
+        years.forEach(y=>{
+          const FF = f.properties.usageShares?.[String(y)]?.FF
+          if (FF != null) { min = Math.min(min, FF); max = Math.max(max, FF) }
+        })
     })
     if (min === max || max === -Infinity) return '#00000000'
     return [

@@ -550,7 +550,7 @@ export function handleMapModeToggle(element, mapRef){
 
 export function handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData, comparisonRegionFilter,
     compRegionFilterRef, setComparisonRegionFilter, setComparisonFuelFilter,
-    fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter, years
+    fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter, years, usageYears
 ){
     // Get the diagram wrapper and check if the comparison window already has been created
     const diagramWrapper = document.querySelector("#allDiagramContainer");
@@ -601,7 +601,8 @@ export function handleAddDiagramClick(assetSources, comparisonFuelFilter, region
         onToggleClick: handleLinePlotToggle,
         onLegendClick: (clickedFuel, setBarChartFilter, setFilter) => handleFueLegClick(clickedFuel, setBarChartFilter, setFilter, checkAndSetFilter),
         comparison: true,
-        years
+        years,
+        usageYears
     })
 
     // Add click functionality to dropDowns

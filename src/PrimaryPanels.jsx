@@ -3,7 +3,8 @@ import { gsap } from "gsap";
 
 import { MapContext, lowCarbonColorForYear, fossilFuelColorForYear } from './Map.jsx'
 import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue,
-              otherFuels, drawLinePlot, drawBarChart, getDropDown, createUsageGradient } from './sidePanelUtilities.js'
+              otherFuels, drawLinePlot, drawBarChart, drawUsageLinePlot, getDropDown, createUsageGradient, 
+              getShownRegionUsage} from './sidePanelUtilities.js'
 import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleIndexClick, handleFueLegClick, handleRegLegClick, handleNavigationClick,
               handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick,
@@ -173,24 +174,30 @@ function PrimaryPanels() {
         const redrawPlots = (width, height) => {
             const linePlotSVG = document.getElementById("linePlotSVG")
             const barChartSVG = document.getElementById("barChartSVG")
-            if (!linePlotSVG && !barChartSVG) return
+            const usageLinePlotSVG = document.getElementById("usagePlotSVG")
+            if (!linePlotSVG && !barChartSVG && !usageLinePlotSVG) return
 
             const sidePanelWidth = Math.floor(width * 0.30)
             const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? width* 0.02 : width * 0.01)
             const sidePanelPadding = Math.floor(2 * width * 0.01)
             const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
+            const altPlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.85)
             const plotHeight = Math.floor((height * 0.35) * 0.72)
 
             const dataVisualization = (linePlotSVG || barChartSVG).parentElement
+            const altVis = usageLinePlotSVG.parentElement
             const linePlotHidden = linePlotSVG ? linePlotSVG.classList.contains("hide") : true
             const barChartHidden = barChartSVG ? barChartSVG.classList.contains("hide") : true
 
             linePlotSVG?.remove()
             barChartSVG?.remove()
+            usageLinePlotSVG?.remove()
 
             const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current, true, yearsRef.current)
+            const regions = getShownRegionUsage(regionalDataRef.current, regionFilterRef.current, shareYearsRef.current )
             drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden, "linePlotSVG", yearsRef.current)
             drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
+            drawUsageLinePlot(altVis, altPlotWidth, plotHeight, regions, "usagePlotSVG", yearsRef.current)
         }
 
         const handleResize = () => {
@@ -342,9 +349,11 @@ function PrimaryPanels() {
 
         const linePlotSVG = document.getElementById("linePlotSVG")
         const barChartSVG = document.getElementById("barChartSVG")
+        const usageLinePlotSVG = document.getElementById("usagePlotSVG")
 
-        if(linePlotSVG && barChartSVG){
+        if(linePlotSVG && barChartSVG && usageLinePlotSVG){
             const dataVisualization = (linePlotSVG || barChartSVG).parentElement
+            const altVis = usageLinePlotSVG.parentElement
             const linePlotHidden = linePlotSVG ? linePlotSVG.classList.contains("hide") : true
             const barChartHidden = barChartSVG ? barChartSVG.classList.contains("hide") : true
 
@@ -355,22 +364,28 @@ function PrimaryPanels() {
             const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? width* 0.02 : width * 0.01)
             const sidePanelPadding = Math.floor(2 * width * 0.01)
             const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
+            const altPlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.85)
             const plotHeight = Math.floor((height * 0.35) * 0.72)
 
             linePlotSVG?.remove()
             barChartSVG?.remove()
+            usageLinePlotSVG?.remove()
 
             const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current, true, yearsRef.current)
+            const regions = getShownRegionUsage(regionalDataRef.current, regionFilterRef.current, shareYearsRef.current)
             drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden, "linePlotSVG", yearsRef.current)
             drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
+            drawUsageLinePlot(altVis, altPlotWidth, plotHeight, regions, "usagePlotSVG", shareYearsRef.current)
         }
 
         // Redraw comparison plots if they exist
         const compLinePlotSVG = document.getElementById("compLinePlotSVG")
         const compBarChartSVG = document.getElementById("compBarChartSVG")
+        const compUsageLinePlotSVG = document.getElementById("compUsagePlotSVG")
 
         if(compLinePlotSVG && compBarChartSVG){
             const compDataVisualization = (compLinePlotSVG || compBarChartSVG).parentElement
+            const compAltVis = compUsageLinePlotSVG.parentElement
             const compLinePlotHidden = compLinePlotSVG ? compLinePlotSVG.classList.contains("hide") : true
             const compBarChartHidden = compBarChartSVG ? compBarChartSVG.classList.contains("hide") : true
 
@@ -381,14 +396,18 @@ function PrimaryPanels() {
             const compSidePanelLeftMargin = Math.floor((window.innerHeight <= 1024)? compWidth* 0.02 : compWidth * 0.01)
             const compSidePanelPadding = Math.floor(2 * compWidth * 0.01)
             const compPlotWidth = Math.floor((compSidePanelWidth - compSidePanelLeftMargin - compSidePanelPadding) * 0.55)
+            const compAltPlotWidth = Math.floor((compSidePanelWidth - compSidePanelLeftMargin - compSidePanelPadding) * 0.85)
             const compPlotHeight = Math.floor((compHeight * 0.35) * 0.72)
 
             compLinePlotSVG?.remove()
             compBarChartSVG?.remove()
+            compUsageLinePlotSVG?.remove()
 
             const compFuels = getShownRegionFuelData(regionalDataRef.current, compRegionFilterRef.current, compFuelFilterRef.current, true, yearsRef.current)
+            const compRegions = getShownRegionUsage(regionalDataRef.current, compRegionFilterRef.current, shareYearsRef.current)
             drawLinePlot(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compLinePlotHidden, "compLinePlotSVG", yearsRef.current)
             drawBarChart(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compBarChartHidden, "compBarChartSVG")
+            drawUsageLinePlot(compAltVis, compAltPlotWidth, compPlotHeight, compRegions, "compUsagePlotSVG", shareYearsRef.current)
         }
 
         if (powerPlants.features.length != pps.length) {
@@ -686,8 +705,8 @@ function PrimaryPanels() {
         }
 
         if (shownRegions.length < regionFilter.length) {
-            LCfilters.push(["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]);
-            FFfilters.push(["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]);
+            LCfilters.push(["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]]);
+            FFfilters.push(["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]]);
         }
 
         if (LCfilters.length === 1) {
@@ -710,8 +729,8 @@ function PrimaryPanels() {
         // The year is not used to filter countries, only to pick which usage values colour them.
         if (shareYearFilter.length === 2 && boundaryData) {
             const year = shareYearFilter[0]
-            const lowCarbonColor = lowCarbonColorForYear(year, boundaryData)
-            const fossilFuelColor = fossilFuelColorForYear(year, boundaryData)
+            const lowCarbonColor = lowCarbonColorForYear(year,shareYearFilter[1], boundaryData)
+            const fossilFuelColor = fossilFuelColorForYear(year,shareYearFilter[1], boundaryData)
 
             toFilter.setPaintProperty("lowCarbon-fill", "fill-color", lowCarbonColor)
             toFilter.setPaintProperty("lowCarbon-border", "line-color", lowCarbonColor)
@@ -760,7 +779,7 @@ function PrimaryPanels() {
         if(!pages || (!pages.dataset.powerPlantsSynced && powerPlants)){ // If the pages haven't been created yet, or data just loaded
             if (pages){sidePanel.replaceChildren()}
             const newPages = createPages(pageContent, powerPlants, regionalData, regionFilter, regionFilterRef, fuelFilter,
-                setFuelFilter, setRegionFilter, setBarChartFilter, yearsRef.current,
+                setFuelFilter, setRegionFilter, setBarChartFilter, yearsRef.current, shareYearsRef.current,
                 (values, bounds) => setYearFilter([values, bounds]),
                 (values, bounds) => setGenerationFilter([values, bounds]),
                 (value, bounds) => setShareYearFilter([value, bounds]),
@@ -771,7 +790,7 @@ function PrimaryPanels() {
                 handleLinePlotToggle,
                 (clickedFuel, setBarChartFilter, setFilter) => handleFueLegClick(clickedFuel, setBarChartFilter, setFilter, checkAndSetFilter),
                 (element, continent, filterRef, setFilter, dontZoomTo) => handleContinentClick(element, continent, filterRef, setFilter, dontZoomTo, zoomToRegionFilter),
-                () => handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData, comparisonRegionFilter, compRegionFilterRef, setComparisonRegionFilter, setComparisonFuelFilter, fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter, yearsRef.current)
+                () => handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData, comparisonRegionFilter, compRegionFilterRef, setComparisonRegionFilter, setComparisonFuelFilter, fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter, yearsRef.current, shareYearsRef.current)
             )
             if (powerPlants){newPages.dataset.powerPlantsSynced = "true"}
             setPages(newPages)
@@ -1231,7 +1250,7 @@ function getSliderBounds(filter, regionalData){
 }
 
 function createPages(pageContent, powerPlants, regionalData, regionFilterData, regionFilterRef, fuels,
-                                  setFuelFilter, setRegionFilter, setBarChartFilter, years,
+                                  setFuelFilter, setRegionFilter, setBarChartFilter, years, usageYears,
                                   onYearChange, onGenerationChange, onShareYearChange, onLCChange, onFFChange,
                                   onReset, onIndexClick, onToggleClick, onLegendClick, onContinentClick, onAddDiagramClick){
     const pageContainer = document.createElement("div")
@@ -1405,7 +1424,7 @@ function createPages(pageContent, powerPlants, regionalData, regionFilterData, r
     const linePlotContainer = createDiagram({
         assetSources, fuels, regionalData, regionFilter: regionFilterData, regionFilterRef,setRegionFilter, setFuelFilter, setBarChartFilter,
         onIndexClick, onContinentClick, onToggleClick, onLegendClick,
-        years,
+        years, usageYears
     })
 
     // Additional diagram prompt

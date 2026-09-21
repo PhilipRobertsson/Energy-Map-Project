@@ -58,6 +58,31 @@ export function getShownRegionFuelData(regionalData, regionFilter, fuelFilter, f
         })
 }
 
+export function getShownRegionUsage(regionalData, regionFilter, years){
+    const shownCountries = regionFilter.filter(r => r.show).map(r => r.country)
+    const shownRegions = regionalData.filter(d => shownCountries.includes(d.country))
+
+    return shownRegions
+        .map(u =>{
+            const entry = {country: u.country, usage: {}}
+            for(let i = years.first; i <= years.last; i++){
+                entry.usage[String(i)] = {}
+                entry.usage[String(i)]["LC"] = {}
+                entry.usage[String(i)]["FF"] = {}
+
+                if(u.usage_shares[i]){
+                    entry.usage[String(i)]["LC"]["value"] = u.usage_shares[i]["LC"] ?? null
+                    entry.usage[String(i)]["LC"]["colour"] = "#00c20d"
+
+                    entry.usage[String(i)]["FF"]["value"] = u.usage_shares[i]["FF"] ?? null
+                    entry.usage[String(i)]["FF"]["colour"] = "#c01603"
+                }
+            }
+
+            return entry
+        })
+}
+
 export function formatPowerOf10(num){
     if (num == null) return "N/A";
     if (num === 0) return `0`.trim();
@@ -297,10 +322,10 @@ export function drawBarChart(svgE, barChartWidth, barChartHeight, data, showPlot
 
 export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svgId = "usagePlotSVG", years){
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    var margin = {top: Math.floor(8*scale), right: Math.floor(40*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
+    var margin = {top: Math.floor(8*scale), right: Math.floor(50*scale), bottom: Math.floor(40*scale), left: Math.floor(10*scale)}
     if(window.innerHeight <= 1024){margin = {top: Math.floor(15*scale), right: Math.floor(45*scale), bottom: Math.floor(55*scale), left: Math.floor(15*scale)}}
-    var width = barChartWidth - margin.left - margin.right,
-    height = barChartHeight - margin.top - margin.bottom;
+    var width = linePlotWidth - margin.left - margin.right,
+    height = linePlotHeight - margin.top - margin.bottom;
 
     var svg = d3.select(svgE)
         .append("svg")
@@ -309,6 +334,150 @@ export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svg
             .attr("id", svgId)
         .append("g")
             .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+    var usages = d3.index(data, (d) => d.country)
+
+    // Create x-axis
+    var x = d3.scaleLinear()
+        .domain([years.first-0.2, years.last])
+        .range([ 0, width ])
+
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(7).tickFormat(d3.format("d")))
+        .call(g => g.select(".domain").remove())
+        .call(g => g.selectAll(".tick").selectAll("line").remove())
+        .selectAll("text")
+            .attr("transform", "translate(-5,0)rotate(-45)")
+            .style("text-anchor", "end")
+            .style("font-size", "1vmin")
+            .style("font-family", "'Lato', sans-serif");
+
+    const maxValue = (d) =>{
+        var max = Number.NEGATIVE_INFINITY
+        for(let i = years.first; i <= years.last; i++){
+            let LCUsage = d.usage[i]["LC"].value
+            let FFUsage = d.usage[i]["FF"].value
+            if(LCUsage >= max){max = LCUsage}
+            if(FFUsage >= max){max = FFUsage}
+        }
+        return max
+    }
+    var lineMax = d3.max(data, function(d) { return maxValue(d) })
+    if (lineMax == null || !isFinite(lineMax) || lineMax <= 0) lineMax = 1
+
+    var y = d3.scaleLinear()
+        .domain([0, lineMax])
+        .range([ height, 0 ]);
+
+    svg.append("g")
+        .attr("transform", "translate("+ width + ", 0)")
+        .call(d3.axisRight(y).tickFormat(d => d3.format('0')(d) + "%"))
+        .call(g => g.select(".domain").remove())
+        .selectAll(".tick text")
+            .style("font-size", "1vmin")
+            .style("font-family", "'Lato', sans-serif");
+
+    // Append the grid lines group
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("stroke-width", 0.5) 
+        .style("stroke-dasharray", ("3, 3"))
+        .call(d3.axisLeft(y)
+            .tickSize(-width)  // Stretches lines across the width of the chart
+            .tickFormat("")    // Removes text labels from the grid lines
+        )
+        .call(g => g.select(".domain").remove());
+    
+    svg.append("g")
+    .attr("class", "grid")
+    .attr("transform", `translate(0, ${height})`)
+    .attr("stroke-width", 0.5) 
+    .style("stroke-dasharray", ("3, 3"))
+    .call(d3.axisTop(x)
+        .ticks(7)
+        .tickSize(height) // Stretches lines up across the height of the chart
+        .tickFormat("")    // Removes text labels
+    )
+    .call(g => g.select(".domain").remove());
+
+    // Low carbon
+    svg.selectAll(".line")
+      .data(Array.from(usages.values()))
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return "#00c20d" })
+        .attr("stroke-width", 2.5)
+        .attr("d", function(d){
+            const points = []
+            for(let year = years.first; year <= years.last; year++){
+                points.push({year:year, value: d["usage"][year]["LC"].value})
+            }
+            const filtered = points.filter(p => p.value !== null);
+            return d3.line()
+                .x(function(p) { return x(p.year); })
+                .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
+                (filtered)
+        })
+
+    // Fossil fuels
+    svg.selectAll(".line")
+      .data(Array.from(usages.values()))
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return "#c01603"})
+        .attr("stroke-width", 2.5)
+        .attr("d", function(d){
+            const points = []
+            for(let year = years.first; year <= years.last; year++){
+                points.push({year:year, value: d["usage"][year]["FF"].value})
+            }
+            const filtered = points.filter(p => p.value !== null);
+            return d3.line()
+                .x(function(p) { return x(p.year); })
+                .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
+                (filtered)
+        })
+
+    // For now, only draw lines for the country key "SWE": one LC line and one FF line
+    /* const sweEntries = usages.get("SWE")
+
+    if (sweEntries) {
+        const usage = sweEntries[0].usage
+        console.log(usage)
+        const lcPoints = []
+        const ffPoints = []
+        for(let year = years.first; year <= years.last; year++){
+            const lc = usage[year]?.["LC"]
+            const ff = usage[year]?.["FF"]
+            if (lc?.value != null) lcPoints.push({ year, value: lc.value})
+            if (ff?.value != null) ffPoints.push({ year, value: ff.value})
+        } */
+
+
+
+        /* const line = d3.line()
+            .x(p => x(p.year))
+            .y(p => (p.value == null || p.value < 0) ? y(0.0) : y(p.value))
+
+        const lcColour = usage[years.first]?.["LC"]?.colour ?? "#00c20d"
+        const ffColour = usage[years.first]?.["FF"]?.colour ?? "#c01603"
+
+        svg.append("path")
+            .datum(lcPoints)
+            .attr("fill", "none")
+            .attr("stroke", lcColour)
+            .attr("stroke-width", 2.5)
+            .attr("d", line)
+
+        svg.append("path")
+            .datum(ffPoints)
+            .attr("fill", "none")
+            .attr("stroke", ffColour)
+            .attr("stroke-width", 2.5)
+            .attr("d", line) */
 }
 
 // Creates the region drop down (with alphabet index)
@@ -365,7 +534,7 @@ export function getDropDown(onIndexClick, assetSources){
 export function createDiagram({
     assetSources, fuels, regionalData, regionFilter,regionFilterRef,setRegionFilter,setFuelFilter, setBarChartFilter,
     onIndexClick, onContinentClick, onToggleClick, onLegendClick,
-    comparison = false, years
+    comparison = false, years, usageYears
 }){
     const ids = comparison ? {
         container: "sidePanelComparisonLinePlot",
@@ -586,6 +755,7 @@ export function createDiagram({
 
     // SVG for actual line plot
     const dataVisualization = document.createElement("svg");
+    const altVis = document.createElement("svg");
 
     // Container for fuelFilter
     const fuelFilterContainer = document.createElement("div");
@@ -598,13 +768,21 @@ export function createDiagram({
         const sidePanelPadding = Math.floor(2*window.innerWidth * 0.01);
 
         // Pixel dimensions for the bar chart container
-        const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.55)
+        const linePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) *0.55)
         const linePlotHeight = Math.floor((window.innerHeight * 0.35) * 0.72)
 
         const shownRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuels, true, years)
         const allRegionFuels = getShownRegionFuelData(regionalData, regionFilter, fuels, false, years)
         drawLinePlot(dataVisualization, linePlotWidth,linePlotHeight, shownRegionFuels, true, ids.linePlotSvg, years)
         drawBarChart(dataVisualization, linePlotWidth, linePlotHeight, shownRegionFuels, false, ids.barChartSvg)
+        
+        // Pixel dimensions for the alternative line plot
+        const altLinePlotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.80)
+
+        const showRegionsUsage = getShownRegionUsage(regionalData, regionFilter, usageYears)
+        drawUsageLinePlot(altVis, altLinePlotWidth, linePlotHeight, showRegionsUsage, ids.usagePlotSvg, usageYears)
+        
+
 
         // Select all option
         const selectAllEntry = document.createElement("div");
@@ -692,6 +870,7 @@ export function createDiagram({
 
     linePlotBody.appendChild(dataVisualization)
     linePlotBody.appendChild(fuelFilterContainer)
+    altLinePlotBody.appendChild(altVis)
     container.appendChild(linePlotBody)
     container.appendChild(altLinePlotBody)
 

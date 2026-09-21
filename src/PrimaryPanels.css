@@ -376,6 +376,7 @@
 
 #altLinePlotBody, #compAltLinePlotBody{
     display: flex;
+    justify-content: center;
 }
 
 #linePlotTitleWrapper, #compLinePlotTitleWrapper{
