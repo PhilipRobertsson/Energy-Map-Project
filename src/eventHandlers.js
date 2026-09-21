@@ -285,13 +285,13 @@ export function handleLinePlotToggle(element){
     const generationValues = container.querySelectorAll(".ffGeneration")
 
     // Get selected continent name
-    const continent = container.querySelector(".continentSelected").querySelector("span").textContent
+    const continent = container.querySelector(".continentSelected")?.querySelector("span").textContent
 
     if(linePlot.classList.contains("hide")){
         gsap.fromTo(linePlot, { opacity: 0 }, 
             { opacity: 1,  duration: 0.15, onComplete: () =>{
                 linePlot.classList.toggle("hide")
-                if(continent == "Global"){
+                if(continent == "Global" || !continent){
                     boldText.textContent = "Global electric generation per year "
                 }else{
                     boldText.textContent = continent + "'s electric generation per year "
@@ -319,7 +319,7 @@ export function handleLinePlotToggle(element){
         gsap.fromTo(barChart, { opacity: 0 }, 
             { opacity: 1,  duration: 0.15, onComplete: () =>{
                 barChart.classList.toggle("hide")
-                if(continent == "Global"){
+                if(continent == "Global" || !continent){
                     boldText.textContent = "Global power plant capacity by source "
                 }else{
                     boldText.textContent = continent+ "'s power plant capacity by source "
