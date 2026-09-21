@@ -430,11 +430,9 @@ function PrimaryPanels() {
         if(regionFilter.filter(r => r.show).length <= 2){
             const selectedContinentButtons = document.querySelectorAll(".continentSelected");
             for(let i = 0; i < selectedContinentButtons.length; i++){
-                console.log(selectedContinentButtons[0])
-                selectedContinentButtons[0].classList.toggle("continentSelected")
-                gsap.fromTo(selectedContinentButtons[0], { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
+                gsap.fromTo(selectedContinentButtons[i], { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
                     { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
-                        selectedContinentButtons[0].classList.toggle("continentSelected")
+                        selectedContinentButtons[i].classList.toggle("continentSelected")
                     } } 
                 );
             }
