@@ -63,6 +63,11 @@ const allPages = [
     {id: 5, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
 ];
 
+// TODO: Add additonal data JSON for global and continent-based usage data to show when specific multi-country 
+// regions are selected. Available and applicable regions with this data: Africa, Asia, Europe, North America, World (global).
+// The global data does cover years 1800-2025 with decade-based data between 1800-1960, don't use the decande data, 
+// only the annual data between 1965-2025
+
 // static JSON to fetch and states to set
 const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "instructions"]
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent"]
