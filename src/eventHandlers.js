@@ -351,11 +351,13 @@ export function handleContinentClick(element, continent, filterRef, setFilter, d
             element.classList.toggle("continentSelected")
         } } 
     );
-    gsap.fromTo(prev, { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
-        { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
-            prev.classList.toggle("continentSelected")
-        } } 
-    );
+    if(prev){
+            gsap.fromTo(prev, { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
+            { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
+                prev.classList.toggle("continentSelected")
+            } } 
+        );
+    }
 
     // Set region filter
     const prevFilter = filterRef.current
