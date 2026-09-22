@@ -42,7 +42,7 @@ def createJSON(path, lowCarbonDf, fossilFuelDf):
 if __name__ == "__main__":
     LCPath = './public/share-of-primary-energy-from-low-carbon-energy.csv'
     FFPath = './public/share-of-primary-energy-from-fossil-fuels.csv'
-    savePath = './public/continentalData.json'
+    savePath = './public/continentalInformation.json'
 
     LCDf = loadCSV(LCPath)
     FFDf = loadCSV(FFPath)

@@ -334,9 +334,7 @@ export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svg
             .attr("id", svgId)
         .append("g")
             .attr("transform","translate(" + margin.left + "," + margin.top + ")");
-
-    var usages = d3.index(data, (d) => d.country)
-
+            
     // Create x-axis
     var x = d3.scaleLinear()
         .domain([years.first-0.2, years.last])
@@ -353,17 +351,27 @@ export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svg
             .style("font-size", "1vmin")
             .style("font-family", "'Lato', sans-serif");
 
-    const maxValue = (d) =>{
-        var max = Number.NEGATIVE_INFINITY
-        for(let i = years.first; i <= years.last; i++){
-            let LCUsage = d.usage[i]["LC"].value
-            let FFUsage = d.usage[i]["FF"].value
-            if(LCUsage >= max){max = LCUsage}
-            if(FFUsage >= max){max = FFUsage}
-        }
-        return max
+    // Normalize input: region data is an array of {country, usage}, while
+    // continent data is a single object {entity, code, usage}.
+    const dataToUse = Array.isArray(data) ? data : [data]
+
+    // Read a usage value for a given entry/year/type, whether stored as a
+    // plain number (continent data) or as {value, colour} (region data).
+    const usageValue = (entry, year, type) => {
+        const v = entry.usage?.[year]?.[type]
+        if (v == null) return null
+        return (typeof v === 'object') ? v.value : v
     }
-    var lineMax = d3.max(data, function(d) { return maxValue(d) })
+
+    let lineMax = Number.NEGATIVE_INFINITY
+    dataToUse.forEach(entry => {
+        for(let i = years.first; i <= years.last; i++){
+            const LCUsage = usageValue(entry, i, "LC")
+            const FFUsage = usageValue(entry, i, "FF")
+            if (LCUsage != null && LCUsage > lineMax) lineMax = LCUsage
+            if (FFUsage != null && FFUsage > lineMax) lineMax = FFUsage
+        }
+    })
     if (lineMax == null || !isFinite(lineMax) || lineMax <= 0) lineMax = 1
 
     var y = d3.scaleLinear()
@@ -401,69 +409,23 @@ export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svg
     )
     .call(g => g.select(".domain").remove());
 
-    // Low carbon
-    svg.selectAll(".line")
-      .data(Array.from(usages.values()))
-      .enter()
-      .append("path")
-        .attr("fill", "none")
-        .attr("stroke", function(d){ return "#00c20d" })
-        .attr("stroke-width", 2.5)
-        .attr("d", function(d){
-            const points = []
-            for(let year = years.first; year <= years.last; year++){
-                points.push({year:year, value: d["usage"][year]["LC"].value})
-            }
-            const filtered = points.filter(p => p.value !== null);
-            return d3.line()
-                .x(function(p) { return x(p.year); })
-                .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
-                (filtered)
-        })
+    // Draw one LC line and one FF line per entry (region or continent)
+    const line = d3.line()
+        .x(p => x(p.year))
+        .y(p => (p.value == null || p.value < 0) ? y(0.0) : y(p.value))
 
-    // Fossil fuels
-    svg.selectAll(".line")
-      .data(Array.from(usages.values()))
-      .enter()
-      .append("path")
-        .attr("fill", "none")
-        .attr("stroke", function(d){ return "#c01603"})
-        .attr("stroke-width", 2.5)
-        .attr("d", function(d){
-            const points = []
-            for(let year = years.first; year <= years.last; year++){
-                points.push({year:year, value: d["usage"][year]["FF"].value})
-            }
-            const filtered = points.filter(p => p.value !== null);
-            return d3.line()
-                .x(function(p) { return x(p.year); })
-                .y(function(p) { return (p.value == null || p.value < 0) ? y(0.0) : y(p.value); })
-                (filtered)
-        })
-
-    // For now, only draw lines for the country key "SWE": one LC line and one FF line
-    /* const sweEntries = usages.get("SWE")
-
-    if (sweEntries) {
-        const usage = sweEntries[0].usage
-        console.log(usage)
+    dataToUse.forEach(entry => {
         const lcPoints = []
         const ffPoints = []
         for(let year = years.first; year <= years.last; year++){
-            const lc = usage[year]?.["LC"]
-            const ff = usage[year]?.["FF"]
-            if (lc?.value != null) lcPoints.push({ year, value: lc.value})
-            if (ff?.value != null) ffPoints.push({ year, value: ff.value})
-        } */
+            const lc = usageValue(entry, year, "LC")
+            const ff = usageValue(entry, year, "FF")
+            if (lc != null) lcPoints.push({ year, value: lc })
+            if (ff != null) ffPoints.push({ year, value: ff })
+        }
 
-
-
-        /* const line = d3.line()
-            .x(p => x(p.year))
-            .y(p => (p.value == null || p.value < 0) ? y(0.0) : y(p.value))
-
-        const lcColour = usage[years.first]?.["LC"]?.colour ?? "#00c20d"
-        const ffColour = usage[years.first]?.["FF"]?.colour ?? "#c01603"
+        const lcColour = entry.usage?.[years.first]?.["LC"]?.colour ?? "#00c20d"
+        const ffColour = entry.usage?.[years.first]?.["FF"]?.colour ?? "#c01603"
 
         svg.append("path")
             .datum(lcPoints)
@@ -477,7 +439,8 @@ export function drawUsageLinePlot(svgE, linePlotWidth, linePlotHeight, data, svg
             .attr("fill", "none")
             .attr("stroke", ffColour)
             .attr("stroke-width", 2.5)
-            .attr("d", line) */
+            .attr("d", line)
+    })
 }
 
 // Creates the region drop down (with alphabet index)
@@ -532,7 +495,7 @@ export function getDropDown(onIndexClick, assetSources){
 
 // Creates the main diagram window (sidePanelLinePlot)
 export function createDiagram({
-    assetSources, fuels, regionalData, regionFilter,regionFilterRef,setRegionFilter,setFuelFilter, setBarChartFilter,
+    assetSources, fuels, regionalData, continentData, regionFilter,regionFilterRef,setRegionFilter,setFuelFilter, setBarChartFilter,
     onIndexClick, onContinentClick, onToggleClick, onLegendClick,
     comparison = false, years, usageYears
 }){
@@ -615,7 +578,7 @@ export function createDiagram({
         let continentName = document.createElement("span");
         continentName.textContent = continents[i];
 
-        continentButton.onclick = () => onContinentClick(continentButton, continents[i], regionFilterRef, setRegionFilter, comparison)
+        continentButton.onclick = () => onContinentClick(continentButton, regionalData, continents[i], continentData, regionFilterRef, setRegionFilter,usageYears, comparison)
 
         continentButton.appendChild(continentName)
         continentFilter.appendChild(continentButton)

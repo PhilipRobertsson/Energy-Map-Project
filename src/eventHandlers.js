@@ -1,5 +1,17 @@
 import { gsap } from "gsap";
-import { createDiagram, otherFuels } from "./sidePanelUtilities.js";
+import { createDiagram, otherFuels, drawUsageLinePlot } from "./sidePanelUtilities.js";
+
+// Tracks which usage plot was just redrawn manually (by a continent click) so
+// the automatic redraw effect can skip overriding it.
+let pendingUsageSkip = null
+
+export function getPendingUsageSkip(){
+    return pendingUsageSkip
+}
+
+export function clearPendingUsageSkip(){
+    pendingUsageSkip = null
+}
 
 // powerplants, region, fuel, year, generation filters
 export function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
@@ -340,7 +352,7 @@ export function handleLinePlotToggle(element){
     );
 }
 
-export function handleContinentClick(element, continent, filterRef, setFilter, dontZoomTo, zoomToRegionFilter){
+export function handleContinentClick(element, regionalData, continent,continentData, filterRef, setFilter, shareYears, dontZoomTo, zoomToRegionFilter){
     // Get previous selection, return if identical click
     const prev = element.parentElement.querySelector(".continentSelected")
     if(element == prev) return;
@@ -399,6 +411,33 @@ export function handleContinentClick(element, continent, filterRef, setFilter, d
     setFilter(toggled)
     if(!dontZoomTo){
         zoomToRegionFilter(toggled)
+    }
+
+    // If continent-level data exists, redraw the usage plot with that data
+    const selectedName = continent === "Global" ? "World" : continent
+    const desiredData = continentData.find(f => f.entity === selectedName)
+
+    if (desiredData) {
+        const svgId = dontZoomTo ? "compUsagePlotSVG" : "usagePlotSVG"
+        const usageLinePlotSVG = document.getElementById(svgId)
+        const altDataVis = usageLinePlotSVG?.parentElement
+
+        if (altDataVis) {
+            const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+            const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+
+            const sidePanelWidth = Math.floor(width * 0.30)
+            const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024) ? width * 0.02 : width * 0.01)
+            const sidePanelPadding = Math.floor(2 * width * 0.01)
+            const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.85)
+            const plotHeight = Math.floor((height * 0.35) * 0.72)
+
+            usageLinePlotSVG?.remove()
+            drawUsageLinePlot(altDataVis, plotWidth, plotHeight, desiredData, svgId, shareYears)
+
+            // Skip the automatic usage-plot redraw triggered by the region filter change
+            pendingUsageSkip = svgId
+        }
     }
 }
 
@@ -550,7 +589,7 @@ export function handleMapModeToggle(element, mapRef){
     }
 }
 
-export function handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData, comparisonRegionFilter,
+export function handleAddDiagramClick(assetSources, comparisonFuelFilter, regionalData,continentData, comparisonRegionFilter,
     compRegionFilterRef, setComparisonRegionFilter, setComparisonFuelFilter,
     fillDropDowns, toggleDropDown, zoomToRegionFilter, checkAndSetFilter, years, usageYears
 ){
@@ -593,13 +632,14 @@ export function handleAddDiagramClick(assetSources, comparisonFuelFilter, region
         assetSources,
         fuels: comparisonFuelFilter,
         regionalData,
+        continentData,
         regionFilter: comparisonRegionFilter,
         regionFilterRef: compRegionFilterRef,
         setRegionFilter: setComparisonRegionFilter,
         setFuelFilter: setComparisonFuelFilter,
         setBarChartFilter: null,
         onIndexClick: (element, index) => handleIndexClick(element, index, compRegionFilterRef),
-        onContinentClick: (element, continent, filterRef, setFilter, dontZoomTo) => handleContinentClick(element, continent, filterRef, setFilter, dontZoomTo, zoomToRegionFilter),
+        onContinentClick: (element, regionalData, continent,continentData, filterRef, setFilter,shareYears, dontZoomTo) => handleContinentClick(element, regionalData, continent, continentData, filterRef, setFilter,shareYears, dontZoomTo, zoomToRegionFilter),
         onToggleClick: handleLinePlotToggle,
         onLegendClick: (clickedFuel, setBarChartFilter, setFilter) => handleFueLegClick(clickedFuel, setBarChartFilter, setFilter, checkAndSetFilter),
         comparison: true,
