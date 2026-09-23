@@ -300,8 +300,8 @@ function Map({ children }) {
     const map = mapInstance.current;
     if (!map) return;
 
-    const displayInformation = (e) =>{
-        const coordinates = e.features[0].geometry.coordinates.slice();
+    const displayInformation = (e, powerPlants) =>{
+        const coordinates = (powerPlants)? e.features[0].geometry.coordinates.slice() : e.lngLat;
         const properties = e.features[0].properties;
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -322,7 +322,7 @@ function Map({ children }) {
           var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
           const popup = new maplibregl.Popup({maxWidth: Math.round(400*scale) + "px", closeButton: false, closeOnClick: false})
             .setLngLat(coordinates)
-            .setHTML("<h1>"+ properties.name +"</h1>")
+            .setHTML((powerPlants)?("<h1>"+ properties.name +"</h1>"):("<h1>"+ properties.name_en +"</h1>"))
             .addTo(map);
 
           // Pop up rotate X "fade in"
@@ -360,69 +360,76 @@ function Map({ children }) {
           popUpHeader.appendChild(closeButton)
           contentElement.appendChild(popUpHeader)
 
-        
-          // Power plant information
           var consiseInformation = document.createElement("div")
           consiseInformation.classList.add("pop-up-info")
-          consiseInformation = getPowerPlantInfo(properties, consiseInformation, reportedYears, estimatedYears)
 
-          // Get regionalInfoIcon
-          if(consiseInformation.children[3].children[2]){
+          if(powerPlants){
+            // Power plant information
+            consiseInformation = getPowerPlantInfo(properties, consiseInformation, reportedYears, estimatedYears)
+
+            // Get regionalInfoIcon
+            if(consiseInformation.children[3].children[2]){
               const consiseInformationIcon = consiseInformation.children[3].children[2]
               consiseInformationIcon.onmouseover = () => handleIconHoverOver(consiseInformationIcon)
               consiseInformationIcon.onmouseout = () => handleIconHoverOut(consiseInformationIcon)
-          }
+            }
 
-          contentElement.appendChild(consiseInformation)
+            contentElement.appendChild(consiseInformation)
 
-          // Regional overview panel, given the data, this is currently the country which the powerplant is located in
-          const regionalOverview = document.createElement("div")
-          regionalOverview.classList.add("regional-overview-panel")
-          const overviewHeader = document.createElement("div")
-          overviewHeader.classList.add("regional-overview-header")
-          const overviewTitle = document.createElement("h1")
-          const overviewOpen = document.createElement("img")
+            // Regional overview panel, given the data, this is currently the country which the powerplant is located in
+            const regionalOverview = document.createElement("div")
+            regionalOverview.classList.add("regional-overview-panel")
+            const overviewHeader = document.createElement("div")
+            overviewHeader.classList.add("regional-overview-header")
+            const overviewTitle = document.createElement("h1")
+            const overviewOpen = document.createElement("img")
 
-          // Set header title and add open/clsoe image
-          overviewTitle.textContent = `${properties.country_long}`
-          overviewOpen.src = assetSources.popupRollupClosed
+            // Set header title and add open/clsoe image
+            overviewTitle.textContent = `${properties.country_long}`
+            overviewOpen.src = assetSources.popupRollupClosed
 
-          // Get the regional information about the corresponding country
-          const regionalInformation = getRegionalInfo(properties, regionalData, colourData, reportedYears, estimatedYears)
+            // Get the regional information about the corresponding country
+            const regionalInformation = getRegionalInfo(properties, regionalData, colourData, reportedYears, estimatedYears)
           
-          // Handle clicks on the rollup icon
-          overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
+            // Handle clicks on the rollup icon
+            overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
         
-          // Get regionalInfoIcon
-          if(regionalInformation.children[0].children[2]){
+            // Get regionalInfoIcon
+            if(regionalInformation.children[0].children[2]){
               const regionalInfoIcon = regionalInformation.children[0].children[2]
               regionalInfoIcon.onmouseover = () => handleIconHoverOver(regionalInfoIcon)
               regionalInfoIcon.onmouseout = () => handleIconHoverOut(regionalInfoIcon)
+            }
+
+            // Append elements to created elements
+            overviewHeader.appendChild(overviewTitle)
+            overviewHeader.appendChild(overviewOpen)
+            regionalOverview.appendChild(overviewHeader)
+            regionalOverview.appendChild(regionalInformation)
+            contentElement.appendChild(regionalOverview)
+
+            // Get bar chart bars and make them clickable
+            const barElements = regionalInformation.querySelectorAll('[class*="bar_"]')
+            barElements.forEach(bar => { 
+              bar.style.cursor = "pointer"
+              bar.onclick = () => {
+                setFilter(prev => {
+                  // Each bar has a name in the form "bar_Fuel"
+                  const fuel = bar.getAttribute("class").split(" ").find(c => c.startsWith("bar_")).slice(4)
+                  const updated = prev ? (prev.includes(fuel) // Update the filter from the map context, used in PrimaryPanels.jsx
+                    ? prev.filter(f => f !== fuel)
+                    : [...prev, fuel])
+                    : [fuel]
+                  return updated.length ? updated : null
+                })
+              }
+            })
+          }else{
+              consiseInformation = getUsageInfo(properties, consiseInformation, shareYears)
+              contentElement.appendChild(consiseInformation)
           }
 
-          // Append elements to created elements
-          overviewHeader.appendChild(overviewTitle)
-          overviewHeader.appendChild(overviewOpen)
-          regionalOverview.appendChild(overviewHeader)
-          regionalOverview.appendChild(regionalInformation)
-          contentElement.appendChild(regionalOverview)
 
-          // Get bar chart bars and make them clickable
-          const barElements = regionalInformation.querySelectorAll('[class*="bar_"]')
-          barElements.forEach(bar => { 
-            bar.style.cursor = "pointer"
-            bar.onclick = () => {
-              setFilter(prev => {
-                // Each bar has a name in the form "bar_Fuel"
-                const fuel = bar.getAttribute("class").split(" ").find(c => c.startsWith("bar_")).slice(4)
-                const updated = prev ? (prev.includes(fuel) // Update the filter from the map context, used in PrimaryPanels.jsx
-                  ? prev.filter(f => f !== fuel)
-                  : [...prev, fuel])
-                  : [fuel]
-                return updated.length ? updated : null
-              })
-            }
-          })
           setPopupCount(pc => pc + 1) // Count each pop-up window open
 
           // Make pop up movable
@@ -484,7 +491,10 @@ function Map({ children }) {
           'fill-color': lowCarbonColor,
           'fill-opacity': 0.4
         }
+      }).on('click', 'lowCarbon-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
+            displayInformation(e, false)
       });
+
       map.addLayer({
         id: 'lowCarbon-border',
         type: 'line',
@@ -495,7 +505,7 @@ function Map({ children }) {
         }
       });
 
-        map.addLayer({
+      map.addLayer({
         id: "fossilFuel-fill",
         type: "fill",
         source: "countryboundaries",
@@ -503,7 +513,10 @@ function Map({ children }) {
           'fill-color': fossilFuelColor,
           'fill-opacity': 0.4
         }
+      }).on('click', 'fossilFuel-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
+            displayInformation(e, false)
       });
+
       map.addLayer({
         id: 'fossilFuel-border',
         type: 'line',
@@ -528,7 +541,7 @@ function Map({ children }) {
         source: "powerplants",
         paint: powerPlantPaint
       }).on('click', 'powerplants-layer', (e) => { // If any feature on the layer is clicked on, open pop-up
-            displayInformation(e)
+            displayInformation(e, true)
       });
       
       map.on('mouseenter', 'powerplants-layer', () => { // Relevant for screens with mouse input, make the mouse a pointer if hovered
@@ -1022,6 +1035,43 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
     htmlElement.appendChild(infoHeader)
     htmlElement.appendChild(barChartContainer)
     return htmlElement;
+}
+
+function getUsageInfo(feature, htmlElement){
+  let usageShares = JSON.parse(feature.usageShares)
+  let year = Object.keys(usageShares)[Object.keys(usageShares).length - 1] // Update to take the filter value
+
+  const ShareField = document.createElement("span")
+  const ShareTitle = document.createElement("strong")
+  ShareTitle.textContent = "Usage Shares " + year + ": "
+  ShareField.appendChild(ShareTitle)
+
+  const LCShareField = document.createElement("span")
+  const LCShareTitle = document.createElement("strong")
+  const LCShareValue = document.createElement("span");
+  LCShareTitle.textContent = "Low Carbon: "
+  if(usageShares[String(year)]["LC"]?.toFixed(0)){LCShareValue.textContent = usageShares[String(year)]["LC"]?.toFixed(0) + "%"}
+  else{LCShareValue.textContent = "N/A"}
+  LCShareField.appendChild(LCShareTitle)
+  LCShareField.appendChild(LCShareValue)
+
+  const FFShareField = document.createElement("span")
+  const FFShareTitle = document.createElement("strong")
+  const FFShareValue = document.createElement("span");
+  FFShareTitle.textContent = "Fossil Fuel: "
+  if(usageShares[String(year)]["FF"]?.toFixed(0)){FFShareValue.textContent = usageShares[String(year)]["FF"]?.toFixed(0) + "%"}
+  else{FFShareValue.textContent = "N/A"}
+  FFShareField.appendChild(FFShareTitle)
+  FFShareField.appendChild(FFShareValue)
+
+  // TODO: Display line plot based on available information
+  // TODO: Displayed usage shares should be the selected year
+  // TODO: If shareYearFilter changes, update pop-ups with the correct information
+
+  htmlElement.appendChild(ShareField)
+  htmlElement.appendChild(LCShareField)
+  htmlElement.appendChild(FFShareField)
+  return htmlElement;
 }
 
 // Observers that keep moved pop-ups disconnected from MapLibre
