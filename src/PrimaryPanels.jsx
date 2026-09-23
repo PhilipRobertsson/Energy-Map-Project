@@ -499,6 +499,71 @@ function PrimaryPanels() {
         prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
     }, [barChartFilter])
 
+    // Check for region and comparison region filter changes, update diagram texts based on said chages
+    useEffect(()=>{
+        if(!regionFilter || !comparisonRegionFilter) return;
+
+        const mainDiagram = document.getElementById("sidePanelLinePlot")
+        const compDiagram = document.getElementById("sidePanelComparisonLinePlot")
+
+        // Check settings of the main diagram and update texts
+        if(!mainDiagram) return;
+        // Get text elements
+        const showingMainOutput = mainDiagram.querySelectorAll(".dataToggleButton")[1].style.backgroundColor == "rgb(170, 211, 222)"
+        console.log(showingMainOutput)
+
+        const mainTitle = mainDiagram.querySelector("#linePlotTitle")
+        const boldText = mainDiagram.querySelector("#linePlotExBoldText")
+        const altMainTitle = mainDiagram.querySelector("#linePlotAltTitle")
+
+        // Get shown regions
+        const shownRegions = regionFilter.filter(f=>f.show)
+        if(shownRegions.length > 2){ // Assumption that the user only can select more than two regions by clicking on the continent button
+            if(shownRegions.length == regionFilter.length){ // Global option selected
+                mainTitle.textContent = "Global Electricity Source Trends"
+                altMainTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
+                if(showingMainOutput){boldText.textContent = "Global electric generation per year "}
+                else{boldText.textContent = "Global power plant capacity by source "}
+            }else{ // A continent is selected, check first item to see which
+                let continent = shownRegions[0].continent
+                mainTitle.textContent = continent + "'s Electricity Source Trends"
+                altMainTitle.textContent = continent + "'s Low Carbon and Fossil Fuel Usage Shares"
+                if(showingMainOutput){boldText.textContent = continent + "'s electric generation per year "}
+                else{boldText.textContent = continent + "'s power plant capacity by source "}
+            }
+        }else{ // User has selected a country or used the storymode
+            if(shownRegions <= 0) return; // Just to be sure undefined objects aren't checked
+            let titleToShow = ""
+            shownRegions.forEach((r, id) =>{
+                if(id > 0){titleToShow += " and "}
+                titleToShow += r.country_long
+            })
+            mainTitle.textContent = titleToShow + "'s Electricity Source Trends"
+            altMainTitle.textContent = titleToShow + "'s Low Carbon and Fossil Fuel Usage Shares"
+            if(showingMainOutput){boldText.textContent = titleToShow + "'s electric generation per year "}
+            else{boldText.textContent = titleToShow + "'s power plant capacity by source "}
+        }
+
+
+        // Check settings of comp diagram and update texts
+        if(!compDiagram) return;
+        // Get shown comparisson regions
+        const shownCompRegions = comparisonRegionFilter.filter(f=>f.show)
+        if(shownCompRegions.length > 2){ // Assumption that the user only can select more than two regions by clicking on the continent button
+            if(shownCompRegions.length == comparisonRegionFilter.length){ // Global option selected
+                console.log("Global selected");
+            }else{ // A continent is selected, check first item to see which
+                console.log(shownCompRegions[0].continent + " selected");
+            }
+        }else{ // User has selected a country or used the storymode
+            if(shownCompRegions <= 0) return; // Just to be sure undefined objects aren't checked
+            shownCompRegions.forEach(r =>{
+                console.log(r.country_long + " selected");
+            })
+        }
+
+    }, [regionFilter,comparisonRegionFilter])
+
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (e) => {

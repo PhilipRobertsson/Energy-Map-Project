@@ -275,7 +275,7 @@ export function handleLinePlotToggle(element){
         } } 
     );
 
-    let linePlot, barChart, boldText, standardText
+    let linePlot, barChart, boldText, standardText, title
 
     if(container.id == "sidePanelLinePlot"){
         linePlot = document.getElementById("linePlotSVG")
@@ -283,6 +283,8 @@ export function handleLinePlotToggle(element){
 
         boldText = document.getElementById("linePlotExBoldText")
         standardText = document.getElementById("linePlotExStandardText")
+
+        title = container.querySelector("#linePlotTitle").textContent
     }
 
     if(container.id == "sidePanelComparisonLinePlot"){
@@ -291,23 +293,22 @@ export function handleLinePlotToggle(element){
 
         boldText = document.getElementById("compLinePlotExBoldText")
         standardText = document.getElementById("compLinePlotExStandardText")
+
+        title = container.querySelector("#compLinePlotTitle").textContent
     }
 
     const capacityValues = container.querySelectorAll(".ffCapacity")
     const generationValues = container.querySelectorAll(".ffGeneration")
 
-    // Get selected continent name
-    const continent = container.querySelector(".continentSelected")?.querySelector("span").textContent
+    // Get entity name
+    const entity = (title.includes("Global"))? title.split(" ")[0] : title.split("'")[0]
 
     if(linePlot.classList.contains("hide")){
         gsap.fromTo(linePlot, { opacity: 0 }, 
             { opacity: 1,  duration: 0.15, onComplete: () =>{
                 linePlot.classList.toggle("hide")
-                if(continent == "Global" || !continent){
-                    boldText.textContent = "Global electric generation per year "
-                }else{
-                    boldText.textContent = continent + "'s electric generation per year "
-                }
+                boldText.textContent = (entity == "Global")?
+                    "Global electric generation per year " : entity + "'s electric generation per year "
                 standardText.textContent = "(GWh)"
             } } 
         );
@@ -331,11 +332,8 @@ export function handleLinePlotToggle(element){
         gsap.fromTo(barChart, { opacity: 0 }, 
             { opacity: 1,  duration: 0.15, onComplete: () =>{
                 barChart.classList.toggle("hide")
-                if(continent == "Global" || !continent){
-                    boldText.textContent = "Global power plant capacity by source "
-                }else{
-                    boldText.textContent = continent+ "'s power plant capacity by source "
-                }
+                boldText.textContent = (entity == "Global")?
+                    "Global power plant capacity by source " : entity + "'s power plant capacity by source "
                 standardText.textContent = "(MW)"
             }} 
         );
@@ -374,38 +372,11 @@ export function handleContinentClick(element, regionalData, continent,continentD
     // Set region filter
     const prevFilter = filterRef.current
 
-    let linePlotTitle, linePlotBold, linePlotSVG
-
-    // Get lineplot titles
-    if(element.parentElement.parentElement.id == "sidePanelLinePlot"){
-        linePlotTitle = element.parentElement.parentElement.querySelector("#linePlotTitle")
-        linePlotBold = element.parentElement.parentElement.querySelector("#linePlotExBoldText")
-        linePlotSVG = element.parentElement.parentElement.querySelector("#linePlotSVG")
-    }
-
-    if(element.parentElement.parentElement.id == "sidePanelComparisonLinePlot"){
-        linePlotTitle = element.parentElement.parentElement.querySelector("#compLinePlotTitle")
-        linePlotBold = element.parentElement.parentElement.querySelector("#compLinePlotExBoldText")
-        linePlotSVG = element.parentElement.parentElement.querySelector("#compLinePlotSVG")
-    }
-
     let toggled
     if(continent == "Global"){
         toggled = prevFilter.map(r => ({ ...r, show: true }))
-        linePlotTitle.textContent = "Global Electricity Source Trends"
-        if(linePlotSVG.classList.contains("hide")){
-            linePlotBold.textContent = "Global power plant capacity by source "
-        }else{
-            linePlotBold.textContent = "Global electric generation per year "
-        }
     }else{
         toggled = prevFilter.map(r => ({ ...r, show: r.continent === continent }))
-        linePlotTitle.textContent = continent + "'s Electricity Source Trends"
-        if(linePlotSVG.classList.contains("hide")){
-            linePlotBold.textContent = continent + "'s power plant capacity by source "
-        }else{
-            linePlotBold.textContent = continent + "'s electric generation per year "
-        }
     }
 
     setFilter(toggled)
