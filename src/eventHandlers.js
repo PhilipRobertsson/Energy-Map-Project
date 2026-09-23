@@ -475,6 +475,9 @@ export function handleMapModeToggle(element, mapRef){
                 compDiagramBody.style.display = "none"
             }
 
+            // Hide pop-ups
+            handleResetClick(null, "close", null)
+
             break;
         case "Low Carbon Usage":
             setVisibility(["lowCarbon-fill", "lowCarbon-border"], "none")
