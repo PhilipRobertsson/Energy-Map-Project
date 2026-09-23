@@ -510,7 +510,6 @@ function PrimaryPanels() {
         if(!mainDiagram) return;
         // Get text elements
         const showingMainOutput = mainDiagram.querySelectorAll(".dataToggleButton")[1].style.backgroundColor == "rgb(170, 211, 222)"
-        console.log(showingMainOutput)
 
         const mainTitle = mainDiagram.querySelector("#linePlotTitle")
         const boldText = mainDiagram.querySelector("#linePlotExBoldText")
@@ -547,19 +546,40 @@ function PrimaryPanels() {
 
         // Check settings of comp diagram and update texts
         if(!compDiagram) return;
+
+        // Get text elements
+        const showingCompOutput = compDiagram.querySelectorAll(".dataToggleButton")[1].style.backgroundColor == "rgb(170, 211, 222)"
+
+        const compTitle = compDiagram.querySelector("#compLinePlotTitle")
+        const boldCompText = compDiagram.querySelector("#compLinePlotExBoldText")
+        const altCompTitle = compDiagram.querySelector("#compLinePlotAltTitle")
+
         // Get shown comparisson regions
         const shownCompRegions = comparisonRegionFilter.filter(f=>f.show)
         if(shownCompRegions.length > 2){ // Assumption that the user only can select more than two regions by clicking on the continent button
             if(shownCompRegions.length == comparisonRegionFilter.length){ // Global option selected
-                console.log("Global selected");
+                compTitle.textContent = "Global Electricity Source Trends"
+                altCompTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
+                if(showingCompOutput){boldCompText.textContent = "Global electric generation per year "}
+                else{boldCompText.textContent = "Global power plant capacity by source "}
             }else{ // A continent is selected, check first item to see which
-                console.log(shownCompRegions[0].continent + " selected");
+                let continentComp = shownCompRegions[0].continent
+                compTitle.textContent = continentComp + "'s Electricity Source Trends"
+                altCompTitle.textContent = continentComp + "'s Low Carbon and Fossil Fuel Usage Shares"
+                if(showingCompOutput){boldCompText.textContent = continentComp + "'s electric generation per year "}
+                else{boldCompText.textContent = continentComp + "'s power plant capacity by source "}
             }
         }else{ // User has selected a country or used the storymode
             if(shownCompRegions <= 0) return; // Just to be sure undefined objects aren't checked
-            shownCompRegions.forEach(r =>{
-                console.log(r.country_long + " selected");
+            let titleToShowComp = ""
+            shownCompRegions.forEach((r, id) =>{
+                if(id > 0){titleToShowComp += " and "}
+                titleToShowComp += r.country_long
             })
+            compTitle.textContent = titleToShowComp + "'s Electricity Source Trends"
+            altCompTitle.textContent = titleToShowComp + "'s Low Carbon and Fossil Fuel Usage Shares"
+            if(showingCompOutput){boldCompText.textContent = titleToShowComp + "'s electric generation per year "}
+            else{boldCompText.textContent = titleToShowComp + "'s power plant capacity by source "}
         }
 
     }, [regionFilter,comparisonRegionFilter])
