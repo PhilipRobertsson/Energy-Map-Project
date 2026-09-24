@@ -4,6 +4,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import * as d3 from "d3";
 import { gsap } from "gsap";
 
+import { drawUsageLinePlot } from "./sidePanelUtilities.js";
+
 import './Map.css'
 
 export const MapContext = createContext({ mapRef: null, powerPlants: null, boundaryData: null, barChartFilter: null, setBarChartFilter: null, popupCount: 0, reportedYears: { first: 0, last: 0 }, estimatedYears: { first: 0, last: 0 } });
@@ -425,6 +427,7 @@ function Map({ children }) {
               }
             })
           }else{
+              consiseInformation.classList.add("noBorder")
               consiseInformation = getUsageInfo(properties, consiseInformation, shareYears)
               contentElement.appendChild(consiseInformation)
           }
@@ -1037,9 +1040,16 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
     return htmlElement;
 }
 
-function getUsageInfo(feature, htmlElement){
+function getUsageInfo(feature, htmlElement, shareYears){
   let usageShares = JSON.parse(feature.usageShares)
-  let year = Object.keys(usageShares)[Object.keys(usageShares).length - 1] // Update to take the filter value
+
+  const yearFilterEl = document.getElementById("shareYearFilterContainer")
+  let year
+  if(yearFilterEl){ // If the share year filter exists, use the specific choice there for pop-up
+    year = yearFilterEl.querySelector(".sliderValueText").textContent
+  }else{ // Else just use the latest available data point
+     year = Object.keys(usageShares)[Object.keys(usageShares).length - 1]
+  }
 
   const ShareField = document.createElement("span")
   const ShareTitle = document.createElement("strong")
@@ -1064,13 +1074,20 @@ function getUsageInfo(feature, htmlElement){
   FFShareField.appendChild(FFShareTitle)
   FFShareField.appendChild(FFShareValue)
 
-  // TODO: Display line plot based on available information
-  // TODO: Displayed usage shares should be the selected year
-  // TODO: If shareYearFilter changes, update pop-ups with the correct information
+  // Display line plot based on available information
+  const usageDiagram = document.createElement("div")
+  usageDiagram.classList.add("pop-up-diagram")
+
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+  const diagramWidth = Math.floor(420 * scale)
+  const diagramHeight = Math.floor(210 * scale)
+
+  drawUsageLinePlot(usageDiagram, diagramWidth, diagramHeight, [{ usage: usageShares }], "popUpUsagePlot", shareYears)
 
   htmlElement.appendChild(ShareField)
   htmlElement.appendChild(LCShareField)
   htmlElement.appendChild(FFShareField)
+  htmlElement.appendChild(usageDiagram)
   return htmlElement;
 }
 

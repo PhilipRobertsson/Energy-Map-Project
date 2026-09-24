@@ -63,10 +63,6 @@ const allPages = [
     {id: 5, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
 ];
 
-// TODO: Check if "linePlotTitle", "linePlotExBoldText", "linePlotAltTitle", "compLinePlotTitle",
-//  "compLinePlotExBoldText", and "compLinePlotAltTitle" can be updated in a better manner, i.e., through
-// a single UseEffect() function.
-
 // static JSON to fetch and states to set
 const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "instructions", "continentalInformation"]
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent", "ContinentalData"]
@@ -458,12 +454,36 @@ function PrimaryPanels() {
         if (sliders && sliders[0] && sliders[0].sync) sliders[0].sync(values[0], values[1])
     }, [yearFilter])
 
-    // Keep the year slider thumb positions in sync with the share year filter state
+    // Keep the year slider thumb position in sync with the share year filter state, update pop-ups if present
     useEffect(() => {
-        if (shareYearFilter.length !== 2) return
+        if (shareYearFilter.length !== 2) return;
         const [value,bounds] = shareYearFilter
+
+        // Slider position sync
         const sliders = sidePanelContainer.current?.querySelectorAll(".sidePanelFilterSliderContainer")
         if (sliders && sliders[1] && sliders[1].sync) sliders[1].sync(bounds[0], value)
+
+        // Pop-up information sync
+        const popUpContents = document.querySelectorAll(".pop-up-info")
+        if(!popUpContents || !popUpContents.length) return;
+
+        for(let i = 0; i < popUpContents.length; i++){
+            let popUp = popUpContents[i]?.parentElement;
+            let country = popUp.querySelector("h1").textContent
+            let countryData = regionalData.find(r => r.country_long === country)
+            let usageLC = countryData.usage_shares?.[value]?.["LC"]
+            let usageFF = countryData.usage_shares?.[value]?.["FF"]
+
+            let YearValue = popUpContents[i]?.querySelectorAll("strong")[0]
+            YearValue.textContent = "Usage Shares " + value + ": ";
+
+            let LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
+            LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
+
+            let FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
+            FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
+        }
+
     }, [shareYearFilter])
 
     // Check the context filter for any updates
@@ -1504,6 +1524,7 @@ function createPages(pageContent, powerPlants, regionalData, continentData, regi
                 // shareYear
                 filterContainer.appendChild(getSliders("shareYear", regionalData, onShareYearChange));
                 filterContainer.classList.toggle("hide")
+                filterContainer.id = "shareYearFilterContainer"
                 multiYearFilterContainer.appendChild(filterContainer)
                 break;
             case 3:

@@ -69,6 +69,10 @@
     padding: 0.5dvh 0 0.5dvh 0;
 }
 
+.noBorder{
+    border-bottom: unset;
+}
+
 .pop-up-info > span{
     font-family: "Lato", sans-serif;
     font-weight: 400;

@@ -122,16 +122,18 @@ export function handleZoomSelection(element, regionFilter, fuelFilter, yearFilte
 }
 
 export function handleResetClick(button, option, resetAllFilters){
-    gsap.fromTo(button, 
-        { opacity: 1 }, 
-        { 
-            opacity: 0.7, 
-            duration: 0.15,
-            yoyo: true, 
-            repeat: 1, 
-            overwrite: true 
-        }
-    );
+    if(button){
+        gsap.fromTo(button, 
+            { opacity: 1 }, 
+            { 
+                opacity: 0.7, 
+                duration: 0.15,
+                yoyo: true, 
+                repeat: 1, 
+                overwrite: true 
+            }
+        );
+    }
     switch(option){
         case "reset":
             resetAllFilters()
