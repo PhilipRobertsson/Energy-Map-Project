@@ -419,16 +419,17 @@ export function handleMapModeToggle(element, mapRef){
     const prev = document.querySelector(".selectedMapMode")
     if(element == prev) return;
 
-    // Remove selected class from previous button, add class to clicked element
+    // Update the selected class immediately so the correct button is marked
+    // (the colour transition is handled by GSAP below).
+    element.classList.add("selectedMapMode")
+    if(prev) prev.classList.remove("selectedMapMode")
+
+    // Animate the colour transition
     gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)", color:"#f7f7f7" }, 
-        { backgroundColor: "#AAD3DE", color:"#243B6D",  duration: 0.15, onComplete: () =>{
-            element.classList.toggle("selectedMapMode")
-        } } 
+        { backgroundColor: "#AAD3DE", color:"#243B6D",  duration: 0.15 }
     );
     gsap.fromTo(prev, { backgroundColor: "#AAD3DE", color:"#243B6D" }, 
-        { backgroundColor: "rgba(0,0,0,0.0)", color:"#f7f7f7",  duration: 0.15, onComplete: () =>{
-            prev.classList.toggle("selectedMapMode")
-        } } 
+        { backgroundColor: "rgba(0,0,0,0.0)", color:"#f7f7f7",  duration: 0.15 }
     );
 
     // Get map context

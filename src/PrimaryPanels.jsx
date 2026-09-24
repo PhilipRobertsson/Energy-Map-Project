@@ -10,6 +10,7 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick,
               handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
               handlePlayBackClick, getPendingUsageSkip, clearPendingUsageSkip } from './eventHandlers.js'
+import { registerInteraction, endSession } from './usageStatistics.js'
 
 import './PrimaryPanels.css'
 
@@ -153,12 +154,42 @@ function PrimaryPanels() {
     useEffect(() =>{
         resetTimer()
     }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent,
-        comparisonRegionFilter, comparisonFuelFilter])
+        comparisonRegionFilter, comparisonFuelFilter,
+        shareYearFilter, LCShareFilter, FFShareFilter, yearFilter, generationFilter])
+
+    // Register user interactions for usage-statistics tracking (any pointer / key / touch)
+    useEffect(() =>{
+        const onInput = () => registerInteraction();
+        window.addEventListener("pointerdown", onInput);
+        window.addEventListener("keydown", onInput);
+        window.addEventListener("touchstart", onInput);
+        return () =>{
+            window.removeEventListener("pointerdown", onInput);
+            window.removeEventListener("keydown", onInput);
+            window.removeEventListener("touchstart", onInput);
+        }
+    }, [])
 
     // Check the timer, if it reaches zero, reset everything
     useEffect(() =>{
         if(timeRef <= 0){
+            endSession()
             resetAllFilters()
+            handleResetClick(null, "close", null) // Close pop-ups
+
+            // Remove the comparison diagram if it is open, and reset its prompt button
+            const comparisonDiagram = document.querySelector("#sidePanelComparisonLinePlot")
+            if (comparisonDiagram) comparisonDiagram.remove()
+            const promptText = document.querySelector("#diagramPromptText")
+            const promptIcon = document.querySelector("#additionalDiagramPromptContainer img")
+            if (promptText) promptText.textContent = "+ add one diagram for comparison"
+            if (promptIcon) promptIcon.src = assetSources.sidePanelRollupOpen
+
+            // Reset the map mode to "Power Plants" (sets the selected class / colours and map layers)
+            const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Power Plants")
+            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
+
             setRegionFilterTo(["SWE"])
             mapRef.current?.flyTo({
                 center: [24.325556, 62.3875],
@@ -471,17 +502,19 @@ function PrimaryPanels() {
             let popUp = popUpContents[i]?.parentElement;
             let country = popUp.querySelector("h1").textContent
             let countryData = regionalData.find(r => r.country_long === country)
-            let usageLC = countryData.usage_shares?.[value]?.["LC"]
-            let usageFF = countryData.usage_shares?.[value]?.["FF"]
+            if(countryData){
+                let usageLC = countryData?.usage_shares?.[value]?.["LC"]
+                let usageFF = countryData?.usage_shares?.[value]?.["FF"]
 
-            let YearValue = popUpContents[i]?.querySelectorAll("strong")[0]
-            YearValue.textContent = "Usage Shares " + value + ": ";
+                let YearValue = popUpContents[i]?.querySelectorAll("strong")[0]
+                YearValue.textContent = "Usage Shares " + value + ": ";
 
-            let LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
-            LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
+                let LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
+                LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
 
-            let FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
-            FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
+                let FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
+                FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
+            }
         }
 
     }, [shareYearFilter])
