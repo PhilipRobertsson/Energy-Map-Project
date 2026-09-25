@@ -56,12 +56,13 @@ const assetSources ={
 
 // The different pages on the instruction page
 const allPages = [
-    {id: 0, visibleHtmlElements: [true, true, true, false, true, true, true, true, false, false,false,false, false]}, /*Home page*/
-    {id: 1, visibleHtmlElements: [true, false, false, true, false, false, false, false, true, false,false,false, false]}, /*Info page*/
-    {id: 2, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, true,false,false, false]}, /*Instructions page 1*/
-    {id: 3, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,true,false, false]}, /*Instructions page 2*/
-    {id: 4, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,true, false]}, /*Instructions page 3*/
-    {id: 5, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,false, true]}, /*Instructions page 4*/
+    {id: 0, visibleHtmlElements: [true, true, true, false, true, true, true, true, false, false,false,false, false, false]}, /*Home page*/
+    {id: 1, visibleHtmlElements: [true, false, false, true, false, false, false, false, true, false,false,false, false, false]}, /*Info page*/
+    {id: 2, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, true,false,false, false, false]}, /*Instructions page 1*/
+    {id: 3, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,true,false, false, false]}, /*Instructions page 2*/
+    {id: 4, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,true, false, false]}, /*Instructions page 3*/
+    {id: 5, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,false, true, false]}, /*Instructions page 4*/
+    {id: 6, visibleHtmlElements: [true, false, false, false, true, true, true, true, false, false,false,false, false, true]}, /*Instructions page 5*/
 ];
 
 // static JSON to fetch and states to set
@@ -1028,6 +1029,12 @@ function PrimaryPanels() {
                         setGenerationFilterTo(0, 38000)
                         if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
                         break;
+                    case 6: // Fifth instructions page
+                        setRegionFilterTo(["SWE", "FIN"])
+                        setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
+                        setGenerationFilterTo(0, 38000)
+                        if(lowCarbonUsageButton) handleMapModeToggle(lowCarbonUsageButton, mapRef)
+                        break;
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
                             resetAllFilters()
@@ -1460,7 +1467,7 @@ function createPages(pageContent, powerPlants, regionalData, continentData, regi
     const navigationElements = document.createElement("div")
     navigationElements.style.display = "flex"
 
-    for(let i = 0; i<6;i++){
+    for(let i = 0; i<7;i++){
         const wrapper = document.createElement("div")
         wrapper.classList.add("navigationBarIconWrapper")
 

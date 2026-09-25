@@ -41,6 +41,10 @@
                 [
                     ["Title", "Discover: "],
                     ["Standard", "Explore deeper insights, such as why Sweden and Denmark rely on different primary energy sources."]
+                ],
+                [
+                    ["Title", "Compare: "],
+                    ["Standard", "Find differences between what kind of energy is used in different parts of the world."]
                 ]
             ]
         ]
@@ -128,6 +132,41 @@
             [
                 "Use the region dropdown to compare both countries and see how their landscapes shape energy. \n",
                 "Sweden relies on mountains and rivers for hydropower, while Denmark focuses on flat, windy coasts for wind power.\n"
+            ]
+        ]
+    },
+    {
+        "id":5,
+        "name":"Energy Map - Energy Usage",
+        "titles":[
+            "Different kinds of fuel sources"
+        ],
+        "lists":[
+            [
+                [
+                    ["Title", "Low Carbon: "],
+                    ["Standard", "Use the "],
+                    ["Highlight", "Low Carbon Usage "],
+                    ["Standard", " map mode to see what share of a countries energy usage was produced with "],
+                    ["Highlight", " Low Carbon "],
+                    ["Standard", "fuel types."]
+                ],
+                [
+                    ["Title", "Fossil Fuel: "],
+                    ["Standard", "Use the "],
+                    ["Highlight", "Fossil Fuel Usage "],
+                    ["Standard", " map mode to see what share of a countries energy usage was produced with "],
+                    ["Highlight", " Fossil Fuels "],
+                    ["Standard", "."]
+                ],
+                [
+                    ["Title", "Additional Information: "],
+                    ["Standard", "Click on "],
+                    ["Highlight", " Sweden "],
+                    ["Standard", "and "],
+                    ["Highlight", "Finland "],
+                    ["Standard", "in the map to compare their fuel type usages throughout the years."]
+                ]
             ]
         ]
     }
