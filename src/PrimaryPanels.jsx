@@ -991,26 +991,42 @@ function PrimaryPanels() {
 
             // Filter settings on page change, for storytelling purposes
             if(pageChanged){
+                // Different map mode buttons for easier acces
+                const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Power Plants")
+
+                const currentSelectionButton = document.querySelectorAll(".mapToggleButton.selectedMapMode")
+
+                const lowCarbonUsageButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Low Carbon Usage")
+
+                const fossilFuelUsageButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Fossil Fuel Usage")
+
                 switch(sidePanelPage.id){
                     case 2: // First instructions page
                         setRegionFilterTo(["SWE", "NOR"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
                         break;
                     case 3: // Second instructions page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
                         break;
                     case 4: // Third instruction page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
                         break;
                     case 5: // Fourth instructions page
                         setRegionFilterTo(["SWE", "DNK"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
                         break;
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
@@ -1022,6 +1038,8 @@ function PrimaryPanels() {
                                 speed: 0.8,
                                 curve: 1.4
                             });
+                            // Keep user selection for switch to home and info pages
+                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef)
                         }
                 }
             }
