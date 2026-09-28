@@ -568,12 +568,11 @@ function PrimaryPanels() {
         prevBarChartFilter.current = currentBCF ? [...currentBCF] : []
     }, [barChartFilter])
 
-    // Check for region and comparison region filter changes, update diagram texts based on said chages
+    // Check for region and comparison region filter changes, update diagram texts based on said changes
     useEffect(()=>{
-        if(!regionFilter || !comparisonRegionFilter) return;
+        if(!regionFilter) return;
 
         const mainDiagram = document.getElementById("sidePanelLinePlot")
-        const compDiagram = document.getElementById("sidePanelComparisonLinePlot")
 
         // Check settings of the main diagram and update texts
         if(!mainDiagram) return;
@@ -610,8 +609,22 @@ function PrimaryPanels() {
             altMainTitle.textContent = titleToShow + "'s Low Carbon and Fossil Fuel Usage Shares"
             if(showingMainOutput){boldText.textContent = titleToShow + "'s electric generation per year "}
             else{boldText.textContent = titleToShow + "'s power plant capacity by source "}
-        }
 
+            // TODO: Check if desired pop-up to open aleady is open, in the case that it is open, skip the following lines
+            console.log("Open pop-up for: ")
+            // Open relevant pop-ups
+            for(let i = 0; i<shownRegions.length; i++){
+                let bounds = boundaryData.features.filter(b=>b.properties.adm0_iso == shownRegions[i].country)[0]
+                console.log(bounds)
+            }
+        }
+    }, [regionFilter])
+
+    // Check for comparison region filter changes, update diagram texts based on said changes
+    useEffect(()=>{
+        if(!comparisonRegionFilter) return;
+
+        const compDiagram = document.getElementById("sidePanelComparisonLinePlot")
 
         // Check settings of comp diagram and update texts
         if(!compDiagram) return;
@@ -650,8 +663,7 @@ function PrimaryPanels() {
             if(showingCompOutput){boldCompText.textContent = titleToShowComp + "'s electric generation per year "}
             else{boldCompText.textContent = titleToShowComp + "'s power plant capacity by source "}
         }
-
-    }, [regionFilter,comparisonRegionFilter])
+    }, [comparisonRegionFilter])
 
     // Close dropdowns when clicking outside
     useEffect(() => {
