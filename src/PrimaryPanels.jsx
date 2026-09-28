@@ -464,17 +464,22 @@ function PrimaryPanels() {
             }
         }
 
-        // Change continent selected if region filter has lenght less than two
-        if(regionFilter.filter(r => r.show).length <= 2){
-            const selectedContinentButtons = document.querySelectorAll(".continentSelected");
-            for(let i = 0; i < selectedContinentButtons.length; i++){
-                gsap.fromTo(selectedContinentButtons[i], { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
-                    { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
-                        selectedContinentButtons[i].classList.toggle("continentSelected")
-                    } } 
-                );
+        // Unset the continent selection when a specific country is selected.
+        // Each diagram (main and comparison) is handled independently.
+        const unsetContinentSelection = (containerId, filter) =>{
+            if(filter.filter(r => r.show).length <= 2){
+                const selectedContinentButtons = document.querySelectorAll(`#${containerId} .continentSelected`);
+                for(let i = 0; i < selectedContinentButtons.length; i++){
+                    gsap.fromTo(selectedContinentButtons[i], { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
+                        { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
+                            selectedContinentButtons[i].classList.toggle("continentSelected")
+                        } } 
+                    );
+                }
             }
         }
+        unsetContinentSelection("sidePanelLinePlot", regionFilter)
+        unsetContinentSelection("sidePanelComparisonLinePlot", comparisonRegionFilter)
 
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears])
 
