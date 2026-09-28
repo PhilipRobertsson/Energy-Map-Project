@@ -73,22 +73,23 @@
     border-bottom: unset;
 }
 
-.pop-up-info > span{
+.pop-up-info > span, .pop-up-info strong, 
+.regional-overview-info > span, .regional-overview-info strong{
     font-family: "Lato", sans-serif;
-    font-weight: 400;
     font-style: normal;
     font-size: 1.8vmin;
+}
+
+.pop-up-info > span{
+    font-weight: 400;
     line-height: 1.4vmin;
     display: flex;
     align-items: baseline;
 }
 
 .pop-up-info strong{
-    font-family: "Lato", sans-serif;
     margin-right: 0.3vmin;
     font-weight: 700;
-    font-style: normal;
-    font-size: 1.8vmin;
     margin-bottom: 0.5dvh;
 }
 
@@ -155,21 +156,15 @@
 }
 
 .regional-overview-info > span{
-    font-family: "Lato", sans-serif;
     font-weight: 400;
-    font-style: normal;
-    font-size: 1.8vmin;
     line-height: 1.4vmin;
     display: flex;
     align-items: center;
 }
 
 .regional-overview-info strong{
-    font-family: "Lato", sans-serif;
     margin-right: 0.3dvw;
     font-weight: 700;
-    font-style: normal;
-    font-size: 1.8vmin;
     margin-bottom: 0.5dvh;
 }
 
