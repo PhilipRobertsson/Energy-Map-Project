@@ -9,7 +9,7 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleIndexClick, handleFueLegClick, handleRegLegClick, handleNavigationClick,
               handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick,
               handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
-              handlePlayBackClick, getPendingUsageSkip, clearPendingUsageSkip } from './eventHandlers.js'
+              handlePlayBackClick } from './eventHandlers.js'
 import { registerInteraction, endSession } from './usageStatistics.js'
 
 import './PrimaryPanels.css'
@@ -104,6 +104,7 @@ function PrimaryPanels() {
     const sidePanelOpenRef = useRef(true);
     const yearsRef = useRef({ reported: { first: 0, last: 0 }, estimated: { first: 0, last: 0 } });
     const shareYearsRef = useRef({first: 0, last: 0}); // similar to yearsRef
+    const continentalDataRef = useRef([]); // continent-level usage data
 
     // Filter references
     const regionFilterRef = useRef([]);
@@ -126,7 +127,8 @@ function PrimaryPanels() {
         regionalDataRef.current = regionalData
         yearsRef.current = { reported: reportedYears, estimated: estimatedYears }
         shareYearsRef.current = shareYears
-    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears]);
+        continentalDataRef.current = continentalData
+    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears, continentalData]);
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -374,16 +376,41 @@ function PrimaryPanels() {
 
     // Update zoom selection icon when filters change, redraw plots
     useEffect(() => {
-        // If a continent click already redrew a usage plot manually, skip that
-        // plot's automatic redraw so the continent-level data is not overridden.
-        const pendingSkip = getPendingUsageSkip()
-        clearPendingUsageSkip()
-
         const filter = filterContainer.current
         if (!filter || !fuelFilter.length || !powerPlants) return
         const zoomSelection = filter.querySelectorAll(".controlIcon")[2]
         if (!zoomSelection) return
         const pps = getShownPowerPlants(powerPlants, regionFilter, fuelFilter, yearFilter, generationFilter)
+
+        // Unset the continent selection when a specific country is selected, so
+        // the usage plot falls back to the region-aggregated data. This must run
+        // synchronously before the redraw below so the DOM is up to date.
+        const unsetContinentSelection = (containerId, filter) =>{
+            if(filter.filter(r => r.show).length <= 2){
+                const selectedContinentButtons = document.querySelectorAll(`#${containerId} .continentSelected`);
+                for(let i = 0; i < selectedContinentButtons.length; i++){
+                    const button = selectedContinentButtons[i]
+                    button.classList.remove("continentSelected")
+                    gsap.fromTo(button, { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
+                        { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15 }
+                    );
+                }
+            }
+        }
+        unsetContinentSelection("sidePanelLinePlot", regionFilter)
+        unsetContinentSelection("sidePanelComparisonLinePlot", comparisonRegionFilter)
+
+        // Usage data for a diagram: continent-level data if a continent is
+        // selected, otherwise the region-aggregated data.
+        const getUsageData = (containerId, regionFilterRef) =>{
+            const continentName = document.querySelector(`#${containerId} .continentSelected span`)?.textContent
+            if (continentName) {
+                const selectedName = continentName === "Global" ? "World" : continentName
+                const continentData = continentalDataRef.current.find(f => f.entity === selectedName)
+                if (continentData) return continentData
+            }
+            return getShownRegionUsage(regionalDataRef.current, regionFilterRef.current, shareYearsRef.current)
+        }
 
         const linePlotSVG = document.getElementById("linePlotSVG")
         const barChartSVG = document.getElementById("barChartSVG")
@@ -407,13 +434,13 @@ function PrimaryPanels() {
 
             linePlotSVG?.remove()
             barChartSVG?.remove()
-            if (pendingSkip !== "usagePlotSVG") usageLinePlotSVG?.remove()
+            usageLinePlotSVG?.remove()
 
             const fuels = getShownRegionFuelData(regionalDataRef.current, regionFilterRef.current, fuelFilterRef.current, true, yearsRef.current)
-            const regions = getShownRegionUsage(regionalDataRef.current, regionFilterRef.current, shareYearsRef.current)
+            const usageData = getUsageData("sidePanelLinePlot", regionFilterRef)
             drawLinePlot(dataVisualization, plotWidth, plotHeight, fuels, !linePlotHidden, "linePlotSVG", yearsRef.current)
             drawBarChart(dataVisualization, plotWidth, plotHeight, fuels, !barChartHidden)
-            if (pendingSkip !== "usagePlotSVG") drawUsageLinePlot(altVis, altPlotWidth, plotHeight, regions, "usagePlotSVG", shareYearsRef.current)
+            drawUsageLinePlot(altVis, altPlotWidth, plotHeight, usageData, "usagePlotSVG", shareYearsRef.current)
         }
 
         // Redraw comparison plots if they exist
@@ -439,13 +466,13 @@ function PrimaryPanels() {
 
             compLinePlotSVG?.remove()
             compBarChartSVG?.remove()
-            if (pendingSkip !== "compUsagePlotSVG") compUsageLinePlotSVG?.remove()
+            compUsageLinePlotSVG?.remove()
 
             const compFuels = getShownRegionFuelData(regionalDataRef.current, compRegionFilterRef.current, compFuelFilterRef.current, true, yearsRef.current)
-            const compRegions = getShownRegionUsage(regionalDataRef.current, compRegionFilterRef.current, shareYearsRef.current)
+            const compUsageData = getUsageData("sidePanelComparisonLinePlot", compRegionFilterRef)
             drawLinePlot(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compLinePlotHidden, "compLinePlotSVG", yearsRef.current)
             drawBarChart(compDataVisualization, compPlotWidth, compPlotHeight, compFuels, !compBarChartHidden, "compBarChartSVG")
-            if (pendingSkip !== "compUsagePlotSVG") drawUsageLinePlot(compAltVis, compAltPlotWidth, compPlotHeight, compRegions, "compUsagePlotSVG", shareYearsRef.current)
+            drawUsageLinePlot(compAltVis, compAltPlotWidth, compPlotHeight, compUsageData, "compUsagePlotSVG", shareYearsRef.current)
         }
 
         if (powerPlants.features.length != pps.length) {
@@ -463,23 +490,6 @@ function PrimaryPanels() {
                 zoomSelectionState.current.isSelection = true
             }
         }
-
-        // Unset the continent selection when a specific country is selected.
-        // Each diagram (main and comparison) is handled independently.
-        const unsetContinentSelection = (containerId, filter) =>{
-            if(filter.filter(r => r.show).length <= 2){
-                const selectedContinentButtons = document.querySelectorAll(`#${containerId} .continentSelected`);
-                for(let i = 0; i < selectedContinentButtons.length; i++){
-                    gsap.fromTo(selectedContinentButtons[i], { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
-                        { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
-                            selectedContinentButtons[i].classList.toggle("continentSelected")
-                        } } 
-                    );
-                }
-            }
-        }
-        unsetContinentSelection("sidePanelLinePlot", regionFilter)
-        unsetContinentSelection("sidePanelComparisonLinePlot", comparisonRegionFilter)
 
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, powerPlants, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears])
 

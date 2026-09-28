@@ -1,17 +1,5 @@
 import { gsap } from "gsap";
-import { createDiagram, otherFuels, drawUsageLinePlot } from "./sidePanelUtilities.js";
-
-// Tracks which usage plot was just redrawn manually (by a continent click) so
-// the automatic redraw effect can skip overriding it.
-let pendingUsageSkip = null
-
-export function getPendingUsageSkip(){
-    return pendingUsageSkip
-}
-
-export function clearPendingUsageSkip(){
-    pendingUsageSkip = null
-}
+import { createDiagram, otherFuels } from "./sidePanelUtilities.js";
 
 // powerplants, region, fuel, year, generation filters
 export function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
@@ -357,17 +345,18 @@ export function handleContinentClick(element, regionalData, continent,continentD
     const prev = element.parentElement.querySelector(".continentSelected")
     if(element == prev) return;
         
-    // Remove selected class from previous button, add class to clicked element
+    // Update the selected class immediately so the correct button is marked
+    // (the colour transition is handled by GSAP below).
+    element.classList.add("continentSelected")
+    if(prev) prev.classList.remove("continentSelected")
+
+    // Animate the colour transition
     gsap.fromTo(element, { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000" }, 
-        { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC",  duration: 0.15, onComplete: () =>{
-            element.classList.toggle("continentSelected")
-        } } 
+        { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC",  duration: 0.15 }
     );
     if(prev){
             gsap.fromTo(prev, { backgroundColor: "#65A1E0", border: "0.1vmin solid #65A1E0", color:"#FCFCFC" }, 
-            { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15, onComplete: () =>{
-                prev.classList.toggle("continentSelected")
-            } } 
+            { backgroundColor: "rgba(0,0,0,0.0)", border: "0.1vmin solid #AAD3DE", color:"#000000",  duration: 0.15 }
         );
     }
 
@@ -384,33 +373,6 @@ export function handleContinentClick(element, regionalData, continent,continentD
     setFilter(toggled)
     if(!dontZoomTo){
         zoomToRegionFilter(toggled)
-    }
-
-    // If continent-level data exists, redraw the usage plot with that data
-    const selectedName = continent === "Global" ? "World" : continent
-    const desiredData = continentData.find(f => f.entity === selectedName)
-
-    if (desiredData) {
-        const svgId = dontZoomTo ? "compUsagePlotSVG" : "usagePlotSVG"
-        const usageLinePlotSVG = document.getElementById(svgId)
-        const altDataVis = usageLinePlotSVG?.parentElement
-
-        if (altDataVis) {
-            const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-            const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-
-            const sidePanelWidth = Math.floor(width * 0.30)
-            const sidePanelLeftMargin = Math.floor((window.innerHeight <= 1024) ? width * 0.02 : width * 0.01)
-            const sidePanelPadding = Math.floor(2 * width * 0.01)
-            const plotWidth = Math.floor((sidePanelWidth - sidePanelLeftMargin - sidePanelPadding) * 0.85)
-            const plotHeight = Math.floor((height * 0.35) * 0.72)
-
-            usageLinePlotSVG?.remove()
-            drawUsageLinePlot(altDataVis, plotWidth, plotHeight, desiredData, svgId, shareYears)
-
-            // Skip the automatic usage-plot redraw triggered by the region filter change
-            pendingUsageSkip = svgId
-        }
     }
 }
 
