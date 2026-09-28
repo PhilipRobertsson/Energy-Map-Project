@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext, createElement } from 'react'
+import maplibregl from "maplibre-gl";
 import { gsap } from "gsap";
 
 import { MapContext, lowCarbonColorForYear, fossilFuelColorForYear } from './Map.jsx'
@@ -583,9 +584,17 @@ function PrimaryPanels() {
         const boldText = mainDiagram.querySelector("#linePlotExBoldText")
         const altMainTitle = mainDiagram.querySelector("#linePlotAltTitle")
 
+        const openPopUps = document.querySelectorAll(".maplibregl-popup-selection-info")
+
         // Get shown regions
         const shownRegions = regionFilter.filter(f=>f.show)
         if(shownRegions.length > 2){ // Assumption that the user only can select more than two regions by clicking on the continent button
+            // Close region-based pop-ups
+            openPopUps.forEach(popup => {
+                    gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+                    gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+            })
+
             if(shownRegions.length == regionFilter.length){ // Global option selected
                 mainTitle.textContent = "Global Electricity Source Trends"
                 altMainTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
@@ -610,13 +619,46 @@ function PrimaryPanels() {
             if(showingMainOutput){boldText.textContent = titleToShow + "'s electric generation per year "}
             else{boldText.textContent = titleToShow + "'s power plant capacity by source "}
 
-            // TODO: Check if desired pop-up to open aleady is open, in the case that it is open, skip the following lines
-            console.log("Open pop-up for: ")
+            const isOpen = (name) =>{
+                let opened = document.querySelectorAll(".maplibregl-popup-selection-info")
+                for(let i = 0; i<opened.length; i++){
+                    let popup = opened[i]
+                    let popUpName = popup.querySelector("h1").textContent
+
+                    if(popUpName == name) return true;
+                }
+                return false;
+            }
+
+            // Close unwanted pop-ups
+            if(openPopUps.length){
+                for(let i = 0; i<openPopUps.length; i++){
+                    let popup = openPopUps[i]
+                    let popUpName = popup.querySelector("h1").textContent
+
+                    if(typeof shownRegions.find(r=>r.country_long == popUpName) == 'undefined'){
+                        gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+                        gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+                    }
+                }
+            }
             // Open relevant pop-ups
             for(let i = 0; i<shownRegions.length; i++){
-                let bounds = boundaryData.features.filter(b=>b.properties.adm0_iso == shownRegions[i].country)[0]
-                console.log(bounds)
+                if(!isOpen(shownRegions[i].country_long)){
+                    // Don't create new pop-up if desired to open already exsists
+                    let bounds = boundaryData.features.find(b=>b.properties.adm0_iso == shownRegions[i].country)
+                    let coordinates = [bounds.properties.label_x, bounds.properties.label_y]
+                
+                    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+                    let popup = new maplibregl.Popup({maxWidth: Math.round(400*scale) + "px", closeButton: false, closeOnClick: false})
+                        .setLngLat(coordinates)
+                        .setHTML(("<h1>"+ shownRegions[i].country_long +"</h1>"))
+                        .addTo(mapRef.current);
+                    // Assign special class to pop-up
+                    popup.getElement().classList.add("maplibregl-popup-selection-info")
+                }
             }
+
         }
     }, [regionFilter])
 

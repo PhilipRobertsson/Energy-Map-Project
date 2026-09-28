@@ -129,8 +129,10 @@ export function handleResetClick(button, option, resetAllFilters){
         case "close":
             const openPopUps = document.querySelectorAll(".maplibregl-popup")
             openPopUps.forEach(popup => {
-                gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
-                gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+                if(!popup.classList.contains("maplibregl-popup-selection-info")){
+                    gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+                    gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+                }
             })
             break;
     }
