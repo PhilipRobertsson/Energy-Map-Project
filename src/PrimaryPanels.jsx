@@ -656,6 +656,46 @@ function PrimaryPanels() {
                         .addTo(mapRef.current);
                     // Assign special class to pop-up
                     popup.getElement().classList.add("maplibregl-popup-selection-info")
+
+                    // Pop up rotate X "fade in"
+                    const contentElement = popup.getElement().children[1]
+                    gsap.set(contentElement, { rotateX: -90, opacity: 0, transformOrigin: "bottom center" })
+                    gsap.set(popup.getElement(), { perspective: 800 })
+                    gsap.to(contentElement, { rotateX: 0, opacity: 1, duration: 0.3, ease: "power2.out",
+                        onComplete: ()=>{
+                            const boundingBox = contentElement.getBoundingClientRect();
+                            const mapWidth = window.screen.width - ((window.screen.height <= 1024)? window.screen.width * 0.30 : window.screen.width * 0.25) - 50
+                            if(boundingBox.top <= 0 || boundingBox.right >= mapWidth){
+                                mapRef.current?.panBy([0, 0], { duration: 1 }) // Work around to reposition pop-ups that are outside the screen
+                            }
+                        }
+                    })
+                    contentElement.style.width = Math.round(400*scale) + "px"
+                    
+                    // Replace text based close button with image based icon instead
+                    const closeButton = document.createElement("img")
+                    closeButton.src = assetSources.closeIcon
+                    
+                    closeButton.onclick = (e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        gsap.to(contentElement.children, {opacity: 0, duration: 0.2, ease: "power2.in"})
+                        gsap.to(contentElement, { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
+                    }
+                    
+                    // Reorder header content
+                    const popUpHeader = document.createElement("div")
+                    popUpHeader.classList.add("pop-up-header")
+                    const popupTitle = contentElement.children[0]
+                    
+                    popUpHeader.appendChild(popupTitle)
+                    popUpHeader.appendChild(closeButton)
+                    contentElement.appendChild(popUpHeader)
+
+                    var regionInfo = document.createElement("div")
+                    regionInfo.classList.add("pop-up-info", "noBorder")
+
+                    contentElement.appendChild(regionInfo)
                 }
             }
 
