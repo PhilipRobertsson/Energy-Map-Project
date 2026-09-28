@@ -95,11 +95,6 @@
     /*color: #030303;*/
     color:#f7f7f7;
     cursor: pointer;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 .selectedMapMode{
@@ -139,7 +134,14 @@
     overflow-y: scroll;
 }
 
-#sidePanelMainTitle{
+#sidePanel, #fuelFilter{
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+#sidePanelMainTitle, #InfoTitle{
     display: flex;
     align-self: flex-start;
     font-family: "DM Serif Display", serif;
@@ -149,11 +151,6 @@
     margin: 1dvh 0 0 0;
     /*color: #004B70;*/
     color:#DEEAED;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #sidePanelMainTitleSmall{
@@ -164,11 +161,6 @@
     font-size: 1.2vmax;
     /*color: #004B70;*/
     color:#DEEAED;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #sidePanelSubtitle{
@@ -181,28 +173,6 @@
     margin: 0;
     /*color: #004B70;*/
     color:#DEEAED;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
-}
-
-#InfoTitle{
-    display: none;
-    font-family: "DM Serif Display", serif;
-    font-weight: 400;
-    font-style: normal;
-    font-size: 3vmax;
-    margin: 1dvh 0 0 0;
-    align-self:flex-start;
-    /*color: #004B70;*/
-    color:#DEEAED;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #sidePanelFilterAndResetWrapper{
@@ -254,11 +224,6 @@
     /*color: #030303;*/
     color:#f7f7f7;
     cursor: pointer;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #sidePanelLinePlot{
@@ -310,11 +275,6 @@
     font-style: normal;
     padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
     cursor: pointer;
-    /*Added to remove selection from texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 .continentSelected{
@@ -328,11 +288,6 @@
     display: flex;
     flex-direction: row;
     margin: 1dvh 1dvw 1dvh 1dvw;
-    /*Added to remove selection from texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #linePlotAltHeader, #compLinePlotAltHeader{
@@ -340,11 +295,6 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    /*Added to remove selection from texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #linePlotUsageLegends, #compLinePlotUsageLegends{
@@ -438,11 +388,6 @@
     display: flex;
     flex-direction: row;
     margin: 0 1dvw 1dvh 1dvw;
-    /*Added to remove selection from texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #fuelFilterContainer, #compFuelFilterContainer{
@@ -533,11 +478,6 @@
     font-size: 1.5vmin;
     margin: 0 1dvh 0 0;
     color: #f7f7f7;
-    /*Added to remove selection from text*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 #additionalDiagramPromptContainer img{
@@ -590,11 +530,6 @@
     font-size: 1.8vmin;
     margin: 0 0 0 1dvw;
     color: #11658C;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 .sidePanelFilterIcon{
@@ -659,11 +594,6 @@
     font-style: normal;
     font-size: 1.4vmin;
     white-space: nowrap;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
     margin: 0;
 }
 
@@ -677,11 +607,6 @@
 .sidePanelFilterName{
     font-size: 1.8vmin;
     font-weight: 400;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
     margin-left: 1dvh;
 }
 
@@ -732,20 +657,24 @@
     height: 8dvh;
 }
 
-.instructionStepsTitle{
-    display: block;
+.instructionStepsTitle, .instructionsStepsList, .instructionStepsItemTitle,
+.instructionStepsItemStandard, .instructionStepsItemHighlight, .infoStepNumber, 
+.navigationBarIconNumber{
+    display: inline;
     font-family: "Lato", sans-serif;
-    font-weight: 600;
     font-style: normal;
     font-size: 1.8vmin;
+}
+
+.instructionStepsTitle{
+    font-weight: 600;
     margin: 1dvh 0 0 0;
-    align-self:center;
     /*color: #004B70;*/
+    align-self:center;
     color:#AAD3DE;
 }
 
 .instructionStepsList{
-    font-size: 1.8vmin;
     margin: 1dvh 0 0 0;
     padding-left: 3ch;
     /*color: #030303;*/
@@ -753,30 +682,21 @@
 }
 
 .instructionStepsItemTitle{
-    font-family: "Lato", sans-serif;
     font-weight: 600;
-    font-style: normal;
-    font-size: 1.8vmin;
     /*color: #030303;*/
     color:#f7f7f7;
     margin: 0;
 }
 
 .instructionStepsItemStandard{
-    font-family: "Lato", sans-serif;
     font-weight: 400;
-    font-style: normal;
-    font-size: 1.8vmin;
     /*color: #030303;*/
     color:#f7f7f7;
     margin: 0;
 }
 
 .instructionStepsItemHighlight{
-    font-family: "Lato", sans-serif;
     font-weight: 600;
-    font-style: normal;
-    font-size: 1.8vmin;
     margin: 0;
     /*color: #004B70;*/
     color: #AAD3DE;
@@ -803,9 +723,7 @@
 
 .infoStepNumber{
     position: absolute;
-    font-family: "Lato", sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 1.5vmin;
     /*color: #f7f7f7;*/
     color:#004B70;
@@ -863,9 +781,7 @@
     transform: translate(-1.7dvh, 0.3dvh);
     opacity: 0;
     position: absolute;
-    font-family: "Lato", sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 1.5vmin;
     /*color: #f7f7f7;*/
     color:#004B70;
@@ -990,11 +906,6 @@
     font-style: normal;
     font-size: 1.1vmin;
     margin: 0;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 .sliderTitleWrapper{
@@ -1028,11 +939,6 @@
     font-style: normal;
     font-size: 1.5vmin;
     margin: 0;
-    /*Added to remove selection from drop down texts*/
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 .sliderIcon{
