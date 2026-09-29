@@ -1001,6 +1001,23 @@
     border-radius: 50%;
 }
 
+.selection-overview-header{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0.5dvh 0 0.5dvh 0;
+    justify-content: space-between;
+    border-top: 0.3dvh solid #e0e0e0;
+}
+
+.selection-overview-header img{
+    width: 2vmin;
+}
+
+.selection-overview-header h1{
+    width: unset;
+}
+
 /*Specific styling for tablet-sized devices*/
 @media (max-height: 1024px){
     .sidePanelPageContainer{margin-left: 2dvw;}

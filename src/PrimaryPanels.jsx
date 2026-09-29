@@ -15,6 +15,7 @@ import { registerInteraction, endSession } from './usageStatistics.js'
 import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable} from './popUpUtilites.js'
 
 import './PrimaryPanels.css'
+import { map } from 'd3';
 
 // Definition for the filter panel
 const fuelFilterDef = {
@@ -693,6 +694,7 @@ function PrimaryPanels() {
                     // Reorder header content
                     const popUpHeader = document.createElement("div")
                     popUpHeader.classList.add("pop-up-header")
+                    popUpHeader.style.marginBottom = "0.5dvh";
                     const popupTitle = contentElement.children[0]
                     
                     popUpHeader.appendChild(popupTitle)
@@ -700,12 +702,41 @@ function PrimaryPanels() {
                     contentElement.appendChild(popUpHeader)
 
                     var regionInfo = document.createElement("div")
-                    regionInfo.classList.add("pop-up-info", "noBorder")
+                    regionInfo.classList.add("pop-up-info", "noBorder", "hide")
 
                     var usageInfo = document.createElement("div")
-                    usageInfo.classList.add("pop-up-info", "noBorder")
+                    usageInfo.classList.add("pop-up-info", "noBorder", "hide")
 
+                    var regionDropDownHeader = document.createElement("div")
+                    regionDropDownHeader.classList.add("selection-overview-header")
+                    var usageDropDownHeader = document.createElement("div")
+                    usageDropDownHeader.classList.add("selection-overview-header")
+
+                    regionDropDownHeader.onclick = () => toggleSelectionDropDown(regionDropDownHeader)
+                    usageDropDownHeader.onclick = () => toggleSelectionDropDown(usageDropDownHeader)
+                    
+                    var rDropDownTitle = document.createElement("h1")
+                    var rDropDownIcon =document.createElement("img")
+                    var uDropDownTitle = document.createElement("h1")
+                    var uDropDownIcon =document.createElement("img")
+
+                    // Set header title and add open/clsoe image
+                    rDropDownTitle.textContent = "Electric Generation"
+                    rDropDownIcon.src = assetSources.sidePanelRollupOpen
+
+                    uDropDownTitle.textContent = "Usage Shares"
+                    uDropDownIcon.src = assetSources.sidePanelRollupOpen
+
+                    regionDropDownHeader.appendChild(rDropDownTitle)
+                    regionDropDownHeader.appendChild(rDropDownIcon)
+
+                    usageDropDownHeader.appendChild(uDropDownTitle)
+                    usageDropDownHeader.appendChild(uDropDownIcon)
+
+
+                    contentElement.appendChild(regionDropDownHeader)
                     contentElement.appendChild(regionInfo)
+                    contentElement.appendChild(usageDropDownHeader)
                     contentElement.appendChild(usageInfo)
 
                     createPopUpBarChart(contentElement,shownRegions[i].country, regionalData,fuelFilter, estimatedYears, assetSources,true)
@@ -1457,6 +1488,45 @@ function PrimaryPanels() {
             gsap.to(rollupIcon,
                 {rotationX: 0, duration: 0.6, ease: "power4.out"}
             )
+        }
+    }
+
+    function toggleSelectionDropDown(element){
+        const popUp = element.parentElement
+        const rollUpIcon = element.children[1]
+
+        const relevantInfo = () =>{
+            var elIndex = Array.from(element.parentNode.children).indexOf(element)
+            return popUp.children[elIndex +1]
+        } 
+        const eRelevant = relevantInfo()
+        const isOpen = !eRelevant.classList.contains("hide")
+
+        if(isOpen){
+            gsap.to(eRelevant,
+                { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
+                    onComplete: () => {;
+                        eRelevant.classList.toggle("hide");
+                    }
+                }
+            )
+            gsap.to(rollUpIcon,
+                {rotationX: 0, duration: 0.6, ease: "power4.out"}
+            )
+        }else{
+            gsap.fromTo(eRelevant,
+                { height: 0, opacity: 0 },
+                { height: "auto", opacity: 1, duration: 0.4, ease: "power4.out",
+                    onComplete: () => {
+                        gsap.set(eRelevant, { clearProps: "height" }) 
+                        mapRef.current?.panBy([0, 0], { duration: 1 })
+                    }
+                }
+            )
+            gsap.to(rollUpIcon,
+                {rotationX: 180, duration: 0.6, ease: "power4.out"}
+            )
+            eRelevant.classList.toggle("hide");
         }
     }
 
