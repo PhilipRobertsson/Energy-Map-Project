@@ -518,22 +518,26 @@ function PrimaryPanels() {
 
         for(let i = 0; i < popUpContents.length; i++){
             let popUp = popUpContents[i]?.parentElement;
-            if(!popUp.parentElement.classList.contains("maplibregl-popup-selection-info")){
-                let country = popUp.querySelector("h1").textContent
-                let countryData = regionalData.find(r => r.country_long === country)
-                if(countryData){
-                    let usageLC = countryData?.usage_shares?.[value]?.["LC"]
-                    let usageFF = countryData?.usage_shares?.[value]?.["FF"]
+            let country = popUp.querySelector("h1").textContent
+            let countryData = regionalData.find(r => r.country_long === country)
+            if(countryData){
+                let usageLC = countryData?.usage_shares?.[value]?.["LC"]
+                let usageFF = countryData?.usage_shares?.[value]?.["FF"]
+                let yearValue,LCValue,FFValue
+                if(!popUp.parentElement.classList.contains("maplibregl-popup-selection-info")){
+                    yearValue = popUpContents[i]?.querySelectorAll("strong")[0]
+                    LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
+                    FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
+                }else{
+                    const selectionContent = popUp.lastChild
 
-                    let YearValue = popUpContents[i]?.querySelectorAll("strong")[0]
-                    YearValue.textContent = "Usage Shares " + value + ": ";
-
-                    let LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
-                    LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
-
-                    let FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
-                    FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
-            }
+                    yearValue = selectionContent?.querySelectorAll("strong")[0]
+                    LCValue =  selectionContent?.querySelectorAll("span span")[0]
+                    FFValue =  selectionContent?.querySelectorAll("span span")[1]
+                }
+                yearValue.textContent = "Usage Shares " + value + ": ";
+                LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
+                FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
             }
         }
 
