@@ -12,7 +12,7 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
               handlePlayBackClick } from './eventHandlers.js'
 import { registerInteraction, endSession } from './usageStatistics.js'
-import {createPopUpBarChart, createPopUpUsagePlot} from './popUpUtilites.js'
+import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable} from './popUpUtilites.js'
 
 import './PrimaryPanels.css'
 
@@ -706,6 +706,7 @@ function PrimaryPanels() {
 
                     createPopUpBarChart(contentElement,shownRegions[i].country, regionalData,fuelFilter, estimatedYears, assetSources,true)
                     createPopUpUsagePlot(contentElement,shownRegions[i].country, regionalData, shareYears, true)
+                    makePopUpMovable(popup.getElement(),mapRef.current)
                 }
             }
 
