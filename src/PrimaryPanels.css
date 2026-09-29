@@ -1017,7 +1017,7 @@
     .instructionStepsItemTitle{font-size: 1.5vmin;}
     .instructionStepsItemStandard{font-size: 1.5vmin;}
     .instructionStepsItemHighlight{font-size: 1.5vmin;}
-    #navigationBarContainer{width: 27%;}
+    #navigationBarContainer{width: 100%;}
     #sidePanelFilterAndResetWrapper{flex-direction: row;}
     #filterCounter{font-size: 1vmin;}
     .sidePanelResetButton{padding: 0.5dvh; margin: 0 0.5dvw 0 0.5dvw;}
