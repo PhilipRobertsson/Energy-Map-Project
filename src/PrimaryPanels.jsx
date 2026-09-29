@@ -517,20 +517,22 @@ function PrimaryPanels() {
 
         for(let i = 0; i < popUpContents.length; i++){
             let popUp = popUpContents[i]?.parentElement;
-            let country = popUp.querySelector("h1").textContent
-            let countryData = regionalData.find(r => r.country_long === country)
-            if(countryData){
-                let usageLC = countryData?.usage_shares?.[value]?.["LC"]
-                let usageFF = countryData?.usage_shares?.[value]?.["FF"]
+            if(!popUp.parentElement.classList.contains("maplibregl-popup-selection-info")){
+                let country = popUp.querySelector("h1").textContent
+                let countryData = regionalData.find(r => r.country_long === country)
+                if(countryData){
+                    let usageLC = countryData?.usage_shares?.[value]?.["LC"]
+                    let usageFF = countryData?.usage_shares?.[value]?.["FF"]
 
-                let YearValue = popUpContents[i]?.querySelectorAll("strong")[0]
-                YearValue.textContent = "Usage Shares " + value + ": ";
+                    let YearValue = popUpContents[i]?.querySelectorAll("strong")[0]
+                    YearValue.textContent = "Usage Shares " + value + ": ";
 
-                let LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
-                LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
+                    let LCValue =  popUpContents[i]?.querySelectorAll("span span")[0]
+                    LCValue.textContent = (usageLC)? usageLC.toFixed(0) + "%" : "N/A"
 
-                let FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
-                FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
+                    let FFValue =  popUpContents[i]?.querySelectorAll("span span")[1]
+                    FFValue.textContent = (usageFF)? usageFF.toFixed(0) + "%" : "N/A"
+            }
             }
         }
 
