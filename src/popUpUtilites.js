@@ -5,9 +5,11 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
     const countryData = regionalData.find(r => r.country == country)
 
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    const contentWidth = Math.round(400*scale)
+    const contentWidth = selection ? Math.round(400*scale) : Math.round(390*scale)
 
-    const contentElement = parent.querySelectorAll(".pop-up-info")[0]
+    const contentElement = selection ? parent.querySelectorAll(".pop-up-info")[0] : document.createElement("div")
+    if(!selection){contentElement.classList.add("regional-overview-info", "hide")}
+
     const infoHeader = document.createElement("span")
     const infoTitle = document.createElement("strong")
     const infoValue = document.createElement("span")
@@ -35,7 +37,7 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
 
         const infoIcon = document.createElement("img")
         infoIcon.className = "regionalInfoIcon"
-        infoIcon.src = assetSources.infoIcon
+        infoIcon.src = selection ? assetSources.infoIcon : assetSources.popupInfo
         
         // Add tooltip
         const infoToolTip = document.createElement("div")
@@ -145,7 +147,8 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
 
     // Variables for D3 code
         const barChartContainer = document.createElement("div")
-        barChartContainer.classList.add("pop-up-selection-svg")
+        if(selection){barChartContainer.classList.add("pop-up-selection-svg")}
+        else{barChartContainer.classList.add("regional-overview-svg", "hide")}
         var barChartPadding = 0.2 
         var barHeight = Math.round(35 * scale)
         var barChartWidth = contentWidth
@@ -234,16 +237,17 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
             .style("font-family", "'Lato', sans-serif");
     
         contentElement.appendChild(barChartContainer)
+
+        if(!selection){return contentElement}
 }
 
 export function createPopUpUsagePlot(parent, country, regionalData, shareYears, selection){
-    const countryData = regionalData.find(r => r.country == country)
-    const usageShares = countryData.usage_shares
+    const usageShares = selection ? regionalData.find(r => r.country == country).usage_shares : JSON.parse(country.usageShares)
 
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
     const contentWidth = Math.round(400*scale)
 
-    const contentElement = parent.querySelectorAll(".pop-up-info")[1]
+    const contentElement = selection ? parent.querySelectorAll(".pop-up-info")[1] : parent
 
     const yearFilterEl = document.getElementById("shareYearFilterContainer")
     let year
@@ -284,10 +288,12 @@ export function createPopUpUsagePlot(parent, country, regionalData, shareYears, 
     const usageDiagram = document.createElement("div")
     usageDiagram.classList.add("pop-up-diagram")
       
-    const diagramWidth = contentWidth
+    const diagramWidth = selection ? contentWidth : Math.floor(420 * scale)
     const diagramHeight = Math.floor(210 * scale)
     
     drawUsageLinePlot(usageDiagram, diagramWidth, diagramHeight, [{ usage: usageShares }], "popUpUsagePlot", shareYears)
 
     contentElement.appendChild(usageDiagram)
+
+    if(!selection){return contentElement}
 }
