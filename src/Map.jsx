@@ -3,7 +3,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { gsap } from "gsap";
 
-import { createPopUpBarChart, createPopUpUsagePlot,makePopUpMovable } from "./popUpUtilites.js";
+import { createPopUpBarChart, createPopUpUsagePlot,getLatestDataArray,makePopUpMovable } from "./popUpUtilites.js";
 
 import './Map.css'
 
@@ -456,8 +456,15 @@ function Map({ children }) {
       // Attach the usage values to each boundary feature (matched by iso_a3)
       boundaryData.features.forEach(f => {
         const iso = f.properties.adm0_iso
-        const entry = regionalData.find(r => r.country == iso)
+        const altIso = f.properties.iso_a3
+        let entry = regionalData.find(r => r.country == iso)
+        if(!entry){ // Attempt to find country with other code
+          entry = regionalData.find(r => r.country == altIso)
+        } 
         f.properties.usageShares = {}
+        f.properties.highestFuelType = {}
+        f.properties.highestFuelType = (entry)?getLatestDataArray(estimatedYears,entry)[0].fuel : null
+
         for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
           f.properties.usageShares[i] = {}
           let usage = entry?.usage_shares?.[i]
@@ -470,6 +477,7 @@ function Map({ children }) {
       // Colour the countries based on the latest year of data by default
       const latestYear = dataYears[dataYears.length - 1]
       const usageColor = usageColourForYear(latestYear, dataYears, boundaryData)
+      const fuelTypeColor = getFuelTypeColor(boundaryData, colourData)
 
       // Add the power plant data as a source to the map
       map.addSource("powerplants", {
@@ -516,6 +524,31 @@ function Map({ children }) {
       // Hide usage layer by default
       map.getLayer("usage-fill").visibility = "none"
       map.getLayer("usage-border").visibility = "none"
+
+      // Create fuel type layer on the map, colours 
+      map.addLayer({
+        id: "fuelType-fill",
+        type: "fill",
+        source: 'countryboundaries',
+        paint: {
+          'fill-color': fuelTypeColor,
+          'fill-opacity': 0.5
+        }
+      })
+
+      map.addLayer({
+        id: "fuelType-border",
+        type: "line",
+        source: 'countryboundaries',
+        paint: {
+          'line-color': fuelTypeColor,
+          'line-width': 2
+        }
+      })
+
+      // Hide fuel type layer by default
+      map.getLayer("fuelType-fill").visibility = "none"
+      map.getLayer("fuelType-border").visibility = "none"
 
       // Create the power plants layer on the map, each circle is a power plant
       map.addLayer({
@@ -742,6 +775,23 @@ function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
 
 function getUsageInfo(feature, htmlElement, shareYears){
     return createPopUpUsagePlot(htmlElement, feature, null, shareYears, false)
+}
+
+export function getFuelTypeColor(boundaryData,colourData){
+  if(!boundaryData) return '#00000000'
+  return [
+    'match',
+      ['get', 'highestFuelType'],
+      'Coal', colourData[0].colour,
+      'Gas', colourData[1].colour,
+      'Oil', colourData[2].colour,
+      'Nuclear', colourData[3].colour,
+      'Hydro', colourData[4].colour,
+      'Wind', colourData[5].colour,
+      'Solar', colourData[6].colour,
+      'Other', colourData[7].colour,
+      '#00000000' // Fallback color for missing or unmatched fuel types
+  ]
 }
 
 export function usageColourForYear(year, years, boundaryData){

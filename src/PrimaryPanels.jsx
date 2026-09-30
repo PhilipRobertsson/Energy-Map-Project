@@ -194,7 +194,7 @@ function PrimaryPanels() {
             // Reset the map mode to "Power Plants" (sets the selected class / colours and map layers)
             const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
                 .find(button => button.querySelector("span")?.textContent === "Power Plants")
-            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
+            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
 
             setRegionFilterTo(["SWE"])
             mapRef.current?.flyTo({
@@ -307,7 +307,7 @@ function PrimaryPanels() {
                     break;
             }
             toggleButton.appendChild(toggleText);
-            toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef)
+            toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef, regionFilter)
 
             if(toggleText.textContent === selectedModeName){
                 toggleButton.classList.add("selectedMapMode");
@@ -573,6 +573,16 @@ function PrimaryPanels() {
     useEffect(()=>{
         if(!regionFilter) return;
 
+        // Set visibility for a set of layer ids
+        const setVisibility = (layerIds, visibility) => {
+            layerIds.forEach(id => {
+                if (mapRef.current.getLayer(id)) mapRef.current.setLayoutProperty(id, "visibility", visibility)
+            })
+        }
+        const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Power Plants")
+        const powerPlantsSelected = powerPlantsButton?.classList.contains("selectedMapMode")
+
         const mainDiagram = document.getElementById("sidePanelLinePlot")
 
         // Check settings of the main diagram and update texts
@@ -595,6 +605,11 @@ function PrimaryPanels() {
                     gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
             })
 
+            if(powerPlantsSelected){
+                setVisibility(["fuelType-fill","fuelType-border"], "visible")
+                setVisibility(["powerplants-layer"], "none")
+            }
+
             if(shownRegions.length == regionFilter.length){ // Global option selected
                 mainTitle.textContent = "Global Electricity Source Trends"
                 altMainTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
@@ -608,6 +623,12 @@ function PrimaryPanels() {
                 else{boldText.textContent = continent + "'s power plant capacity by source "}
             }
         }else{ // User has selected a country or used the storymode
+
+            if(powerPlantsSelected){
+                setVisibility(["fuelType-fill","fuelType-border"], "none")
+                setVisibility(["powerplants-layer"], "visible")
+            }
+
             if(shownRegions <= 0) return; // Just to be sure undefined objects aren't checked
             let titleToShow = ""
             shownRegions.forEach((r, id) =>{
@@ -647,6 +668,10 @@ function PrimaryPanels() {
                 if(!isOpen(shownRegions[i].country_long)){
                     // Don't create new pop-up if desired to open already exsists
                     let bounds = boundaryData.features.find(b=>b.properties.adm0_iso == shownRegions[i].country)
+                    if(!bounds){ // Attempt to find country with other code
+                        bounds = boundaryData.features.find(b=>b.properties.iso_a3 == shownRegions[i].country)
+                    }
+                    if(!bounds) return;
                     let coordinates = [bounds.properties.label_x, bounds.properties.label_y]
                 
                     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
@@ -945,11 +970,17 @@ function PrimaryPanels() {
     // Update map layer filter
     useEffect(() => {
         const toFilter = mapRef.current;
-        if (!toFilter || !toFilter.getLayer("powerplants-layer") || !fuelFilter.length || !regionFilter.length) return;
+        if (!toFilter ||
+            !toFilter.getLayer("powerplants-layer") ||
+            !toFilter.getLayer("fuelType-fill") ||
+            !toFilter.getLayer("fuelType-border") ||
+            !fuelFilter.length || !regionFilter.length
+        ) return;
         const shownFuels = fuelFilter.filter(f => f.show).map(f => f.fuel);
         const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
 
         const filters = ["all"];
+        const fuelTypeFitlers = ["all"];
 
         if (shownFuels.length < fuelFilter.length) {
             const matchFuels = shownFuels.flatMap(f => f === "Other" ? [...otherFuels] : [f]);
@@ -957,6 +988,7 @@ function PrimaryPanels() {
         }
         if (shownRegions.length < regionFilter.length) {
             filters.push(["in", ["get", "country"], ["literal", [...shownRegions]]]);
+            fuelTypeFitlers.push(['any',["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]],["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]]);
         }
         if (yearFilter.length === 2) {
             const [values, bounds] = yearFilter
@@ -978,6 +1010,15 @@ function PrimaryPanels() {
         } else {
             toFilter.setFilter("powerplants-layer", filters);
         }
+
+        if(fuelTypeFitlers.length === 1){
+            toFilter.setFilter("fuelType-fill", null);
+            toFilter.setFilter("fuelType-border", null);
+        }else{
+            toFilter.setFilter("fuelType-fill", fuelTypeFitlers);
+            toFilter.setFilter("fuelType-border", fuelTypeFitlers);
+        }
+
     }, [fuelFilter, regionFilter, yearFilter, generationFilter, mapRef, mapReady]);
 
     // Update alternative map layer filters
@@ -1003,7 +1044,7 @@ function PrimaryPanels() {
         }
 
         if (shownRegions.length < regionFilter.length) {
-            LCfilters.push(["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]]);
+            LCfilters.push(['any',["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]],["in", ["get", "iso_a3"], ["literal", [...shownRegions]]]]);
         }
 
         if (LCfilters.length === 1) {
@@ -1122,42 +1163,39 @@ function PrimaryPanels() {
 
                 const currentSelectionButton = document.querySelectorAll(".mapToggleButton.selectedMapMode")
 
-                const lowCarbonUsageButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Low Carbon Usage")
-
-                const fossilFuelUsageButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Fossil Fuel Usage")
+                const usageButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Energy Usage")
 
                 switch(sidePanelPage.id){
                     case 2: // First instructions page
                         setRegionFilterTo(["SWE", "NOR"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
                         break;
                     case 3: // Second instructions page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
                         break;
                     case 4: // Third instruction page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
                         break;
                     case 5: // Fourth instructions page
                         setRegionFilterTo(["SWE", "DNK"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
                         break;
                     case 6: // Fifth instructions page
                         setRegionFilterTo(["SWE", "FIN"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if(lowCarbonUsageButton) handleMapModeToggle(lowCarbonUsageButton, mapRef)
+                        if(usageButton) handleMapModeToggle(usageButton, mapRef, regionFilter)
                         break;
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
@@ -1170,7 +1208,7 @@ function PrimaryPanels() {
                                 curve: 1.4
                             });
                             // Keep user selection for switch to home and info pages
-                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef)
+                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef, regionFilter)
                         }
                 }
             }

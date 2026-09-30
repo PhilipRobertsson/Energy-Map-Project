@@ -1,61 +1,9 @@
 import * as d3 from "d3";
 import { drawUsageLinePlot} from './sidePanelUtilities.js'
 
-export function createPopUpBarChart(parent, country, regionalData,fuelFilter, estimatedYears, assetSources, selection){
-    const countryData = regionalData.find(r => r.country == country)
-
-    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
-    const contentWidth = selection ? Math.round(400*scale) : Math.round(390*scale)
-
-    const contentElement = selection ? parent.querySelectorAll(".pop-up-info")[0] : document.createElement("div")
-    if(!selection){contentElement.classList.add("regional-overview-info", "hide")}
-
-    const infoHeader = document.createElement("span")
-    const infoTitle = document.createElement("strong")
-    const infoValue = document.createElement("span")
-
-    var latestDataYear = 0
-    var latestDataValue = 0
-    for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
-        var tempEstimated = eval("countryData.regional_annual_output.estimated_generation_gwh_" + i)
-       if(tempEstimated != null){
-        latestDataYear = i
-        latestDataValue = tempEstimated
-        break;
-       }
-    }
-
-    infoTitle.textContent = "Generation " + `${(latestDataYear==0)? "Data Not available" :":"}`
-    infoValue.textContent = `${(latestDataValue==0)? "" : Math.round(latestDataValue*100)/100 + " GWh"}`
-    
-    infoHeader.appendChild(infoTitle)
-    infoHeader.appendChild(infoValue)
-
-    if(infoTitle.textContent !== "Generation Data Not available"){
-        const infoWrapper = document.createElement("span")
-        infoWrapper.className = "regionalInfoWrapper"
-
-        const infoIcon = document.createElement("img")
-        infoIcon.className = "regionalInfoIcon"
-        infoIcon.src = selection ? assetSources.infoIcon : assetSources.popupInfo
-        
-        // Add tooltip
-        const infoToolTip = document.createElement("div")
-        infoToolTip.className = "generationInfoTooltip"
-        const infoToolTipText = document.createElement("span")
-        infoToolTipText.className = "generationInfoTooltipText"
-        infoToolTipText.textContent = "Estimated annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
-        
-        infoToolTip.appendChild(infoToolTipText)
-        infoWrapper.appendChild(infoIcon)
-        infoWrapper.appendChild(infoToolTip)
-        infoHeader.appendChild(infoWrapper)
-    }
-
-    contentElement.appendChild(infoHeader)
-
+export function getLatestDataArray(years, countryData){
     var latestData = {}
-    for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
+    for(var i = years.last; i >=years.first; i--){
         var tempEstimated = eval("countryData.annual_output_by_fuel.estimated_generation_gwh_" + i)
 
         // Removes null items from the object
@@ -126,6 +74,64 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
     
     // Sort the array
     latestDataArray.sort((a,b) => b.value - a.value)
+
+    return latestDataArray
+}
+
+export function createPopUpBarChart(parent, country, regionalData,fuelFilter, estimatedYears, assetSources, selection){
+    const countryData = regionalData.find(r => r.country == country)
+
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+    const contentWidth = selection ? Math.round(400*scale) : Math.round(390*scale)
+
+    const contentElement = selection ? parent.querySelectorAll(".pop-up-info")[0] : document.createElement("div")
+    if(!selection){contentElement.classList.add("regional-overview-info", "hide")}
+
+    const infoHeader = document.createElement("span")
+    const infoTitle = document.createElement("strong")
+    const infoValue = document.createElement("span")
+
+    var latestDataYear = 0
+    var latestDataValue = 0
+    for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
+        var tempEstimated = eval("countryData.regional_annual_output.estimated_generation_gwh_" + i)
+       if(tempEstimated != null){
+        latestDataYear = i
+        latestDataValue = tempEstimated
+        break;
+       }
+    }
+
+    infoTitle.textContent = "Generation " + `${(latestDataYear==0)? "Data Not available" :":"}`
+    infoValue.textContent = `${(latestDataValue==0)? "" : Math.round(latestDataValue*100)/100 + " GWh"}`
+    
+    infoHeader.appendChild(infoTitle)
+    infoHeader.appendChild(infoValue)
+
+    if(infoTitle.textContent !== "Generation Data Not available"){
+        const infoWrapper = document.createElement("span")
+        infoWrapper.className = "regionalInfoWrapper"
+
+        const infoIcon = document.createElement("img")
+        infoIcon.className = "regionalInfoIcon"
+        infoIcon.src = selection ? assetSources.infoIcon : assetSources.popupInfo
+        
+        // Add tooltip
+        const infoToolTip = document.createElement("div")
+        infoToolTip.className = "generationInfoTooltip"
+        const infoToolTipText = document.createElement("span")
+        infoToolTipText.className = "generationInfoTooltipText"
+        infoToolTipText.textContent = "Estimated annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
+        
+        infoToolTip.appendChild(infoToolTipText)
+        infoWrapper.appendChild(infoIcon)
+        infoWrapper.appendChild(infoToolTip)
+        infoHeader.appendChild(infoWrapper)
+    }
+
+    contentElement.appendChild(infoHeader)
+
+    const latestDataArray = getLatestDataArray(estimatedYears, countryData)
 
     // Finds the max value in the data
     const findMax = (data) =>{
