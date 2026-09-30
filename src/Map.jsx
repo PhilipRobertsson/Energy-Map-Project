@@ -469,8 +469,7 @@ function Map({ children }) {
 
       // Colour the countries based on the latest year of data by default
       const latestYear = dataYears[dataYears.length - 1]
-      const lowCarbonColor = lowCarbonColorForYear(latestYear,dataYears, boundaryData)
-      const fossilFuelColor = fossilFuelColorForYear(latestYear,dataYears, boundaryData)
+      const usageColor = usageColourForYear(latestYear, dataYears, boundaryData)
 
       // Add the power plant data as a source to the map
       map.addSource("powerplants", {
@@ -486,55 +485,37 @@ function Map({ children }) {
 
       // Create country boundaries layer on the map, each polygon is a country
       map.addLayer({
-        id: "lowCarbon-fill",
-        type: "fill",
-        source: "countryboundaries",
+        id: 'usage-fill',
+        type: 'fill',
+        source:'countryboundaries',
         paint: {
-          'fill-color': lowCarbonColor,
-          'fill-opacity': 0.4
+          'fill-color': usageColor,
+          'fill-opacity': 0.6
         }
-      }).on('click', 'lowCarbon-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
+      }).on('click', 'usage-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
             displayInformation(e, false)
       });
 
       map.addLayer({
-        id: 'lowCarbon-border',
+        id: 'usage-border',
         type: 'line',
         source: 'countryboundaries',
         paint: {
-          'line-color': lowCarbonColor,
-          'line-width': 2 // Set your desired border thickness here
+          'line-color': usageColor,
+          'line-width': 2
         }
       });
 
-      map.addLayer({
-        id: "fossilFuel-fill",
-        type: "fill",
-        source: "countryboundaries",
-        paint: {
-          'fill-color': fossilFuelColor,
-          'fill-opacity': 0.4
-        }
-      }).on('click', 'fossilFuel-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
-            displayInformation(e, false)
+      map.on('mouseenter', 'usage-fill', () => { // Relevant for screens with mouse input, make the mouse a pointer if hovered
+            map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'usage-fill', () => { // Relevant for screens with mouse input, remove cursor style when mouse leaves feature
+            map.getCanvas().style.cursor = '';
       });
 
-      map.addLayer({
-        id: 'fossilFuel-border',
-        type: 'line',
-        source: 'countryboundaries',
-        paint: {
-          'line-color': fossilFuelColor,
-          'line-width': 2 // Set your desired border thickness here
-        }
-      });
-
-      // Hide fossil fuel and low carbon layers by default
-      map.getLayer("lowCarbon-fill").visibility = "none"
-      map.getLayer("lowCarbon-border").visibility = "none"
-      map.getLayer("fossilFuel-fill").visibility = "none"
-      map.getLayer("fossilFuel-border").visibility = "none"
-
+      // Hide usage layer by default
+      map.getLayer("usage-fill").visibility = "none"
+      map.getLayer("usage-border").visibility = "none"
 
       // Create the power plants layer on the map, each circle is a power plant
       map.addLayer({
@@ -763,45 +744,198 @@ function getUsageInfo(feature, htmlElement, shareYears){
     return createPopUpUsagePlot(htmlElement, feature, null, shareYears, false)
 }
 
-// Build a paint expression that colours each country by its low-carbon usage
-// for the given year, interpolating between that year's min and max values.
-export function lowCarbonColorForYear(year, years, boundaryData){
-    if (!boundaryData) return '#00000000'
-    const key = String(year)
-    let min = Infinity, max = -Infinity
-    boundaryData.features.forEach(f => {
-        years.forEach(y=>{
-          const LC = f.properties.usageShares?.[String(y)]?.LC
-          if (LC != null) { min = Math.min(min, LC); max = Math.max(max, LC) }
-        })
-    })
-    if (min === max || max === -Infinity) return '#00000000'
-    return [
-        'case',
-        ['==', ['get', 'LC', ['get', key, ['get', 'usageShares']]], null],
-        '#00000000',
-        ['interpolate', ['linear'], ['get', 'LC', ['get', key, ['get', 'usageShares']]], min, '#0c1900', max, '#01ff12']
-    ]
-}
+export function usageColourForYear(year, years, boundaryData){
+  if(!boundaryData) return '#00000000'
+  const key = String(year)
+  let minFF = Infinity, maxFF = -Infinity
+  let minLC = Infinity, maxLC = -Infinity
 
-// Same as above, but for fossil fuel usage.
-export function fossilFuelColorForYear(year, years, boundaryData){
-    if (!boundaryData) return '#00000000'
-    const key = String(year)
-    let min = Infinity, max = -Infinity
-    boundaryData.features.forEach(f => {
-        years.forEach(y=>{
-          const FF = f.properties.usageShares?.[String(y)]?.FF
-          if (FF != null) { min = Math.min(min, FF); max = Math.max(max, FF) }
-        })
+  boundaryData.features.forEach(f =>{
+    years.forEach(y=>{
+      const FF = f.properties.usageShares?.[String(y)]?.FF
+      const LC = f.properties.usageShares?.[String(y)]?.LC
+
+      if(FF != null) {minFF = Math.min(minFF,FF); maxFF = Math.max(maxFF,FF)}
+      if(LC != null) {minLC = Math.min(minLC,LC); maxLC = Math.max(maxLC,LC)}
     })
-    if (min === max || max === -Infinity) return '#00000000'
-    return [
+  })
+  // LC data is singular or missing 
+  if (minLC === maxLC || maxLC === -Infinity){
+    if (minFF === maxFF || maxFF === -Infinity) return '#00000000'; // FF data is also singular or missing 
+    else return [ // FF data exists, use previous colouring function
         'case',
         ['==', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null],
         '#00000000',
-        ['interpolate', ['linear'], ['get', 'FF', ['get', key, ['get', 'usageShares']]], min, '#200000', max, '#ff1900']
+        ['interpolate', ['linear'], ['get', 'FF', ['get', key, ['get', 'usageShares']]], minFF, '#ffffbf', maxFF, '#ed0e12']
     ]
+  }
+
+  // FF data is singular or missing 
+  if (minFF === maxFF || maxFF === -Infinity){
+    if (minLC === maxLC || maxLC === -Infinity) return '#00000000'; // LC data is also singular or missing 
+    else return [ // LC data exists, use previous colouring function
+        'case',
+        ['==', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null],
+        '#00000000',
+        ['interpolate', ['linear'], ['get', 'LC', ['get', key, ['get', 'usageShares']]], minLC, '#ffffbf', maxLC, '#13d651']
+    ]
+  }
+
+  // Min and max values could be found for both datasets
+  return [
+    'case',
+    ['all', // Both values are equal to null
+      ['==',['get', 'LC', ['get', key, ['get', 'usageShares']]], null],
+      ['==', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null]
+    ],
+      '#00000000', // LC and FF are missing for the given year
+    ['all', // LC equal to null, FF different from null
+      ['==', ['get', 'LC', ['get', key, ['get', 'usageShares']]], null],
+      ['!=', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null]
+    ],
+      ['case',
+        ['<=',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          20
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+              0, '#1b5e39', 20, '#5fa675'
+          ],
+        ['<',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          40
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+              20, '#5fa675', 40, '#f3db5e'
+          ],
+        ['<',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          60
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+              40, '#f3db5e', 60, '#e68a47 '
+          ],
+        ['<',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+              60, '#e68a47', 80, '#c93b2b '
+          ],
+        ['>=',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          '#c93b2b ',
+        '#00000000'
+      ],
+    ['all', // LC different from null, FF equal to null
+      ['!=', ['get', 'LC', ['get', key, ['get', 'usageShares']]], null],
+      ['==', ['get', 'FF', ['get', key, ['get', 'usageShares']]], null]
+    ],
+      ['case',
+        ['<=',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          20
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+              0, '#c93b2b ', 20, '#e68a47'
+          ],
+        ['<',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          40
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+              20, '#e68a47', 40, '#f3db5e'
+          ],
+        ['<',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          60
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+              40, '#f3db5e', 60, '#5fa675'
+          ],
+        ['<',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+              60, '#5fa675', 80, '#1b5e39'
+          ],
+        ['>=',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          '#1b5e39',
+        '#00000000'
+      ],
+    ['>=', // LC value larger or equal to FF
+      ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+      ['get', 'FF', ['get', key, ['get', 'usageShares']]]
+    ],
+      ['case',
+        ['<=',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          60
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+              50, '#f3db5e', 60, '#5fa675'
+          ],
+        ['<',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+              60, '#5fa675', 80, '#1b5e39'
+          ],
+        ['>=',
+          ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          '#1b5e39',
+        '#00000000'
+      ],
+    ['<', // LC value smaller than FF
+      ['get', 'LC', ['get', key, ['get', 'usageShares']]],
+      ['get', 'FF', ['get', key, ['get', 'usageShares']]]
+    ],
+      ['case',
+        ['<=',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          60
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+              50, '#f3db5e', 60, '#e68a47 '
+          ],
+        ['<',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          ['interpolate', ['linear'],
+            ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+              60, '#e68a47', 80, '#c93b2b '
+          ],
+        ['>=',
+          ['get', 'FF', ['get', key, ['get', 'usageShares']]],
+          80
+        ],
+          '#c93b2b ',
+        '#00000000'
+      ],
+    '#00000000' // Fallback (unreachable, required by 'case' to have an odd number of arguments)
+  ]
+
 }
 
 export default Map;

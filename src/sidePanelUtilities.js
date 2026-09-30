@@ -840,42 +840,28 @@ export function createDiagram({
     return container
 }
 
-export function createUsageGradient(container, colours, regionalData, mapMode){
-
-    // Assumes the low carbon and fossil fuel usage data has the same lenghts
-    const usageKeys = Object.keys(regionalData[0].usage_shares)
-    const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
-
-    let minUsage = Infinity
-    let maxUsage = -Infinity
-    regionalData.forEach(r => {
-        for(let i = dataYears[0]; i <= dataYears[dataYears.length-1]; i++){
-            const usage = (mapMode == "LC")? r.usage_shares?.[i]?.LC : r.usage_shares?.[i]?.FF
-
-            if (usage != null) {
-                if (usage < minUsage) minUsage = usage.toFixed(2)
-                if (usage > maxUsage) maxUsage = usage.toFixed(2)
-            }
-        }
-    })
-
-    //console.log(mapMode + ": (Min: " + minUsage + ", Max: " + maxUsage + ")")
+export function createUsageGradient(container, colours){
 
     const gradientHeight = "24dvh"
-    const pixelHeight = Math.floor((window.innerHeight*0.24))
 
     const legend = document.createElement("div");
     legend.classList.add("gradientLegend")
     legend.style.height = gradientHeight
-    legend.style.background = `linear-gradient(0deg, ${colours[0]} 0%, ${colours[1]} 100%)`
+    legend.style.background = `linear-gradient(0deg,
+        ${colours[0]} 0%,
+        ${colours[1]} 20%,
+        ${colours[2]} 40%,
+        ${colours[3]} 60%,
+        ${colours[4]} 80%
+    )`
 
     const tickContainer = document.createElement("div");
     tickContainer.classList.add("gradientTickContainer");
     tickContainer.style.height = gradientHeight
 
-    const nTicks = 8 // Same as the number of fuel filter entries
-    const stepLength = (maxUsage-minUsage)/(nTicks-1)
-    const tickValues = Array.from({ length: nTicks }, (value, index) => (maxUsage - (stepLength * index)).toFixed(0))
+    const nTicks = 6 // Same as the number of fuel filter entries
+    const stepLength = (100)/(nTicks-1)
+    const tickValues = Array.from({ length: nTicks }, (value, index) => (100 - (stepLength * index)).toFixed(0))
     for(let i = 0; i < nTicks; i++){
         const tick = document.createElement("spin");
         tick.classList.add("gradientTick");

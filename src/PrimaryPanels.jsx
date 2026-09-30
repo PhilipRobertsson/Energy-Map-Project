@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useContext, createElement } from 'react'
 import maplibregl from "maplibre-gl";
 import { gsap } from "gsap";
 
-import { MapContext, lowCarbonColorForYear, fossilFuelColorForYear } from './Map.jsx'
+import { MapContext, usageColourForYear } from './Map.jsx'
 import { createDiagram, getShownRegionFuelData, formatPowerOf10, getLatestGenerationValue,
               otherFuels, drawLinePlot, drawBarChart, drawUsageLinePlot, getDropDown, createUsageGradient, 
               getShownRegionUsage} from './sidePanelUtilities.js'
@@ -293,7 +293,7 @@ function PrimaryPanels() {
         const currentSelection = filter.querySelector(".selectedMapMode");
         const selectedModeName = currentSelection ? currentSelection.querySelector("span").textContent : "Power Plants";
 
-        for(let i = 0; i<3;i++){
+        for(let i = 0; i<2;i++){
             let toggleButton = document.createElement("div");
             toggleButton.classList.add("mapToggleButton");
 
@@ -303,10 +303,7 @@ function PrimaryPanels() {
                     toggleText.textContent = "Power Plants"
                     break;
                 case 1:
-                    toggleText.textContent = "Low Carbon Usage"
-                    break;
-                case 2:
-                    toggleText.textContent = "Fossil Fuel Usage"
+                    toggleText.textContent = "Energy Usage"
                     break;
             }
             toggleButton.appendChild(toggleText);
@@ -329,13 +326,9 @@ function PrimaryPanels() {
         const legendContainer = document.createElement("div")
         legendContainer.classList.add("fuelFilterContent")
 
-        let lowCarbonContainer = document.createElement("div")
-        lowCarbonContainer = createUsageGradient(lowCarbonContainer, ["#0c1900", "#01ff12"], regionalData, "LC")
-        lowCarbonContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
-
-        let fossilFuelContainer = document.createElement("div")
-        fossilFuelContainer = createUsageGradient(fossilFuelContainer, ["#200000", "#ff1900"], regionalData, "FF")
-        fossilFuelContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
+        let usageContainer = document.createElement("div")
+        usageContainer = createUsageGradient(usageContainer, ["#c93b2b", "#e68a47", "#f3db5e", "#5fa675", "#1b5e39"])
+        usageContainer.classList.add("fuelFilterContent", "gradientContainer", "hide")
 
         // Create colour legends for each fuel available
         for(let i = 0; i < fuelFilter.length; i++){
@@ -371,8 +364,7 @@ function PrimaryPanels() {
         }
 
         filter.appendChild(legendContainer)
-        filter.appendChild(lowCarbonContainer)
-        filter.appendChild(fossilFuelContainer)
+        filter.appendChild(usageContainer)
         filter.appendChild(mapToggleButtonContainer)
         filter.appendChild(controlContainer) // Append control panel to filter panel
     }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
@@ -993,15 +985,12 @@ function PrimaryPanels() {
         const toFilter = mapRef.current;
         if (
             !toFilter ||
-            !toFilter.getLayer("lowCarbon-fill") ||
-            !toFilter.getLayer("lowCarbon-border") ||
-            !toFilter.getLayer("fossilFuel-fill") ||
-            !toFilter.getLayer("fossilFuel-border") ||
-            !shareYearFilter.length || !LCShareFilter.length || !FFShareFilter.length
+            !toFilter.getLayer("usage-fill") ||
+            !toFilter.getLayer("usage-border") ||
+            !shareYearFilter.length || !LCShareFilter.length
         ) return;
 
         const LCfilters = ["all"];
-        const FFfilters = ["all"];
         const key = String(shareYearFilter[0])
         const shownRegions = regionFilter.filter(r => r.show).map(r => r.country);
 
@@ -1013,46 +1002,26 @@ function PrimaryPanels() {
             }
         }
 
-        if (FFShareFilter.length === 2) {
-            const [values, bounds] = FFShareFilter
-            if (values[0] !== bounds[0] || values[1] !== bounds[1]) {
-                FFfilters.push([">=", ["to-number", ['get', 'FF', ['get', key, ['get', 'usageShares']]]], values[0]]);
-                FFfilters.push(["<=", ["to-number", ['get', 'FF', ['get', key, ['get', 'usageShares']]]], values[1]]);
-            }
-        }
-
         if (shownRegions.length < regionFilter.length) {
             LCfilters.push(["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]]);
-            FFfilters.push(["in", ["get", "adm0_iso"], ["literal", [...shownRegions]]]);
         }
 
         if (LCfilters.length === 1) {
-            toFilter.setFilter("lowCarbon-fill", null);
-            toFilter.setFilter("lowCarbon-border", null);
+            toFilter.setFilter("usage-fill", null);
+            toFilter.setFilter("usage-border", null);
         } else {
-            toFilter.setFilter("lowCarbon-fill", LCfilters);
-            toFilter.setFilter("lowCarbon-border", LCfilters);
-        }
-
-        if(FFfilters.length === 1){
-            toFilter.setFilter("fossilFuel-fill", null);
-            toFilter.setFilter("fossilFuel-border", null);
-        }else{
-            toFilter.setFilter("fossilFuel-fill", FFfilters);
-            toFilter.setFilter("fossilFuel-border", FFfilters);
+            toFilter.setFilter("usage-fill", LCfilters);
+            toFilter.setFilter("usage-border", LCfilters);
         }
 
         // Recolour the low carbon / fossil fuel layers based on the selected share year.
         // The year is not used to filter countries, only to pick which usage values colour them.
         if (shareYearFilter.length === 2 && boundaryData) {
             const year = shareYearFilter[0]
-            const lowCarbonColor = lowCarbonColorForYear(year,shareYearFilter[1], boundaryData)
-            const fossilFuelColor = fossilFuelColorForYear(year,shareYearFilter[1], boundaryData)
+            const usageColor = usageColourForYear(year, shareYearFilter[1], boundaryData)
 
-            toFilter.setPaintProperty("lowCarbon-fill", "fill-color", lowCarbonColor)
-            toFilter.setPaintProperty("lowCarbon-border", "line-color", lowCarbonColor)
-            toFilter.setPaintProperty("fossilFuel-fill", "fill-color", fossilFuelColor)
-            toFilter.setPaintProperty("fossilFuel-border", "line-color", fossilFuelColor)
+            toFilter.setPaintProperty("usage-fill", "fill-color", usageColor)
+            toFilter.setPaintProperty("usage-border", "line-color", usageColor)
         }
     }, [regionFilter, shareYearFilter, LCShareFilter, FFShareFilter, mapRef, mapReady, boundaryData])
 

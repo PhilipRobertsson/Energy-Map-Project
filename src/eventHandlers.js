@@ -446,26 +446,11 @@ export function handleMapModeToggle(element, mapRef){
             handleResetClick(null, "close", null)
 
             break;
-        case "Low Carbon Usage":
-            setVisibility(["lowCarbon-fill", "lowCarbon-border"], "none")
+        case "Energy Usage":
+            setVisibility(["usage-fill", "usage-border"], "none")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")
-
-            // Diagram specific elements
-            diagramHeader.querySelector("#linePlotAltHeader").style.display = "none"
-            altDiagramBody.style.display = "none"
-            if(compDiagramHeader){
-                compDiagramHeader.querySelector("#compLinePlotAltHeader").style.display = "none"
-                compaAltDiagramBody.style.display = "none"
-            }
-
-            break;
-        case "Fossil Fuel Usage":
-            setVisibility(["fossilFuel-fill", "fossilFuel-border"], "none")
-            fuelFilterContents[2].classList.toggle("hide")
-            filterContainers[1].classList.toggle("hide")
-            filterContainers[4].classList.toggle("hide")
 
             // Diagram specific elements
             diagramHeader.querySelector("#linePlotAltHeader").style.display = "none"
@@ -500,26 +485,11 @@ export function handleMapModeToggle(element, mapRef){
             handleResetClick(null, "close", null)
 
             break;
-        case "Low Carbon Usage":
-            setVisibility(["lowCarbon-fill", "lowCarbon-border"], "visible")
+        case "Energy Usage":
+            setVisibility(["usage-fill", "usage-border"], "visible")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")
-
-            // Diagram specific elements
-            diagramHeader.querySelector("#linePlotAltHeader").style.display = "flex"
-            altDiagramBody.style.display = "flex"
-            if(compDiagramHeader){
-                compDiagramHeader.querySelector("#compLinePlotAltHeader").style.display = "flex"
-                compaAltDiagramBody.style.display = "flex"
-            }
-
-            break;
-        case "Fossil Fuel Usage":
-            setVisibility(["fossilFuel-fill", "fossilFuel-border"], "visible")
-            fuelFilterContents[2].classList.toggle("hide")
-            filterContainers[1].classList.toggle("hide")
-            filterContainers[4].classList.toggle("hide")
 
             // Diagram specific elements
             diagramHeader.querySelector("#linePlotAltHeader").style.display = "flex"
