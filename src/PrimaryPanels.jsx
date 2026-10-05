@@ -15,7 +15,6 @@ import { registerInteraction, endSession } from './usageStatistics.js'
 import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable, toggleSelectionDropDown} from './popUpUtilites.js'
 
 import './PrimaryPanels.css'
-import { map } from 'd3';
 
 // Definition for the filter panel
 const fuelFilterDef = {
