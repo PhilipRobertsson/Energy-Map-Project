@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef, use } from "react";
+import { createContext, useState, useEffect, useRef, use, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { gsap } from "gsap";
@@ -214,6 +214,12 @@ function Map({ children }) {
   const [mapReady, setMapReady] = useState(false);
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
+  const fuelTypeSelectedCountries = useRef([]);
+  const fuelTypeBaseFilter = useRef(undefined);
+  const clearFuelTypeSelection = useCallback(() => {
+    fuelTypeSelectedCountries.current = []
+    fuelTypeBaseFilter.current = undefined
+  }, [])
   const [time, setTime] = useState(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET);
   const [referenceTime, setReferenceTime] = useState(Date.now());
 
@@ -484,6 +490,30 @@ function Map({ children }) {
                 entry = regionalData.find(r => r.country == altIso)
               } 
               
+              const selectedCountries = fuelTypeSelectedCountries.current
+              if (iso && !selectedCountries.includes(iso)) {
+                  selectedCountries.push(iso)
+              }
+              const selectedList = [...selectedCountries]
+
+              if (fuelTypeBaseFilter.current === undefined) {
+                  fuelTypeBaseFilter.current = map.getFilter("fuelType-fill") ?? null
+              }
+
+              const exclusion = [
+                  ["!", ["in", ["get", "adm0_iso"], ["literal", selectedList]]],
+                  ["!", ["in", ["get", "iso_a3"], ["literal", selectedList]]],
+              ]
+
+              const fuelTypeFilter = fuelTypeBaseFilter.current
+                  ? ["all", fuelTypeBaseFilter.current, ...exclusion]
+                  : ["all", ...exclusion]
+
+              map.setFilter("fuelType-fill", fuelTypeFilter)
+              map.setFilter("fuelType-border", fuelTypeFilter)
+              map.setLayoutProperty("powerplants-layer", "visibility", "visible")
+              map.setFilter("powerplants-layer", ["in", ["get", "country"], ["literal", selectedList]])
+
               createPopUpBarChart(contentElement,entry.country, regionalData,colourData, estimatedYears, assetSources.popupInfo,true)
               createPopUpUsagePlot(contentElement,entry.country, regionalData, shareYears, true)
               break;
@@ -723,7 +753,8 @@ function Map({ children }) {
     <MapContext.Provider value={{ mapRef: mapInstance, powerPlants: data, boundaryData,
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
-                                                    reportedYears, estimatedYears, shareYears, mapReady }}>
+                                                    reportedYears, estimatedYears, shareYears, mapReady,
+                                                    clearFuelTypeSelection }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>

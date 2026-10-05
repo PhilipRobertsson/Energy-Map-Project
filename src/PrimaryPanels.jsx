@@ -73,7 +73,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent", "ContinentalData"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady } = useContext(MapContext);
+    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -132,6 +132,11 @@ function PrimaryPanels() {
         shareYearsRef.current = shareYears
         continentalDataRef.current = continentalData
     }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears, continentalData]);
+
+    // Clear the fuel type country selection whenever the region filter changes
+    useEffect(() => {
+        clearFuelTypeSelection()
+    }, [regionFilter, clearFuelTypeSelection])
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
