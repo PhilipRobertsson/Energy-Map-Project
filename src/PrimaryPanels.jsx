@@ -1216,8 +1216,8 @@ function PrimaryPanels() {
             // Add playback eventlisteners
             const playBackParents = pages.querySelectorAll("#sliderPlaybackField")
 
-            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilter, setYearFilter, 20000);
-            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilter, setShareYearFilter, 20000);
+            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilter, setYearFilter, 20000, mapRef.current);
+            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilter, setShareYearFilter, 20000, null);
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]

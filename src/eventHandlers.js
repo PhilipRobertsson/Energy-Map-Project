@@ -602,9 +602,15 @@ export function handleAddDiagramClick(assetSources, comparisonFuelFilter, region
     )
 }
 
-export function handlePlayBackClick(element,filter, setFilter,playTime){
+export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
     if(element.classList.contains("runningPlayBack")) return;
     element.classList.add("runningPlayBack")
+
+
+    let mapVisibility
+    if(mapRef?.getLayer("powerplants-layer").visibility == "visible" ||
+    typeof mapRef?.getLayer("powerplants-layer").visibility == 'undefined'){mapVisibility = true}
+    else{mapVisibility = false}
 
     gsap.fromTo(element, 
         { opacity: 1 }, 
@@ -637,6 +643,13 @@ export function handlePlayBackClick(element,filter, setFilter,playTime){
     // stepping one year at a time over the playback duration.
     const bounds = filter.length === 2 ? filter[1] : null
 
+    // Set visibility for a set of layer ids
+    const setVisibility = (layerIds, visibility) => {
+        layerIds.forEach(id => {
+            if (mapRef.getLayer(id)) mapRef.setLayoutProperty(id, "visibility", visibility)
+        })
+    }
+
     if (bounds && bounds[1] > bounds[0]) {
         const [minYear, maxYear] = bounds
         const totalSteps = maxYear - minYear
@@ -644,6 +657,10 @@ export function handlePlayBackClick(element,filter, setFilter,playTime){
 
         // Start at the earliest year, then increment the max value each step
         if(filter[0].length == 2){
+            if(!mapVisibility){
+                setVisibility(["fuelType-border", "fuelType-fill"], "none")
+                setVisibility(["powerplants-layer"], "visible")
+            }
             setFilter([[minYear, minYear], bounds])
             for(let step = 1; step <= totalSteps; step++){
                 setTimeout(() => {
@@ -662,6 +679,10 @@ export function handlePlayBackClick(element,filter, setFilter,playTime){
 
     // When the playback time has elapsed, restore the original label and width
     setTimeout(() =>{
+        if(filter[0].length == 2 && !mapVisibility){
+                setVisibility(["fuelType-border", "fuelType-fill"], "visible")
+                setVisibility(["powerplants-layer"], "none")
+        }
         gsap.fromTo(element, 
             { width: newWidth }, 
             { width: originalWidth, duration: 0.10, onComplete: () =>{
