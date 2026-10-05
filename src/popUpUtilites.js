@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { drawUsageLinePlot} from './sidePanelUtilities.js'
+import { gsap } from "gsap";
 
 export function getLatestDataArray(years, countryData){
     var latestData = {}
@@ -78,7 +79,7 @@ export function getLatestDataArray(years, countryData){
     return latestDataArray
 }
 
-export function createPopUpBarChart(parent, country, regionalData,fuelFilter, estimatedYears, assetSources, selection){
+export function createPopUpBarChart(parent, country, regionalData,fuelFilter, estimatedYears, icon, selection){
     const countryData = regionalData.find(r => r.country == country)
 
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
@@ -114,7 +115,7 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
 
         const infoIcon = document.createElement("img")
         infoIcon.className = "regionalInfoIcon"
-        infoIcon.src = selection ? assetSources.infoIcon : assetSources.popupInfo
+        infoIcon.src = icon
         
         // Add tooltip
         const infoToolTip = document.createElement("div")
@@ -374,6 +375,45 @@ export function makePopUpMovable(popUpE, map){
             addRemoveListeners(document, "add", onMove, onEnd)
         }
         addRemoveListeners(popUpE,"start",null,null, onStart)
+}
+
+export function toggleSelectionDropDown(element, mapE){
+    const popUp = element.parentElement
+    const rollUpIcon = element.children[1]
+
+    const relevantInfo = () =>{
+        var elIndex = Array.from(element.parentNode.children).indexOf(element)
+        return popUp.children[elIndex +1]
+    } 
+    const eRelevant = relevantInfo()
+    const isOpen = !eRelevant.classList.contains("hide")
+
+    if(isOpen){
+        gsap.to(eRelevant,
+            { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
+                onComplete: () => {;
+                    eRelevant.classList.toggle("hide");
+                }
+            }
+        )
+        gsap.to(rollUpIcon,
+            {rotationX: 0, duration: 0.6, ease: "power4.out"}
+        )
+    }else{
+        gsap.fromTo(eRelevant,
+            { height: 0, opacity: 0 },
+            { height: "auto", opacity: 1, duration: 0.4, ease: "power4.out",
+                onComplete: () => {
+                    gsap.set(eRelevant, { clearProps: "height" }) 
+                    mapE?.panBy([0, 0], { duration: 1 })
+                }
+            }
+        )
+        gsap.to(rollUpIcon,
+            {rotationX: 180, duration: 0.6, ease: "power4.out"}
+        )
+        eRelevant.classList.toggle("hide");
+    }
 }
 
 function addRemoveListeners(e,type="", onMove, onEnd, onStart){

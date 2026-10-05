@@ -3,7 +3,8 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { gsap } from "gsap";
 
-import { createPopUpBarChart, createPopUpUsagePlot,getLatestDataArray,makePopUpMovable } from "./popUpUtilites.js";
+import { createPopUpBarChart, createPopUpUsagePlot,
+              getLatestDataArray,makePopUpMovable, toggleSelectionDropDown } from "./popUpUtilites.js";
 
 import './Map.css'
 
@@ -301,8 +302,8 @@ function Map({ children }) {
     const map = mapInstance.current;
     if (!map) return;
 
-    const displayInformation = (e, powerPlants) =>{
-        const coordinates = (powerPlants)? e.features[0].geometry.coordinates.slice() : e.lngLat;
+    const displayInformation = (e, mode) =>{
+        const coordinates = (mode=="powerPlants")? e.features[0].geometry.coordinates.slice() : e.lngLat;
         const properties = e.features[0].properties;
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -323,7 +324,7 @@ function Map({ children }) {
           var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
           const popup = new maplibregl.Popup({maxWidth: Math.round(400*scale) + "px", closeButton: false, closeOnClick: false})
             .setLngLat(coordinates)
-            .setHTML((powerPlants)?("<h1>"+ properties.name +"</h1>"):("<h1>"+ properties.name_en +"</h1>"))
+            .setHTML((mode=="powerPlants")?("<h1>"+ properties.name +"</h1>"):("<h1>"+ properties.name_en +"</h1>"))
             .addTo(map);
 
           // Pop up rotate X "fade in"
@@ -364,74 +365,129 @@ function Map({ children }) {
           var consiseInformation = document.createElement("div")
           consiseInformation.classList.add("pop-up-info")
 
-          if(powerPlants){
-            // Power plant information
-            consiseInformation = getPowerPlantInfo(properties, consiseInformation, reportedYears, estimatedYears)
+          switch(mode){
+            case "powerPlants":
+              // Power plant information
+              consiseInformation = getPowerPlantInfo(properties, consiseInformation, reportedYears, estimatedYears)
 
-            // Get regionalInfoIcon
-            if(consiseInformation.children[3].children[2]){
-              const consiseInformationIcon = consiseInformation.children[3].children[2]
-              consiseInformationIcon.onmouseover = () => handleIconHoverOver(consiseInformationIcon)
-              consiseInformationIcon.onmouseout = () => handleIconHoverOut(consiseInformationIcon)
-            }
-
-            contentElement.appendChild(consiseInformation)
-
-            // Regional overview panel, given the data, this is currently the country which the powerplant is located in
-            const regionalOverview = document.createElement("div")
-            regionalOverview.classList.add("regional-overview-panel")
-            const overviewHeader = document.createElement("div")
-            overviewHeader.classList.add("regional-overview-header")
-            const overviewTitle = document.createElement("h1")
-            const overviewOpen = document.createElement("img")
-
-            // Set header title and add open/clsoe image
-            overviewTitle.textContent = `${properties.country_long}`
-            overviewOpen.src = assetSources.popupRollupClosed
-
-            // Get the regional information about the corresponding country
-            const regionalInformation = getRegionalInfo(properties, regionalData, colourData, reportedYears, estimatedYears)
-          
-            // Handle clicks on the rollup icon
-            overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
-        
-            // Get regionalInfoIcon
-            if(regionalInformation.children[0].children[2]){
-              const regionalInfoIcon = regionalInformation.children[0].children[2]
-              regionalInfoIcon.onmouseover = () => handleIconHoverOver(regionalInfoIcon)
-              regionalInfoIcon.onmouseout = () => handleIconHoverOut(regionalInfoIcon)
-            }
-
-            // Append elements to created elements
-            overviewHeader.appendChild(overviewTitle)
-            overviewHeader.appendChild(overviewOpen)
-            regionalOverview.appendChild(overviewHeader)
-            regionalOverview.appendChild(regionalInformation)
-            contentElement.appendChild(regionalOverview)
-
-            // Get bar chart bars and make them clickable
-            const barElements = regionalInformation.querySelectorAll('[class*="bar_"]')
-            barElements.forEach(bar => { 
-              bar.style.cursor = "pointer"
-              bar.onclick = () => {
-                setFilter(prev => {
-                  // Each bar has a name in the form "bar_Fuel"
-                  const fuel = bar.getAttribute("class").split(" ").find(c => c.startsWith("bar_")).slice(4)
-                  const updated = prev ? (prev.includes(fuel) // Update the filter from the map context, used in PrimaryPanels.jsx
-                    ? prev.filter(f => f !== fuel)
-                    : [...prev, fuel])
-                    : [fuel]
-                  return updated.length ? updated : null
-                })
+              // Get regionalInfoIcon
+              if(consiseInformation.children[3].children[2]){
+                const consiseInformationIcon = consiseInformation.children[3].children[2]
+                consiseInformationIcon.onmouseover = () => handleIconHoverOver(consiseInformationIcon)
+                consiseInformationIcon.onmouseout = () => handleIconHoverOut(consiseInformationIcon)
               }
-            })
-          }else{
+
+              contentElement.appendChild(consiseInformation)
+
+              // Regional overview panel, given the data, this is currently the country which the powerplant is located in
+              const regionalOverview = document.createElement("div")
+              regionalOverview.classList.add("regional-overview-panel")
+              const overviewHeader = document.createElement("div")
+              overviewHeader.classList.add("regional-overview-header")
+              const overviewTitle = document.createElement("h1")
+              const overviewOpen = document.createElement("img")
+
+              // Set header title and add open/clsoe image
+              overviewTitle.textContent = `${properties.country_long}`
+              overviewOpen.src = assetSources.popupRollupClosed
+
+              // Get the regional information about the corresponding country
+              const regionalInformation = getRegionalInfo(properties, regionalData, colourData, reportedYears, estimatedYears)
+          
+              // Handle clicks on the rollup icon
+              overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
+        
+              // Get regionalInfoIcon
+              if(regionalInformation.children[0].children[2]){
+                const regionalInfoIcon = regionalInformation.children[0].children[2]
+                regionalInfoIcon.onmouseover = () => handleIconHoverOver(regionalInfoIcon)
+                regionalInfoIcon.onmouseout = () => handleIconHoverOut(regionalInfoIcon)
+              }
+
+              // Append elements to created elements
+              overviewHeader.appendChild(overviewTitle)
+              overviewHeader.appendChild(overviewOpen)
+              regionalOverview.appendChild(overviewHeader)
+              regionalOverview.appendChild(regionalInformation)
+              contentElement.appendChild(regionalOverview)
+
+              // Get bar chart bars and make them clickable
+              const barElements = regionalInformation.querySelectorAll('[class*="bar_"]')
+              barElements.forEach(bar => { 
+                bar.style.cursor = "pointer"
+                bar.onclick = () => {
+                  setFilter(prev => {
+                    // Each bar has a name in the form "bar_Fuel"
+                    const fuel = bar.getAttribute("class").split(" ").find(c => c.startsWith("bar_")).slice(4)
+                    const updated = prev ? (prev.includes(fuel) // Update the filter from the map context, used in PrimaryPanels.jsx
+                      ? prev.filter(f => f !== fuel)
+                      : [...prev, fuel])
+                      : [fuel]
+                    return updated.length ? updated : null
+                  })
+                }
+              })
+              break;
+            case "usage":
               consiseInformation.classList.add("noBorder")
               consiseInformation = getUsageInfo(properties, consiseInformation, shareYears)
               contentElement.appendChild(consiseInformation)
+
+              break;
+            case "fuelType":
+              popup.getElement().classList.add("maplibregl-popup-selection-info")
+
+              popUpHeader.style.marginBottom = "0.5dvh"
+
+              var regionInfo = document.createElement("div")
+              regionInfo.classList.add("pop-up-info", "noBorder", "hide")
+              
+              var usageInfo = document.createElement("div")
+              usageInfo.classList.add("pop-up-info", "noBorder", "hide")
+              
+              var regionDropDownHeader = document.createElement("div")
+              regionDropDownHeader.classList.add("selection-overview-header")
+              var usageDropDownHeader = document.createElement("div")
+              usageDropDownHeader.classList.add("selection-overview-header")
+              
+              regionDropDownHeader.onclick = () => toggleSelectionDropDown(regionDropDownHeader, map)
+              usageDropDownHeader.onclick = () => toggleSelectionDropDown(usageDropDownHeader, map)
+                                  
+              var rDropDownTitle = document.createElement("h1")
+              var rDropDownIcon =document.createElement("img")
+              var uDropDownTitle = document.createElement("h1")
+              var uDropDownIcon =document.createElement("img")
+              
+              // Set header title and add open/clsoe image
+              rDropDownTitle.textContent = "Electric Generation"
+              rDropDownIcon.src = assetSources.popupRollupOpened
+              
+              uDropDownTitle.textContent = "Usage Shares"
+              uDropDownIcon.src = assetSources.popupRollupOpened
+              
+              regionDropDownHeader.appendChild(rDropDownTitle)
+              regionDropDownHeader.appendChild(rDropDownIcon)
+              
+              usageDropDownHeader.appendChild(uDropDownTitle)
+              usageDropDownHeader.appendChild(uDropDownIcon)
+              
+              
+              contentElement.appendChild(regionDropDownHeader)
+              contentElement.appendChild(regionInfo)
+              contentElement.appendChild(usageDropDownHeader)
+              contentElement.appendChild(usageInfo)
+
+              const iso = properties.adm0_iso
+              const altIso = properties.iso_a3
+              let entry = regionalData.find(r => r.country == iso)
+              if(!entry){ // Attempt to find country with other code
+                entry = regionalData.find(r => r.country == altIso)
+              } 
+              
+              createPopUpBarChart(contentElement,entry.country, regionalData,colourData, estimatedYears, assetSources.popupInfo,true)
+              createPopUpUsagePlot(contentElement,entry.country, regionalData, shareYears, true)
+              break;
           }
-
-
           setPopupCount(pc => pc + 1) // Count each pop-up window open
 
           // Make pop up movable
@@ -501,7 +557,7 @@ function Map({ children }) {
           'fill-opacity': 0.6
         }
       }).on('click', 'usage-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
-            displayInformation(e, false)
+            displayInformation(e, "usage")
       });
 
       map.addLayer({
@@ -534,7 +590,9 @@ function Map({ children }) {
           'fill-color': fuelTypeColor,
           'fill-opacity': 0.5
         }
-      })
+      }).on('click', 'fuelType-fill', (e) => { // If any feature on the layer is clicked on, open pop-up
+            displayInformation(e, "fuelType")
+      });
 
       map.addLayer({
         id: "fuelType-border",
@@ -545,6 +603,13 @@ function Map({ children }) {
           'line-width': 2
         }
       })
+
+      map.on('mouseenter', 'fuelType-fill', () => { // Relevant for screens with mouse input, make the mouse a pointer if hovered
+            map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'fuelType-fill', () => { // Relevant for screens with mouse input, remove cursor style when mouse leaves feature
+            map.getCanvas().style.cursor = '';
+      });
 
       // Hide fuel type layer by default
       map.getLayer("fuelType-fill").visibility = "none"
@@ -557,7 +622,7 @@ function Map({ children }) {
         source: "powerplants",
         paint: powerPlantPaint
       }).on('click', 'powerplants-layer', (e) => { // If any feature on the layer is clicked on, open pop-up
-            displayInformation(e, true)
+            displayInformation(e, "powerPlants")
       });
       
       map.on('mouseenter', 'powerplants-layer', () => { // Relevant for screens with mouse input, make the mouse a pointer if hovered

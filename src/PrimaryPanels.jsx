@@ -12,7 +12,7 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
               handlePlayBackClick } from './eventHandlers.js'
 import { registerInteraction, endSession } from './usageStatistics.js'
-import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable} from './popUpUtilites.js'
+import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable, toggleSelectionDropDown} from './popUpUtilites.js'
 
 import './PrimaryPanels.css'
 import { map } from 'd3';
@@ -471,14 +471,14 @@ function PrimaryPanels() {
         }
 
         if (powerPlants.features.length != pps.length) {
-            // Filtered → show "full screen" icon
+            // Filtered -> show "full screen" icon
             if (zoomSelection.classList.contains("selection")) {
                 zoomSelection.classList.remove("selection")
                 zoomSelection.src = assetSources.zoomFullScreen
                 zoomSelectionState.current.isSelection = false
             }
         } else {
-            // All shown → show "zoom selection" icon
+            // All shown -> show "zoom selection" icon
             if (!zoomSelection.classList.contains("selection")) {
                 zoomSelection.classList.add("selection")
                 zoomSelection.src = assetSources.zoomSelection
@@ -729,8 +729,8 @@ function PrimaryPanels() {
                     var usageDropDownHeader = document.createElement("div")
                     usageDropDownHeader.classList.add("selection-overview-header")
 
-                    regionDropDownHeader.onclick = () => toggleSelectionDropDown(regionDropDownHeader)
-                    usageDropDownHeader.onclick = () => toggleSelectionDropDown(usageDropDownHeader)
+                    regionDropDownHeader.onclick = () => toggleSelectionDropDown(regionDropDownHeader, mapRef.current)
+                    usageDropDownHeader.onclick = () => toggleSelectionDropDown(usageDropDownHeader, mapRef.current)
                     
                     var rDropDownTitle = document.createElement("h1")
                     var rDropDownIcon =document.createElement("img")
@@ -756,7 +756,7 @@ function PrimaryPanels() {
                     contentElement.appendChild(usageDropDownHeader)
                     contentElement.appendChild(usageInfo)
 
-                    createPopUpBarChart(contentElement,shownRegions[i].country, regionalData,fuelFilter, estimatedYears, assetSources,true)
+                    createPopUpBarChart(contentElement,shownRegions[i].country, regionalData,fuelFilter, estimatedYears, assetSources.infoIcon,true)
                     createPopUpUsagePlot(contentElement,shownRegions[i].country, regionalData, shareYears, true)
                     makePopUpMovable(popup.getElement(),mapRef.current)
                 }
@@ -1495,45 +1495,6 @@ function PrimaryPanels() {
             gsap.to(rollupIcon,
                 {rotationX: 0, duration: 0.6, ease: "power4.out"}
             )
-        }
-    }
-
-    function toggleSelectionDropDown(element){
-        const popUp = element.parentElement
-        const rollUpIcon = element.children[1]
-
-        const relevantInfo = () =>{
-            var elIndex = Array.from(element.parentNode.children).indexOf(element)
-            return popUp.children[elIndex +1]
-        } 
-        const eRelevant = relevantInfo()
-        const isOpen = !eRelevant.classList.contains("hide")
-
-        if(isOpen){
-            gsap.to(eRelevant,
-                { height: 0, opacity: 0, duration: 0.2, ease: "power4.in",
-                    onComplete: () => {;
-                        eRelevant.classList.toggle("hide");
-                    }
-                }
-            )
-            gsap.to(rollUpIcon,
-                {rotationX: 0, duration: 0.6, ease: "power4.out"}
-            )
-        }else{
-            gsap.fromTo(eRelevant,
-                { height: 0, opacity: 0 },
-                { height: "auto", opacity: 1, duration: 0.4, ease: "power4.out",
-                    onComplete: () => {
-                        gsap.set(eRelevant, { clearProps: "height" }) 
-                        mapRef.current?.panBy([0, 0], { duration: 1 })
-                    }
-                }
-            )
-            gsap.to(rollUpIcon,
-                {rotationX: 180, duration: 0.6, ease: "power4.out"}
-            )
-            eRelevant.classList.toggle("hide");
         }
     }
 
