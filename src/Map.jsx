@@ -563,6 +563,12 @@ function Map({ children }) {
 
               createPopUpBarChart(contentElement,entry.country, regionalData,colourData, estimatedYears, assetSources.popupInfo,true)
               createPopUpUsagePlot(contentElement,entry.country, regionalData, shareYears, true)
+
+              const infoIcon = contentElement.querySelector(".regionalInfoWrapper")
+              const infoToolTip = contentElement.querySelector(".generationInfoTooltipText")
+              infoIcon.onmouseover = () => infoToolTip.style.visibility = "visible"
+              infoIcon.onmouseout = () => infoToolTip.style.visibility = "hidden"
+              
               break;
           }
           setPopupCount(pc => pc + 1) // Count each pop-up window open
@@ -912,7 +918,7 @@ function getPowerPlantInfo(feature, htmlElement, reportedYears, estimatedYears){
 
 // Function to generate the regional information stored in each pop-up
 function getRegionalInfo(feature, data, colours, reportedYears, estimatedYears){
-    return createPopUpBarChart(null, feature.country, data, colours, estimatedYears, assetSources, false)
+    return createPopUpBarChart(null, feature.country, data, colours, estimatedYears, assetSources.popupInfo, false)
 }
 
 function getUsageInfo(feature, htmlElement, shareYears){

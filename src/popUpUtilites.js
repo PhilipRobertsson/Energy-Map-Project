@@ -123,6 +123,9 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
         const infoToolTipText = document.createElement("span")
         infoToolTipText.className = "generationInfoTooltipText"
         infoToolTipText.textContent = "Estimated annual generation " + latestDataYear + " in gigawatt hours (GWhs)"
+
+        infoIcon.onmouseover = () => infoToolTip.style.visibility = "visible"
+        infoIcon.onmouseout = () => infoToolTip.style.visibility = "hidden"
         
         infoToolTip.appendChild(infoToolTipText)
         infoWrapper.appendChild(infoIcon)

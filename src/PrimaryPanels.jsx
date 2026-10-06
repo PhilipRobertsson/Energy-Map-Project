@@ -772,6 +772,12 @@ function PrimaryPanels() {
 
                     createPopUpBarChart(contentElement,shownRegions[i].country, regionalData,fuelFilter, estimatedYears, assetSources.infoIcon,true)
                     createPopUpUsagePlot(contentElement,shownRegions[i].country, regionalData, shareYears, true)
+
+                    const infoIcon = contentElement.querySelector(".regionalInfoWrapper")
+                    const infoToolTip = contentElement.querySelector(".generationInfoTooltipText")
+                    infoIcon.onmouseover = () => infoToolTip.style.visibility = "visible"
+                    infoIcon.onmouseout = () => infoToolTip.style.visibility = "hidden"
+
                     makePopUpMovable(popup.getElement(),mapRef.current)
                 }
             }
