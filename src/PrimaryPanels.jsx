@@ -200,10 +200,9 @@ function PrimaryPanels() {
                 .find(button => button.querySelector("span")?.textContent === "Power Plants")
             if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
 
-            setRegionFilterTo(["SWE"])
             mapRef.current?.flyTo({
-                center: [24.325556, 62.3875],
-                zoom: 4.5,
+                center: [89, 30],
+                zoom: 1.8,
                 speed: 0.8,
                 curve: 1.4
             });
@@ -1204,10 +1203,9 @@ function PrimaryPanels() {
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
                             resetAllFilters()
-                            setRegionFilterTo(["SWE"])
                             mapRef.current?.flyTo({
-                                center: [24.325556, 62.3875],
-                                zoom: 4.5,
+                                center: [89, 30],
+                                zoom: 1.8,
                                 speed: 0.8,
                                 curve: 1.4
                             });
@@ -1288,12 +1286,6 @@ function PrimaryPanels() {
             if(sidePanel.children.length == 0){
                 sidePanel.appendChild(pages)
             }
-
-            // Set the default region filter to only show Sweden on initial load
-            if(!defaultRegionSet.current && powerPlants?.features?.length){
-                defaultRegionSet.current = true
-                setRegionFilterTo(["SWE"])
-            }
         }
         
     }, [sidePanelPage,pages, fuelFilter, regionFilter, regionalData, powerPlants, pageContent])
@@ -1314,7 +1306,7 @@ function PrimaryPanels() {
             });
         }else{
             mapRef.current?.flyTo({
-                center: [23.333333, 15.5],
+                center: [89, 30],
                 zoom: 1.8,
                 speed: 0.8,
                 curve: 1.4

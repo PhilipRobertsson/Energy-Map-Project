@@ -69,7 +69,7 @@ export function handleZoomOut(icon, mapRef){
 export function handleZoomSelection(element, regionFilter, fuelFilter, yearFilter, generationFilter, powerPlants, mapRef, assetSources, zoomSelectionState){
     const fullScreen = () =>{
         mapRef.current?.flyTo({
-            center: [23.333333, 15.5],
+            center: [89, 30],
             zoom: 1.8,
             speed: 0.8,
             curve: 1.4

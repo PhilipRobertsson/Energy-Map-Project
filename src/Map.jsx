@@ -278,8 +278,8 @@ function Map({ children }) {
         mapInstance.current = new maplibregl.Map({
           container: mapContainer.current,
           style: data, //mapStyle,
-          center: [24.325556, 62.3875],
-          zoom: 4.5,
+          center: [89, 30],
+          zoom: 1.8,
         });
 
         // disable map rotation using right click + drag
@@ -641,10 +641,6 @@ function Map({ children }) {
             map.getCanvas().style.cursor = '';
       });
 
-      // Hide fuel type layer by default
-      map.getLayer("fuelType-fill").visibility = "none"
-      map.getLayer("fuelType-border").visibility = "none"
-
       // Create the power plants layer on the map, each circle is a power plant
       map.addLayer({
         id: "powerplants-layer",
@@ -654,6 +650,9 @@ function Map({ children }) {
       }).on('click', 'powerplants-layer', (e) => { // If any feature on the layer is clicked on, open pop-up
             displayInformation(e, "powerPlants")
       });
+
+      // Hide power plants layer by default
+      map.getLayer("powerplants-layer").visibility = "none"
       
       map.on('mouseenter', 'powerplants-layer', () => { // Relevant for screens with mouse input, make the mouse a pointer if hovered
             map.getCanvas().style.cursor = 'pointer';
