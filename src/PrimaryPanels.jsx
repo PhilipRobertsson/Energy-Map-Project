@@ -72,7 +72,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent", "ContinentalData"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection } = useContext(MapContext);
+    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, handleContinentFromMapRef, applyFuelTypeSelection, setBaseFilters } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -136,6 +136,17 @@ function PrimaryPanels() {
     useEffect(() => {
         clearFuelTypeSelection()
     }, [regionFilter, clearFuelTypeSelection])
+
+    // Expose a continent-click handler for Map.jsx (used when clicking a country
+    // on the map while no continent is currently selected)
+    useEffect(() => {
+        handleContinentFromMapRef.current = (continentName) => {
+            const element = Array.from(document.querySelectorAll(".linePlotContinentButton"))
+                .find(btn => btn.querySelector("span")?.textContent === continentName)
+            if (!element) return
+            handleContinentClick(element, regionalData, continentName, continentalData, regionFilterRef, setRegionFilter, shareYears, false, zoomToRegionFilter)
+        }
+    })
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
@@ -1022,7 +1033,18 @@ function PrimaryPanels() {
             toFilter.setFilter("fuelType-border", fuelTypeFitlers);
         }
 
-    }, [fuelFilter, regionFilter, yearFilter, generationFilter, mapRef, mapReady]);
+        // Store the freshly-computed base filters so the country selection
+        // (kept in Map.jsx) can be re-applied on top of them.
+        setBaseFilters(
+            fuelTypeFitlers.length === 1 ? null : fuelTypeFitlers,
+            filters.length === 1 ? null : filters
+        )
+
+        // Re-apply the country selection made on the map (if any) on top of
+        // the base filters that were just set above.
+        applyFuelTypeSelection()
+
+    }, [fuelFilter, regionFilter, yearFilter, generationFilter, mapRef, mapReady, applyFuelTypeSelection, setBaseFilters]);
 
     // Update alternative map layer filters
     useEffect(() =>{

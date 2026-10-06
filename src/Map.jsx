@@ -215,10 +215,49 @@ function Map({ children }) {
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
   const fuelTypeSelectedCountries = useRef([]);
-  const fuelTypeBaseFilter = useRef(undefined);
+  const fuelTypeBaseFilter = useRef(null);
+  const powerplantsBaseFilter = useRef(null);
+  const handleContinentFromMapRef = useRef(null);
   const clearFuelTypeSelection = useCallback(() => {
     fuelTypeSelectedCountries.current = []
-    fuelTypeBaseFilter.current = undefined
+    fuelTypeBaseFilter.current = null
+    powerplantsBaseFilter.current = null
+  }, [])
+
+  // PrimaryPanels stores the current base (region/fuel/year/generation)
+  // filters here whenever they change, so the country selection can be
+  // re-applied on top without ever re-reading the (already combined) layers.
+  const setBaseFilters = useCallback((fuelTypeBase, powerplantsBase) => {
+    fuelTypeBaseFilter.current = fuelTypeBase
+    powerplantsBaseFilter.current = powerplantsBase
+  }, [])
+
+  // Re-apply the fuel type selection (excluded countries + shown power plants)
+  // on top of the stored base filters.
+  const applyFuelTypeSelection = useCallback(() => {
+    const selectedList = fuelTypeSelectedCountries.current
+    if (!selectedList.length) return
+
+    const map = mapInstance.current
+    if (!map) return
+
+    const exclusion = [
+      ["!", ["in", ["get", "adm0_iso"], ["literal", selectedList]]],
+      ["!", ["in", ["get", "iso_a3"], ["literal", selectedList]]],
+    ]
+    const fuelTypeFilter = fuelTypeBaseFilter.current
+      ? ["all", fuelTypeBaseFilter.current, ...exclusion]
+      : ["all", ...exclusion]
+
+    const powerplantsSelection = ["in", ["get", "country"], ["literal", selectedList]]
+    const powerplantsFilter = powerplantsBaseFilter.current
+      ? ["all", powerplantsBaseFilter.current, powerplantsSelection]
+      : powerplantsSelection
+
+    map.setFilter("fuelType-fill", fuelTypeFilter)
+    map.setFilter("fuelType-border", fuelTypeFilter)
+    map.setLayoutProperty("powerplants-layer", "visibility", "visible")
+    map.setFilter("powerplants-layer", powerplantsFilter)
   }, [])
   const [time, setTime] = useState(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET);
   const [referenceTime, setReferenceTime] = useState(Date.now());
@@ -489,30 +528,38 @@ function Map({ children }) {
               if(!entry){ // Attempt to find country with other code
                 entry = regionalData.find(r => r.country == altIso)
               } 
-              
-              const selectedCountries = fuelTypeSelectedCountries.current
-              if (iso && !selectedCountries.includes(iso)) {
+
+              const selectedContinent = document.querySelector(".continentSelected")
+
+              if(selectedContinent && selectedContinent.querySelector("span")?.textContent != "Global"){
+                const selectedCountries = fuelTypeSelectedCountries.current
+                const geometry = e.features[0].geometry 
+                const bounds = new maplibregl.LngLatBounds();
+
+                const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates
+                polygons.forEach(polygon => {
+                  polygon.forEach(ring => {
+                    ring.forEach(coord => {
+                      bounds.extend(coord);
+                    });
+                  });
+                });
+
+                map.flyTo({
+                  center: coordinates,
+                  padding: {top: 20, bottom: 20, left: 50, right: Math.floor(window.innerWidth * 0.30)},
+                  zoom: 4,
+                  speed: 0.8,
+                  curve: 1.4
+                });
+
+                if (iso && !selectedCountries.includes(iso)) {
                   selectedCountries.push(iso)
+                }
+                applyFuelTypeSelection()
+              }else{
+                handleContinentFromMapRef.current?.(properties.continent)
               }
-              const selectedList = [...selectedCountries]
-
-              if (fuelTypeBaseFilter.current === undefined) {
-                  fuelTypeBaseFilter.current = map.getFilter("fuelType-fill") ?? null
-              }
-
-              const exclusion = [
-                  ["!", ["in", ["get", "adm0_iso"], ["literal", selectedList]]],
-                  ["!", ["in", ["get", "iso_a3"], ["literal", selectedList]]],
-              ]
-
-              const fuelTypeFilter = fuelTypeBaseFilter.current
-                  ? ["all", fuelTypeBaseFilter.current, ...exclusion]
-                  : ["all", ...exclusion]
-
-              map.setFilter("fuelType-fill", fuelTypeFilter)
-              map.setFilter("fuelType-border", fuelTypeFilter)
-              map.setLayoutProperty("powerplants-layer", "visibility", "visible")
-              map.setFilter("powerplants-layer", ["in", ["get", "country"], ["literal", selectedList]])
 
               createPopUpBarChart(contentElement,entry.country, regionalData,colourData, estimatedYears, assetSources.popupInfo,true)
               createPopUpUsagePlot(contentElement,entry.country, regionalData, shareYears, true)
@@ -753,7 +800,7 @@ function Map({ children }) {
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
                                                     reportedYears, estimatedYears, shareYears, mapReady,
-                                                    clearFuelTypeSelection }}>
+                                                    clearFuelTypeSelection, handleContinentFromMapRef, applyFuelTypeSelection, setBaseFilters }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>

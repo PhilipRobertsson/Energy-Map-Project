@@ -374,7 +374,7 @@ export function handleContinentClick(element, regionalData, continent,continentD
 
     setFilter(toggled)
     if(!dontZoomTo){
-        zoomToRegionFilter(toggled)
+        (continent == "Global")? zoomToRegionFilter(toggled.map(r=>({...r, show:false}))) : zoomToRegionFilter(toggled)
     }
 }
 
