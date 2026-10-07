@@ -12,6 +12,7 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
               handlePlayBackClick } from './eventHandlers.js'
 import { registerInteraction, endSession } from './usageStatistics.js'
+import { startScreenSaver, stopScreenSaver } from './screenSaver.js';
 import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable, toggleSelectionDropDown} from './popUpUtilites.js'
 
 import './PrimaryPanels.css'
@@ -113,7 +114,6 @@ function PrimaryPanels() {
     const fuelFilterRef = useRef([]);
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
-    const defaultRegionSet = useRef(false);
 
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -179,8 +179,12 @@ function PrimaryPanels() {
         shareYearFilter, LCShareFilter, FFShareFilter, yearFilter, generationFilter])
 
     // Register user interactions for usage-statistics tracking (any pointer / key / touch)
+    // and stop the screen saver once the user starts interacting.
     useEffect(() =>{
-        const onInput = () => registerInteraction();
+        const onInput = () => {
+            registerInteraction();
+            stopScreenSaver();
+        };
         window.addEventListener("pointerdown", onInput);
         window.addEventListener("keydown", onInput);
         window.addEventListener("touchstart", onInput);
@@ -191,10 +195,26 @@ function PrimaryPanels() {
         }
     }, [])
 
+    // Start the screen saver once the map and all of its layers are loaded
+    useEffect(() =>{
+        if(mapReady && mapRef?.current){
+            startScreenSaver(mapRef.current, 1, 50)
+        }
+    }, [mapReady])
+
     // Check the timer, if it reaches zero, reset everything
     useEffect(() =>{
         if(timeRef <= 0){
+            mapRef.current?.setZoom(1.8)
+            setTimeout(()=>{
+                mapRef.current?.flyTo({
+                center: [89, 30],
+                speed: 0.8,
+                curve: 1.4
+            });
+            },5)
             endSession()
+            startScreenSaver(mapRef?.current, 1, 50)
             resetAllFilters()
             handleResetClick(null, "close", null) // Close pop-ups
 
@@ -211,12 +231,6 @@ function PrimaryPanels() {
                 .find(button => button.querySelector("span")?.textContent === "Power Plants")
             if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
 
-            mapRef.current?.flyTo({
-                center: [89, 30],
-                zoom: 1.8,
-                speed: 0.8,
-                curve: 1.4
-            });
             handleNavigationClick(0, document.getElementById("navigationID0"), setSidePanelPage, allPages)
         }
     }, [timeRef])

@@ -427,11 +427,8 @@ export function handleMapModeToggle(element, mapRef, regionFilter){
     // Hide previous mode's layers
     switch(prevMode){
         case "Power Plants":
-            if(shownRegions.length > 2){
-                setVisibility(["fuelType-border", "fuelType-fill"], "none")
-            }else{
-                setVisibility(["powerplants-layer"], "none")
-            }
+            setVisibility(["fuelType-border", "fuelType-fill"], "none")
+            setVisibility(["powerplants-layer"], "none")
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")
@@ -470,11 +467,8 @@ export function handleMapModeToggle(element, mapRef, regionFilter){
     // Show selected mode's layers
     switch(selectedMode){
         case "Power Plants":
-            if(shownRegions.length > 2){
-                setVisibility(["fuelType-border", "fuelType-fill"], "visible")
-            }else{
-                setVisibility(["powerplants-layer"], "visible")
-            }
+            setVisibility(["fuelType-border", "fuelType-fill"], "visible")
+            setVisibility(["powerplants-layer"], "visible")
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")
