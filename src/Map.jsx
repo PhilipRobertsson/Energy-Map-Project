@@ -529,37 +529,32 @@ function Map({ children }) {
                 entry = regionalData.find(r => r.country == altIso)
               } 
 
-              const selectedContinent = document.querySelector(".continentSelected")
+              const selectedCountries = fuelTypeSelectedCountries.current
+              const geometry = e.features[0].geometry 
+              const bounds = new maplibregl.LngLatBounds();
 
-              if(selectedContinent && selectedContinent.querySelector("span")?.textContent != "Global"){
-                const selectedCountries = fuelTypeSelectedCountries.current
-                const geometry = e.features[0].geometry 
-                const bounds = new maplibregl.LngLatBounds();
-
-                const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates
-                polygons.forEach(polygon => {
-                  polygon.forEach(ring => {
-                    ring.forEach(coord => {
-                      bounds.extend(coord);
-                    });
+              const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates
+              polygons.forEach(polygon => {
+                polygon.forEach(ring => {
+                  ring.forEach(coord => {
+                    bounds.extend(coord);
                   });
                 });
+              });
 
-                map.flyTo({
-                  center: coordinates,
-                  padding: {top: 20, bottom: 20, left: 50, right: Math.floor(window.innerWidth * 0.30)},
-                  zoom: 4,
-                  speed: 0.8,
-                  curve: 1.4
-                });
+              /* map.flyTo({
+                center: coordinates,
+                padding: {top: 20, bottom: 20, left: 50, right: Math.floor(window.innerWidth * 0.30)},
+                zoom: 4,
+                speed: 0.8,
+                curve: 1.4
+              }); */
 
-                if (iso && !selectedCountries.includes(iso)) {
-                  selectedCountries.push(iso)
-                }
-                applyFuelTypeSelection()
-              }else{
-                handleContinentFromMapRef.current?.(properties.continent)
+              if (iso && !selectedCountries.includes(iso)) {
+                selectedCountries.push(iso)
               }
+
+              applyFuelTypeSelection()
 
               createPopUpBarChart(contentElement,entry.country, regionalData,colourData, estimatedYears, assetSources.popupInfo,true)
               createPopUpUsagePlot(contentElement,entry.country, regionalData, shareYears, true)
@@ -806,7 +801,7 @@ function Map({ children }) {
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
                                                     reportedYears, estimatedYears, shareYears, mapReady,
-                                                    clearFuelTypeSelection, handleContinentFromMapRef, applyFuelTypeSelection, setBaseFilters }}>
+                                                    clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>

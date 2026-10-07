@@ -73,7 +73,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent", "ContinentalData"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, handleContinentFromMapRef, applyFuelTypeSelection, setBaseFilters } = useContext(MapContext);
+    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -136,17 +136,6 @@ function PrimaryPanels() {
     useEffect(() => {
         clearFuelTypeSelection()
     }, [regionFilter, clearFuelTypeSelection])
-
-    // Expose a continent-click handler for Map.jsx (used when clicking a country
-    // on the map while no continent is currently selected)
-    useEffect(() => {
-        handleContinentFromMapRef.current = (continentName) => {
-            const element = Array.from(document.querySelectorAll(".linePlotContinentButton"))
-                .find(btn => btn.querySelector("span")?.textContent === continentName)
-            if (!element) return
-            handleContinentClick(element, regionalData, continentName, continentalData, regionFilterRef, setRegionFilter, shareYears, false, zoomToRegionFilter)
-        }
-    })
 
     // Fetch JSON files and set relevant States
     useEffect(() => {
