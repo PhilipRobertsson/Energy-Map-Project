@@ -378,7 +378,7 @@ export function handleContinentClick(element, regionalData, continent,continentD
     }
 }
 
-export function handleMapModeToggle(element, mapRef, regionFilter){
+export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSelection){
     // Get previous selection, return if identical click
     const prev = document.querySelector(".selectedMapMode")
     if(element == prev) return;
@@ -467,8 +467,12 @@ export function handleMapModeToggle(element, mapRef, regionFilter){
     // Show selected mode's layers
     switch(selectedMode){
         case "Power Plants":
-            setVisibility(["fuelType-border", "fuelType-fill"], "visible")
-            setVisibility(["powerplants-layer"], "visible")
+            if(shownRegions.length > 2){
+                setVisibility(["fuelType-border", "fuelType-fill"], "visible")
+                applyTypeSelection()
+            }else{
+                setVisibility(["powerplants-layer"], "visible")
+            }
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")

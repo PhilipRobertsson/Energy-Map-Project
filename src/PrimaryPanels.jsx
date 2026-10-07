@@ -218,7 +218,7 @@ function PrimaryPanels() {
             // Reset the map mode to "Power Plants" (sets the selected class / colours and map layers)
             const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
                 .find(button => button.querySelector("span")?.textContent === "Power Plants")
-            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
+            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
 
             handleNavigationClick(0, document.getElementById("navigationID0"), setSidePanelPage, allPages)
         }
@@ -324,7 +324,7 @@ function PrimaryPanels() {
                     break;
             }
             toggleButton.appendChild(toggleText);
-            toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef, regionFilter)
+            toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef, regionFilter, applyFuelTypeSelection)
 
             if(toggleText.textContent === selectedModeName){
                 toggleButton.classList.add("selectedMapMode");
@@ -1205,31 +1205,31 @@ function PrimaryPanels() {
                         setRegionFilterTo(["SWE", "NOR"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
                         break;
                     case 3: // Second instructions page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
                         break;
                     case 4: // Third instruction page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
                         break;
                     case 5: // Fourth instructions page
                         setRegionFilterTo(["SWE", "DNK"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
                         break;
                     case 6: // Fifth instructions page
                         setRegionFilterTo(["SWE", "FIN"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if(usageButton) handleMapModeToggle(usageButton, mapRef, regionFilter)
+                        if(usageButton) handleMapModeToggle(usageButton, mapRef, regionFilter, applyFuelTypeSelection)
                         break;
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
@@ -1241,7 +1241,7 @@ function PrimaryPanels() {
                                 curve: 1.4
                             });
                             // Keep user selection for switch to home and info pages
-                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef, regionFilter)
+                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef, regionFilter, applyFuelTypeSelection)
                         }
                 }
             }
