@@ -529,6 +529,8 @@ function Map({ children }) {
                 entry = regionalData.find(r => r.country == altIso)
               } 
 
+              console.log(entry)
+
               const selectedCountries = fuelTypeSelectedCountries.current
               const geometry = e.features[0].geometry 
               const bounds = new maplibregl.LngLatBounds();
@@ -550,8 +552,8 @@ function Map({ children }) {
                 curve: 1.4
               }); */
 
-              if (iso && !selectedCountries.includes(iso)) {
-                selectedCountries.push(iso)
+              if (entry?.country && !selectedCountries.includes(entry?.country)) {
+                selectedCountries.push(entry?.country)
               }
 
               applyFuelTypeSelection()
