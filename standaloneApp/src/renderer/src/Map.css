@@ -1,0 +1,222 @@
+/*Break points should be added for smaller devices <= 1500px width*/
+
+.maplibregl-popup-close-button{
+    position: relative;
+    right: unset;
+    top: unset;
+    color: #A8A8A8;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.maplibregl-popup-close-button img{
+    width: 1.5vmin;
+    height: 1.5vmin;
+}
+
+.maplibregl-popup-content{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    background: #F2FBFF;
+    border-radius: 1.1dvh;
+    padding: 1.5dvh;
+}
+
+.maplibregl-popup-tip {
+    border-width: 1dvh; /*To adjust the size of the pop-up tip*/
+}
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+    border-top-color: #F2FBFF !important;
+}
+.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+    border-bottom-color: #F2FBFF !important;
+}
+.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+    border-left-color: #F2FBFF !important;
+}
+.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+    border-right-color: #F2FBFF !important;
+}
+
+.maplibregl-popup-content h1{
+    font-family: "Lato", sans-serif;
+    width: 6dvw;
+    font-weight: 700;
+    font-size: 2.2vmin;
+    line-height: 2vmin;
+    font-style: normal;
+    color: #004B70;
+    margin: 0;
+    padding: 0;
+}
+
+.pop-up-header{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pop-up-info{
+    display: flex;
+    flex-direction: column;
+    border-bottom: 0.3dvh solid #e0e0e0;
+    width: 100%;
+    padding: 0.5dvh 0 0.5dvh 0;
+}
+
+.noBorder{
+    border-bottom: unset;
+}
+
+.pop-up-info > span, .pop-up-info strong, 
+.regional-overview-info > span, .regional-overview-info strong{
+    font-family: "Lato", sans-serif;
+    font-style: normal;
+    font-size: 1.8vmin;
+}
+
+.pop-up-info > span{
+    font-weight: 400;
+    line-height: 1.4vmin;
+    display: flex;
+    align-items: baseline;
+}
+
+.pop-up-info strong{
+    margin-right: 0.3vmin;
+    font-weight: 700;
+    margin-bottom: 0.5dvh;
+}
+
+.popupInfoIcon{
+    width: 1.5vmin;
+    height: auto;
+    margin-left: 0.3dvw;
+}
+
+.popupInfoWrapper{
+    position: relative;
+    display: inline-block;
+}
+
+.generationInfoTooltip{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.generationInfoTooltipText{
+    visibility: hidden; /* Hidden by default */
+    width: 9dvw;
+    background-color: black;
+    color: #ffffff;
+    text-align: center;
+    padding: 1dvh;
+    border-radius: 0.5dvh;
+    position: absolute;
+    z-index: 1; /* Ensure tooltip is displayed above content */
+    left: 105%;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.8vmin;
+    line-height: 1.9vmin;
+}
+
+.regional-overview-panel{
+    width: 100%;
+    padding-top: 0.5dvh;
+}
+
+.regional-overview-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.regional-overview-header img{
+    width: 2vmin;
+}
+
+.regional-overview-info{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0.5dvh 0 0.5dvh 0;
+}
+
+.hide {
+  display: none;
+}
+
+.regional-overview-info > span{
+    font-weight: 400;
+    line-height: 1.4vmin;
+    display: flex;
+    align-items: center;
+}
+
+.regional-overview-info strong{
+    margin-right: 0.3dvw;
+    font-weight: 700;
+    margin-bottom: 0.5dvh;
+}
+
+.regionalInfoIcon{
+    width: 1.5vmin;
+    height: auto;
+    margin-left: 0.3dvw;
+}
+
+.regionalInfoWrapper{
+    position: relative;
+    display: inline-block;
+}
+
+.regional-overview-svg{
+    display: flex;
+    justify-content: center;   
+}
+
+@keyframes slideInOut {
+  0% { transform: translateX(-100%); }
+  15% { transform: translateX(0); }
+  85% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+#popUpAlert{
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    z-index: 1; /* Ensure alert is displayed above map */
+    left: 0;
+    top: 5dvh;
+    background-color: rgba(239, 239, 239, 0.88);
+    border-radius: 0 15px 15px 0;
+    transform: translateX(-100%);
+}
+
+#popUpAlert.animate{
+    animation: slideInOut 2s ease forwards;
+}
+
+#popUpAlert *{
+    padding: 0;
+    margin: 1vmin;
+    font-size: 2.5vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    color: #004B70;
+}
+
+.bar_filtered {
+    border: 0.1vmin solid #11658C;
+}

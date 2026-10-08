@@ -1,0 +1,1043 @@
+/*CSS for the filter container, background, border styling, and content positioning*/
+/*Break points should be added for smaller devices <= 1500px width*/
+#fuelFilter{
+    background-color: rgba(0, 75, 112, 0.88); /*changed from rgba(184, 214, 229, 0.88) in previous version*/
+    color: rgba(222, 234, 237, 1);
+    border-radius: 0 2.5dvh 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1dvh;
+}
+.filterLegend{ /*Container for each legend element*/
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    cursor: pointer;/*Pointer instead of text input cursor*/
+    transition-property: opacity;
+    transition-duration: 0.15s;
+
+}
+.legendColour{ /*The coloured box representing each fuel type*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.5dvh;
+    height: 2.5dvh;
+    margin: 0.16dvh 0 0.16dvh 0;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+}
+.legendIcon{
+    width: 1.5dvh;
+    height: 1.5dvh;
+}
+
+.legendName{ /*The name for each fuel type*/
+    padding: 0;
+    margin: 0;
+    font-size: 2vmin;
+    margin-left: 0.46dvw;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.legendCheck{
+    width: 1.8dvh;
+    height: auto;
+    margin-left: unset;
+}
+
+.gradientContainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.gradientLegend{
+    width: 2.5dvh;
+    margin: 0.16dvh 0 0.16dvh 0;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+}
+
+.gradientTickContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.gradientTick{
+    padding: 0;
+    margin: 0;
+    font-size: 2vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#mapToggleContainer{
+    margin: 0.5dvh 0 0.5dvh 0;
+    border-radius: 0.2dvh;
+    border: 0.1vmin solid #AAD3DE;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+    /*padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;*/
+}
+
+.mapToggleButton{
+    padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.6vmin;
+    margin: 0;
+    /*color: #030303;*/
+    color:#f7f7f7;
+    cursor: pointer;
+}
+
+.selectedMapMode{
+    background-color: #AAD3DE;
+    color: #243B6D;
+}
+
+#controlContainer{ /*Container for the control buttons*/
+    width: 100%;
+    margin-top: 1dvh;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.2dvh;
+}
+.controlIcon{
+    filter: brightness(0) saturate(100%) invert(85%) sepia(1%) saturate(7343%) hue-rotate(192deg) brightness(117%) contrast(86%);
+    padding: 0.2dvh;
+    width: 3.04dvh; /*Have been made 20% smaller, previous 3.8dvh*/
+    height: 3.04dvh; /*Have been made 20% smaller, previous 3.8dvh*/
+    cursor: pointer; /*Pointer instead of standard cursor*/
+}
+
+/*CSS for the side panel container, background and border styling*/
+#sidePanel{
+    /*background: linear-gradient(90deg,rgba(255, 255, 255, 0.0) 0%, rgba(239, 239, 239, 0.96) 5%, rgba(222, 234, 237, 1) 100%);*/
+    background: linear-gradient(90deg,rgba(255, 255, 255, 0.0) 0%, rgba(67, 69, 84, 0.96) 5%, rgba(0, 75, 112, 1) 100%);
+    display: flex;
+    justify-content: center;
+}
+
+.sidePanelPageContainer{
+    width: 100%;
+    margin-left: 2dvw;
+    padding: 0 1dvw 0 1dvw;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+#sidePanel, #fuelFilter{
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
+#sidePanelMainTitle, #InfoTitle{
+    display: flex;
+    align-self: flex-start;
+    font-family: "DM Serif Display", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 3vmax;
+    margin: 1dvh 0 0 0;
+    /*color: #004B70;*/
+    color:#DEEAED;
+}
+
+#sidePanelMainTitleSmall{
+    opacity: 0;
+    font-family: "DM Serif Display", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.2vmax;
+    /*color: #004B70;*/
+    color:#DEEAED;
+}
+
+#sidePanelSubtitle{
+    display: flex;
+    align-self: flex-start;
+    font-family: "DM Serif Display", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1vmax;
+    margin: 0;
+    /*color: #004B70;*/
+    color:#DEEAED;
+}
+
+#sidePanelFilterAndResetWrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1dvh;
+}
+
+#filterCounter{
+    display: block;
+    align-self: center;
+    width: 55%;
+}
+
+#filterCounter * {
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.5vmin;
+    margin: 0;
+}
+
+#filterCounterValue{
+    /*color: #11658C;*/
+    color:#AAD3DE;
+}
+
+#filterCounterStatic{
+    /*color: #030303;*/
+    color:#f7f7f7;
+}
+
+.sidePanelResetButton{
+    z-index: 8;
+    border-radius: 0.2dvh;
+    border: #AAD3DE solid 0.1dvh;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+    padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
+}
+
+.sidePanelResetButton span{
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.2vmin;
+    margin: 0;
+    /*color: #030303;*/
+    color:#f7f7f7;
+    cursor: pointer;
+}
+
+#sidePanelLinePlot{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f7f7f7;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+    border-radius: 1dvh;
+    margin-top: 1dvh;
+}
+
+#sidePanelComparisonLinePlot{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f7f7f7;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+    border-radius: 1dvh;
+    margin: 1dvh 0 1dvh 0;
+}
+
+#linePlotRegionFilter{
+    margin: 1dvh 0 1dvh 0;
+    border-bottom: #004B70 solid 0.2dvh;
+    padding: 0 0 1dvh 0;
+}
+
+#compRegionFilter{
+    margin: 1dvh 0 1dvh 0;
+    border-bottom: #004B70 solid 0.2dvh;
+    padding: 0 0 1dvh 0;
+}
+
+#linePlotContinentFilter, #compLinePlotContinentFilter{
+    margin: 0.15dvh 0 0.15dvh 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 1dvw 0 1dvw;
+}
+
+.linePlotContinentButton{
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+    font-size: 1vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
+    cursor: pointer;
+}
+
+.continentSelected{
+    border: 0.1vmin solid #65A1E0;
+    background-color: #65A1E0;
+    color: #FCFCFC;
+}
+
+#linePlotHeader, #compLinePlotHeader{
+    height: 18%;
+    display: flex;
+    flex-direction: row;
+    margin: 1dvh 1dvw 1dvh 1dvw;
+}
+
+#linePlotAltHeader, #compLinePlotAltHeader{
+    height: 18%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#linePlotUsageLegends, #compLinePlotUsageLegends{
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 1dvh;
+}
+
+.usageLegend{
+    display: flex;
+    align-items: center;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+    margin: 0 0.16dvw 0 0;
+    padding: 0.4dvh;
+    font-size: 1.4vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.usageLegend div{
+    width: 2dvh;
+    height: 2dvh;
+    margin-right: 0.32dvw;
+    padding: 0.1dvh;
+    border-radius: 0.2vmin;
+}
+
+#altLinePlotBody, #compAltLinePlotBody{
+    display: flex;
+    justify-content: center;
+}
+
+#linePlotTitleWrapper, #compLinePlotTitleWrapper{
+    width: 65%;
+}
+
+#linePlotTitle, #compLinePlotTitle, #linePlotAltTitle, #compLinePlotAltTitle{
+    font-size: 1.6vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
+#dataToggleWrapper, #compDataToggleWrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0.32dvh;
+}
+
+#dataToggleTitle, #compDataToggleTitle{
+    margin-right: 0.16dvw;
+    font-size: 1.5vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+#dataToggleButtonContainer, #compDataToggleButtonContainer{
+    display: flex;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 0.2vmin;
+}
+
+.dataToggleButton{
+    padding: 0.4dvh 1.1dvh;
+    font-size: 1.2vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+#linePlotTextCollector, #compLinePlotTextCollector{
+    width: 45%;
+    font-family: "Lato", sans-serif;
+    font-size: 1.4vmin;
+    font-style: normal;
+}
+
+#linePlotExBoldText, #compLinePlotExBoldText{
+    font-weight: 600;
+}
+
+#linePlotExStandardText, #compLinePlotExStandardText{
+    font-weight: 400;
+}
+
+#linePlotBody, #compLinePlotBody{
+    display: flex;
+    flex-direction: row;
+    margin: 0 1dvw 1dvh 1dvw;
+}
+
+#fuelFilterContainer, #compFuelFilterContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 0.8dvw;
+    width: 45%;
+    height: 90%;
+    font-family: "Lato", sans-serif;
+    font-size: 1.5vmin;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.fuelFilterEntry{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fuelFilterLegendColour{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2dvh;
+    height: 2dvh;
+    margin-right: 0.32dvw;
+    padding: 0.1dvh;
+    border-radius: 0.2vmin;
+}
+
+.fuelFilterValue{
+    font-weight: 400;
+    margin-right: 0.32dvw;
+}
+
+.fuelFilterCheckBox{
+    border: 0.25vmin solid #004B70;
+    border-radius: 0.2vmin;
+    height: 1.5vmin;
+    width: 1.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fuelFilterCheckMark{
+    width: 1.2dvh;
+    height: 1.2dvh;
+    margin-left: unset;
+}
+
+#fuelFilterSelectAllName, #compFuelFilterSelectAllName{
+    font-weight: 400;
+    margin-right: 0.32dvw;
+}
+
+#fuelFilterSelectAllCircle, #compFuelFilterSelectAllCircle{
+    background-color: rgba(0, 0, 0, 0);
+    border: 0.25vmin solid #004B70;
+    border-radius: 50%;
+    height: 1.5vmin;
+    width: 1.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#fuelFilterSelectAllCheck, #compFuelFilterSelectAllCheck{
+    width: 0.8dvh;
+    height: auto;
+    margin-left: unset;
+}
+
+#additionalDiagramPromptContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 1dvh 0 1dvh 0;
+}
+
+#additionalDiagramPromptContainer span{
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.5vmin;
+    margin: 0 1dvh 0 0;
+    color: #f7f7f7;
+}
+
+#additionalDiagramPromptContainer img{
+    filter: brightness(0) saturate(100%) invert(85%) sepia(31%) saturate(240%) hue-rotate(149deg) brightness(93%) contrast(85%);
+}
+
+.instructionTitle{
+    display: none;
+    font-family: "DM Serif Display", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 2.2vmin;
+    margin: 2dvh 0 1dvh 0;
+    align-self:flex-start;
+    /*color: #004B70;*/
+    color:#AAD3DE;
+}
+
+.sidePanelFilterContainer{
+    display: flex;
+    background-color: #f7f7f7;
+    margin-top: 1dvh;
+    width: 100%;
+    align-self: center;
+    border-radius: 1dvh;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
+}
+
+.sidePanelDropDownHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: pointer; /*Added to show that the header is clickable*/
+}
+
+.sidePanelFilterDropDown{
+    display: flex;
+    width: 100%;
+}
+
+.sidePanelFilterTitle{
+    display: block;
+    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 1.8vmin;
+    margin: 0 0 0 1dvw;
+    color: #11658C;
+}
+
+.sidePanelFilterIcon{
+    width: 1dvw;
+    height: auto;
+    margin: 0 1dvw 0 0;
+}
+
+.sidePanelDropDownField{
+    position: absolute;
+    top: 4.5dvh;
+    left: 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    height: 28dvh;
+    width: 100%;
+    background-color: #F2FBFF;
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    padding: 1dvh 0 1dvh 0;
+}
+
+.sidePanelLegendContainer{
+    overflow-y: scroll;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-right: 0.5dvw;
+}
+
+.dropDownIndexContainer{
+    display: flex;
+    flex-direction: column;
+    overflow-x: scroll;
+    flex-shrink: 0;
+    margin-right: 0.5dvw;
+}
+
+.dropDownIndexContainer::-webkit-scrollbar{
+    width: 0.3dvw;
+    display: none;
+}
+.dropDownIndexContainer::-webkit-scrollbar-thumb {
+  background: #11658C;
+  border-radius: 10px;
+}
+
+.dropDownIndex{
+    display: flex;
+    justify-content: center;
+    width: 1.2vmin;
+    /*border: 0.4vmin solid #004B70;*/
+    /*border-radius: 0.7vmin;*/
+    margin: 0 0.1dvh 0 0.1dvh;
+    padding: 0.16dvh;
+    flex-shrink: 0;
+}
+.dropDownIndexChar{
+    display: block;
+    color: #004B70;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.4vmin;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.sidePanelFilterColour{
+    width: 2.5dvh;
+    height: 2.5dvh;
+    margin-left: 1dvh;
+    border: 0.4vmin solid #F2FBFF;
+}
+
+.sidePanelFilterName{
+    font-size: 1.8vmin;
+    font-weight: 400;
+    margin-left: 1dvh;
+}
+
+.hide {
+  display: none;
+}
+
+.sidePanelInstructionsContainer{
+    display: none;
+    margin: 0 0 1.5dvh 0;
+}
+
+.instructionsTitle{
+    display: block;
+    font-family: "Lato", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 2.5vmin;
+    margin: 1dvh 0 0 0;
+    align-self:center;
+    /*color: #004B70;*/
+    color:#AAD3DE;
+}
+
+.instructionsIntro{
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.8vmin;
+    margin: 1dvh 0 0 0;
+    /*color: #030303;*/
+    color:#f7f7f7;
+}
+
+.instructionsImgLinkWrapper{
+    display: flex;
+    width: 100%;
+    margin: 1dvh 0 0 0;
+}
+
+.instructionsTitleAndParagraphWrapper *{
+    font-size: 1.5vmin;
+    line-height: 1.5vmin;
+}
+
+.instructionsQRImage{
+    width: 8dvh;
+    height: 8dvh;
+}
+
+.instructionStepsTitle, .instructionsStepsList, .instructionStepsItemTitle,
+.instructionStepsItemStandard, .instructionStepsItemHighlight, .infoStepNumber, 
+.navigationBarIconNumber{
+    display: inline;
+    font-family: "Lato", sans-serif;
+    font-style: normal;
+    font-size: 1.8vmin;
+}
+
+.instructionStepsTitle{
+    font-weight: 600;
+    margin: 1dvh 0 0 0;
+    /*color: #004B70;*/
+    align-self:center;
+    color:#AAD3DE;
+}
+
+.instructionStepsList{
+    margin: 1dvh 0 0 0;
+    padding-left: 3ch;
+    /*color: #030303;*/
+    color:#f7f7f7;
+}
+
+.instructionStepsItemTitle{
+    font-weight: 600;
+    /*color: #030303;*/
+    color:#f7f7f7;
+    margin: 0;
+}
+
+.instructionStepsItemStandard{
+    font-weight: 400;
+    /*color: #030303;*/
+    color:#f7f7f7;
+    margin: 0;
+}
+
+.instructionStepsItemHighlight{
+    font-weight: 600;
+    margin: 0;
+    /*color: #004B70;*/
+    color: #AAD3DE;
+}
+
+.infoStepsList{
+    list-style: none;
+    padding-left: 0;
+}
+
+.infoStepIconWrapper{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1ch;
+    vertical-align: middle;
+}
+
+.infoStepIcon{
+    height: 2.5dvh;
+    width: auto;
+}
+
+.infoStepNumber{
+    position: absolute;
+    font-weight: 700;
+    font-size: 1.5vmin;
+    /*color: #f7f7f7;*/
+    color:#004B70;
+    pointer-events: none;
+}
+.infoStepItem{
+    margin: 0px 0px 1dvh;
+    display: flex;
+    flex-direction: row;
+}
+
+.infoStepItem strong{
+    margin-right: 0.1dvw;
+}
+
+#navigationBarContainer{
+    align-self: flex-end;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 2dvh 0 0 0;
+    flex-direction: row;
+    align-items: center;
+}
+
+.navigationBarIconLarge{
+    height: 3dvh;
+    width: auto;
+    cursor: pointer; /*Pointer instead of standard cursor*/
+}
+
+.navigationBarIconSmall{
+    height: 2.5dvh;
+    width: auto;
+    cursor: pointer; /*Pointer instead of standard cursor*/
+}
+
+.navigationBarIconWrapper{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigationBarIconWrapperLarge{
+    margin-right: 2dvh;
+}
+
+.navigationBarIconWrapperSmall{
+    margin-right: 1dvh;
+    display: none;
+}
+
+.navigationBarIconNumber{
+    transform: translate(-1.7dvh, 0.3dvh);
+    opacity: 0;
+    position: absolute;
+    font-weight: 700;
+    font-size: 1.5vmin;
+    /*color: #f7f7f7;*/
+    color:#004B70;
+    pointer-events: none;
+    margin: 0;
+}
+
+#sidePanelToggleContainer{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 6dvh;
+    height: 6dvh;
+    right: 28.5dvw;
+    bottom: 0;
+    border-radius: 0.7vmin 0 0 0.7vmin;
+    /*background-color: rgba(239, 239, 239, 0.92);*/
+    background-color: rgba(67, 69, 84, 0.96);
+}
+#sidePanelToggleIcon{
+    filter: brightness(0) saturate(100%) invert(85%) sepia(1%) saturate(7343%) hue-rotate(192deg) brightness(117%) contrast(86%);
+}
+
+/*Scroll bar*/
+::-webkit-scrollbar {
+  width: 0.3dvw;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  display: none;
+  background: #dae4e8;
+  border-radius: 10px; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #11658C;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #004B70; 
+}
+
+/*Up and down arrows*/
+::-webkit-scrollbar-button{
+	display: none;
+}
+
+/* Dual range slider */
+.sidePanelFilterSliderContainer{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    min-height: 4dvh;
+    margin: 0 2dvw 0 2dvw;
+    padding: 4dvh 0 1.2dvh 0;
+}
+
+.sliderTrack{
+    position: absolute;
+    width: 100%;
+    height: 0.5dvh;
+    background-color: #f7f7f7;
+    border: 2px solid #11658C;
+    border-radius: 1dvh;
+}
+
+.sliderRange{
+    position: absolute;
+    height: 1dvh;
+    background-color: #11658C;
+    border-radius: 1dvh;
+}
+
+.sliderThumb{
+    position: absolute;
+    width: 1.5dvh;
+    height: 1.5dvh;
+    background-color: #ffffff;
+    border: 2px solid #11658C;
+    border-radius: 50%;
+    transform: translateX(-50%) translateY(-25%);
+    cursor: pointer;
+    z-index: 2;
+    left: 0%;
+    display: flex;
+    justify-content: center;
+}
+.sliderValueText{
+    position: relative;
+    top: -4dvh;
+    display: block;
+    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 1.8vmin;
+    color: #11658C;
+    white-space: nowrap;
+}
+.sliderThumb:hover{
+    background-color: #e8f4f8;
+}
+
+.sliderTextField{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin: 1.5dvh 0 1dvh 0;
+}
+.sliderEdgeText{
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.1vmin;
+    margin: 0;
+}
+
+.sliderTitleWrapper{
+    display: flex;
+    align-items: center;
+}
+
+#sliderPlaybackField{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#sliderPlaybackButton{
+    display: flex;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 2vmin;
+    padding: 0.4dvh 1.1dvh;
+    font-size: 1.2vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    box-sizing: border-box;
+}
+
+.sliderTitle{
+    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 1.5vmin;
+    margin: 0;
+}
+
+.sliderIcon{
+    height: 1.7vmin;
+    width: 1.7vmin;
+    margin-left: 0.3dvw;
+    cursor: pointer;
+}
+
+.sliderTooltipTooltip{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    z-index: 10; /* Ensure tooltip is displayed above content */
+}
+
+.sliderTooltipTooltipText{
+    visibility: hidden; /* Hidden by default */
+    width: 9dvw;
+    background-color: black;
+    color: #ffffff;
+    text-align: center;
+    padding: 1dvh;
+    border-radius: 0.5dvh;
+    position: absolute;
+    right: 105%;
+    top: 50%;
+    transform: translateX(-10%);;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.8vmin;
+    line-height: 1.9vmin;
+}
+
+.selectAllDropdown > p {
+    font-family: "Lato", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.selectAllDropdown > div {
+    border: 0.4vmin solid #004B70;
+    border-radius: 50%;
+}
+
+.selectAllCheck {
+    width: 1.2dvh;
+    height: auto;
+    margin-left: unset;
+}
+
+.legendCheckBox{
+    border: 0.4vmin solid #004B70;
+    border-radius: 0.7vmin;
+}
+
+.legendRadio{
+    border-color: #004B70;
+    border-radius: 50%;
+}
+
+.selection-overview-header{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0.5dvh 0 0.5dvh 0;
+    justify-content: space-between;
+    border-top: 0.3dvh solid #e0e0e0;
+}
+
+.selection-overview-header img{
+    width: 2vmin;
+}
+
+.selection-overview-header h1{
+    width: unset;
+}
+
+/*Specific styling for tablet-sized devices*/
+@media (max-height: 1024px){
+    .sidePanelPageContainer{margin-left: 2dvw;}
+    #sidePanelMainTitle{font-size: 3.2vmax;}
+    #sidePanelSubtitle{font-size: 1.5vmax;}
+    #InfoTitle{font-size: 3.2vmax;}
+    .instructionTitle{font-size: 1.2vmax;}
+    .instructionsTitleAndParagraphWrapper *{font-size: 1vmin; line-height: 1.5vmin;}
+    .instructionsQRImage{width: 6dvh; height: 6dvh;}
+    .instructionsTitle{font-size: 2vmin;}
+    .instructionsIntro{font-size: 1.5vmin; margin: 0.5dvh 0 0 0;}
+    .instructionStepsTitle{font-size: 1.5vmin; margin: 0.5dvh 0 0 0;}
+    .instructionStepsList{font-size: 1.5vmin; margin: 0.5dvh 0 0 0; padding-left: 2ch;}
+    .instructionStepsItemTitle{font-size: 1.5vmin;}
+    .instructionStepsItemStandard{font-size: 1.5vmin;}
+    .instructionStepsItemHighlight{font-size: 1.5vmin;}
+    #navigationBarContainer{width: 100%;}
+    #sidePanelFilterAndResetWrapper{flex-direction: row;}
+    #filterCounter{font-size: 1vmin;}
+    .sidePanelResetButton{padding: 0.5dvh; margin: 0 0.5dvw 0 0.5dvw;}
+    #fuelFilterContainer, #compFuelFilterContainer{padding-left: 0.4dvw; font-size: 1.2vmin;}
+    #fuelFilterSelectAllCheck, #compFuelFilterSelectAllCheck{width: 0.7dvh;}
+}

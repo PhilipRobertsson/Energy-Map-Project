@@ -1,0 +1,13 @@
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import PrimaryPanels from './PrimaryPanels.jsx'
+import Map from './Map.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <Map>
+      <PrimaryPanels />
+    </Map>
+  </StrictMode>,
+)

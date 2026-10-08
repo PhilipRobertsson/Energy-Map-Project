@@ -1,0 +1,173 @@
+[
+    {
+        "id":0,
+        "name":"Info",
+        "titles":[
+            "Introduction",
+            "Research paper",
+            "Source of Information",
+            "Guide"
+        ],
+        "bodies":[
+            [
+                "This PhD research project visualizes the distribution and capacity of power plants worldwide. It transforms complex energy data into an interactive map, revealing how our planet stays powered. Explore the hidden infrastructure that sustains modern society across every continent.",
+                "By tapping individual data points, you can access specific details about any plant on the map. Use the built-in filters to compare different energy sources. \n",
+                "The Story Mode will walk you through the tool’s features while highlighting key trends in global energy. Discover the balance of power that shapes our international communities today. \n",
+                "This tool relies on data from the Global Power Plant Database, which includes both reported and estimated values for power plant generation. Only 11,400 power plants (33%) have reported data, thus, we are using estimated values to maximize coverage to 33,470 plants (96%).\n",
+                "These estimates are based on methodologies documented by the dataset provider in its technical note and README file. However, they should not be interpreted as directly observed generation data, and results may be subject to uncertainty arising from the estimation methods and underlying data limitations.\n"
+            ],
+            [
+                "https://dl.acm.org/doi/full/10.1145/3769534.3769541"
+            ],
+            [
+                "https://www.wri.org/research/global-database-power-plants"
+            ]
+        ],
+        "lists":[
+            [],[],[],
+            [
+                [
+                    ["Title", "Explore: "],
+                    ["Standard", "Use the filter to view the energy landscape of each region."]
+                ],
+                [
+                    ["Title", "Zoom In: "],
+                    ["Standard", "Navigate to local area to discover which energy sources power your daily life."]
+                ],
+                [
+                    ["Title", "Analyze: "],
+                    ["Standard", "Tap on a power plant to open detailed info cards."]
+                ],
+                [
+                    ["Title", "Discover: "],
+                    ["Standard", "Explore deeper insights, such as why Sweden and Denmark rely on different primary energy sources."]
+                ],
+                [
+                    ["Title", "Compare: "],
+                    ["Standard", "Find differences between what kind of energy is used in different parts of the world."]
+                ]
+            ]
+        ]
+    },
+    {
+        "id":1,
+        "name":"Energy Map - Filters",
+        "titles":[
+            "Filter your map view"
+        ],
+        "lists":[
+            [
+                [
+                    ["Title", "Choose a place: "],
+                    ["Standard", "Tap the top drop-down list to select "],
+                    ["Highlight", "regions"],
+                    ["Standard", "."]
+                ],
+                [
+                    ["Title", "Select a time range: "],
+                    ["Standard", "Drag the handles on the "],
+                    ["Highlight", "year started "],
+                    ["Standard", "slider to select a specific time period."]
+                ],
+                [
+                    ["Title", "Select plants by size: "],
+                    ["Standard", "Drag the "],
+                    ["Highlight", "annual generation "],
+                    ["Standard", "slider to filter out smaller and larger stations."]
+                ],
+                [
+                    ["Title", "Choose a power source: "],
+                    ["Standard", "Use the checkbox next to the diagram to explore the "],
+                    ["Highlight", "power source of different regions"],
+                    ["Standard", "."]
+                ]
+            ]
+        ]
+    },
+    {
+        "id":2,
+        "name":"Energy Map - Legends",
+        "titles":[
+            "Read the Map"
+        ],
+        "lists":[
+            [
+                [
+                    ["Title", "Circle size (capacity): "],
+                    ["Standard", "Colored circles show power plants, with larger circles representing major stations and smaller dots indicating minor ones."]
+                ],
+                [
+                    ["Title", "Circle colour (energy source): "],
+                    ["Standard", "Each color stands for a different type of energy."]
+                ]
+            ]
+        ]
+    },
+    {
+        "id":3,
+        "name":"Energy Map - Data Cards",
+        "titles":[
+            "Read more about the power plants"
+        ],
+        "lists":[
+            [
+                [
+                    ["Title", "Tap a circle "],
+                    ["Standard", "to view its opening year, capacity and actual output."]
+                ],
+                [
+                    ["Title", "Use the arrow next to the region "],
+                    ["Standard", "to view its overall capacity and energy sources."]
+                ]
+            ]
+        ]
+    },
+    {
+        "id":4,
+        "name":"Energy Map - Sweden Overview",
+        "titles":[
+            "Why Sweden and Denmark Use Different Energy Sources"
+        ],
+        "bodies":[
+            [
+                "Use the region dropdown to compare both countries and see how their landscapes shape energy. \n",
+                "Sweden relies on mountains and rivers for hydropower, while Denmark focuses on flat, windy coasts for wind power.\n"
+            ]
+        ]
+    },
+    {
+        "id":5,
+        "name":"Energy Map - Energy Usage",
+        "titles":[
+            "Different kinds of fuel sources"
+        ],
+        "lists":[
+            [
+                [
+                    ["Title", "Low Carbon: "],
+                    ["Standard", "Use the "],
+                    ["Highlight", "Low Carbon Usage "],
+                    ["Standard", " map mode to see what share of a countries energy usage was produced with "],
+                    ["Highlight", " Low Carbon "],
+                    ["Standard", "fuel types."]
+                ],
+                [
+                    ["Title", "Fossil Fuel: "],
+                    ["Standard", "Use the "],
+                    ["Highlight", "Fossil Fuel Usage "],
+                    ["Standard", " map mode to see what share of a countries energy usage was produced with "],
+                    ["Highlight", " Fossil Fuels "],
+                    ["Standard", "."]
+                ],
+                [
+                    ["Title", "Additional Information: "],
+                    ["Standard", "Click on "],
+                    ["Highlight", " Sweden "],
+                    ["Standard", "and "],
+                    ["Highlight", "Finland "],
+                    ["Standard", "in the map to compare their fuel type usages throughout the years."]
+                ]
+            ]
+        ]
+    }
+]
