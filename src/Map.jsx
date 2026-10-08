@@ -855,7 +855,8 @@ function getPowerPlantInfo(feature, htmlElement, reportedYears, estimatedYears){
     var reported = false
     for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
         //var tempReported = eval("feature.generation_gwh_" + i)
-        var tempEstimated = eval("feature.estimated_generation_gwh_" + i)
+        //var tempEstimated = eval("feature.estimated_generation_gwh_" + i)
+        var tempEstimated = feature["estimated_generation_gwh_"+i]
         /* if(tempReported != null){
             latestDataYear = i
             latestDataValue = tempReported

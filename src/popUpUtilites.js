@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 export function getLatestDataArray(years, countryData){
     var latestData = {}
     for(var i = years.last; i >=years.first; i--){
-        var tempEstimated = eval("countryData.annual_output_by_fuel.estimated_generation_gwh_" + i)
+        var tempEstimated = countryData.annual_output_by_fuel["estimated_generation_gwh_"+i]
 
         // Removes null items from the object
         const cleanObject = (object) =>
@@ -95,7 +95,7 @@ export function createPopUpBarChart(parent, country, regionalData,fuelFilter, es
     var latestDataYear = 0
     var latestDataValue = 0
     for(var i = estimatedYears.last; i >=estimatedYears.first; i--){
-        var tempEstimated = eval("countryData.regional_annual_output.estimated_generation_gwh_" + i)
+        var tempEstimated = countryData.regional_annual_output["estimated_generation_gwh_"+i]
        if(tempEstimated != null){
         latestDataYear = i
         latestDataValue = tempEstimated

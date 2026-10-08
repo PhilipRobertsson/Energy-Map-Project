@@ -144,7 +144,23 @@ function PrimaryPanels() {
             fetch("./" + fetchJSON[i] + ".json")
                 .then((response) => response.json())
                 .then((data) =>{
-                    eval("set"+state+"(data)");
+                    switch(state){
+                        case "FuelFilter":
+                            setFuelFilter(data)
+                            break;
+                        case "RegionalData":
+                            setRegionalData(data)
+                            break;
+                        case "RegionFilter":
+                            setRegionFilter(data)
+                            break;
+                        case "PageContent":
+                            setPageContent(data)
+                            break;
+                        case "ContinentalData":
+                            setContinentalData(data)
+                            break;
+                    }
                     if(state == "FuelFilter"){setComparisonFuelFilter(data)}
                     if(state == "RegionFilter"){setComparisonRegionFilter(data)}
                 })
@@ -193,6 +209,7 @@ function PrimaryPanels() {
 
     // Check the timer, if it reaches zero, reset everything
     useEffect(() =>{
+        console.log(timeRef)
         if(timeRef <= 0){
             mapRef.current?.setZoom(1.8)
             setTimeout(()=>{
@@ -364,7 +381,8 @@ function PrimaryPanels() {
             if(fuel.fuel != "Other"){
                 const icon = document.createElement("img")
                 icon.classList.add("legendIcon")
-                icon.src = eval("assetSources.fuelIcon"+fuel.fuel)
+                //icon.src = eval("assetSources.fuelIcon"+fuel.fuel)
+                icon.src = assetSources["fuelIcon"+fuel.fuel]
                 colour.appendChild(icon)
             }
 
@@ -1467,11 +1485,11 @@ function PrimaryPanels() {
             if(clickedItem == "all"){
                 return prevFilter.map(i => ({ ...i, show: false}));
             }
-            return prevFilter.map(i => ({ ...i, show: eval("i."+propName) === clickedItem})); // If true, deselect everything but the clicked option
+            return prevFilter.map(i => ({ ...i, show: i[propName] === clickedItem})); // If true, deselect everything but the clicked option
         }
 
         const toggled = prevFilter.map(i =>
-            eval("i."+propName) === clickedItem ? { ...i, show: !i.show } : i // Deselect or select the clicked option
+            i[propName] === clickedItem ? { ...i, show: !i.show } : i // Deselect or select the clicked option
             
         );
         if(clickedItem == "all"){
@@ -2158,30 +2176,30 @@ function getSliders(filter, regionalData, onChange){
     return sliderContainer
 }
 
+function makeTitle(text){
+    const element = document.createElement("strong")
+    element.classList.add("instructionStepsItemTitle")
+    element.textContent = text
+    return element
+}
+
+function makeStandard(text){
+    const element = document.createElement("span")
+    element.classList.add("instructionStepsItemStandard")
+    element.textContent = text
+    return element
+}
+
+function makeHighlight(text){
+    const element = document.createElement("strong")
+    element.classList.add("instructionStepsItemHighlight")
+    element.textContent = text
+    return element
+}
+
 function getInstructions(pageContent, id){
     const container = document.createElement("div")
     container.classList.add('sidePanelInstructionsContainer')
-
-    const makeTitle = (text) => {
-        const element = document.createElement("strong")
-        element.classList.add("instructionStepsItemTitle")
-        element.textContent = text
-        return element
-    }
-
-    const makeStandard = (text) => {
-        const element = document.createElement("span")
-        element.classList.add("instructionStepsItemStandard")
-        element.textContent = text
-        return element
-    }
-
-    const makeHighlight = (text) => {
-        const element = document.createElement("strong")
-        element.classList.add("instructionStepsItemHighlight")
-        element.textContent = text
-        return element
-    }
 
     pageContent.forEach(content =>{
         if(id == content.id){
@@ -2262,10 +2280,30 @@ function getInstructions(pageContent, id){
                                 }
                                 item.forEach(s =>{
                                     if(content.id == 0){
-                                        textWrapper.appendChild(eval('make'+s[0]+'("'+s[1]+'")'))
+                                        switch(s[0]){
+                                            case "Title":
+                                                textWrapper.appendChild(makeTitle(s[1]))
+                                                break;
+                                            case "Standard":
+                                                 textWrapper.appendChild(makeStandard(s[1]))
+                                                 break;
+                                            case "HighLight":
+                                                textWrapper.appendChild(makeHighlight(s[1]))
+                                                break;
+                                        }
                                         collector.appendChild(textWrapper)
                                     }else{
-                                        collector.appendChild(eval('make'+s[0]+'("'+s[1]+'")'))
+                                        switch(s[0]){
+                                            case "Title":
+                                                collector.appendChild(makeTitle(s[1]))
+                                                break;
+                                            case "Standard":
+                                                 collector.appendChild(makeStandard(s[1]))
+                                                 break;
+                                            case "HighLight":
+                                                collector.appendChild(makeHighlight(s[1]))
+                                                break;
+                                        }
                                     }
                                 })
                                 stepsList.appendChild(collector)
