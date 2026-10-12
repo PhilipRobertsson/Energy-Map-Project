@@ -109,7 +109,7 @@ export function handleZoomSelection(element, regionFilter, fuelFilter, yearFilte
     element.classList.toggle("selection");
 }
 
-export function handleResetClick(button, option, resetAllFilters){
+export function handleResetClick(button, option, resetAllFilters, closeAll){
     if(button){
         gsap.fromTo(button, 
             { opacity: 1 }, 
@@ -129,7 +129,7 @@ export function handleResetClick(button, option, resetAllFilters){
         case "close":
             const openPopUps = document.querySelectorAll(".maplibregl-popup")
             openPopUps.forEach(popup => {
-                if(!popup.classList.contains("maplibregl-popup-selection-info")){
+                if(closeAll||!popup.classList.contains("maplibregl-popup-selection-info")){
                     gsap.to(popup.children[1].children, {opacity: 0, duration: 0.2, ease: "power2.in"})
                     gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
                 }
@@ -444,7 +444,7 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
             }
 
             // Hide pop-ups
-            handleResetClick(null, "close", null)
+            handleResetClick(null, "close", null, false)
 
             break;
         case "Energy Usage":
@@ -488,7 +488,7 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
             }
 
             // Hide pop-ups
-            handleResetClick(null, "close", null)
+            handleResetClick(null, "close", null, false)
 
             break;
         case "Energy Usage":

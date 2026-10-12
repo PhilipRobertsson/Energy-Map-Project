@@ -222,7 +222,7 @@ function PrimaryPanels() {
             endSession()
             startScreenSaver(mapRef?.current, 1, 50)
             resetAllFilters()
-            handleResetClick(null, "close", null) // Close pop-ups
+            handleResetClick(null, "close", null, true) // Close pop-ups
 
             // Remove the comparison diagram if it is open, and reset its prompt button
             const comparisonDiagram = document.querySelector("#sidePanelComparisonLinePlot")
@@ -1164,7 +1164,7 @@ function PrimaryPanels() {
                 (value, bounds) => setShareYearFilter([value, bounds]),
                 (values, bounds) => setLCShareFilter([values,bounds]),
                 (values, bounds) => setFFShareFilter([values,bounds]),
-                (button, option) => handleResetClick(button, option, resetAllFilters),
+                (button, option) => handleResetClick(button, option, resetAllFilters, true),
                 (element, index) => handleIndexClick(element, index, regionFilterRef),
                 handleLinePlotToggle,
                 (clickedFuel, setBarChartFilter, setFilter) => handleFueLegClick(clickedFuel, setBarChartFilter, setFilter, checkAndSetFilter),
@@ -1751,7 +1751,7 @@ function createPages(pageContent, powerPlants, regionalData, continentData, regi
 
     closeButtonField.classList.add("sidePanelResetButton")
     closeButtonText.textContent = "Close Pop-Ups"
-    closeButtonField.onclick = () => onReset(closeButtonField, "close")
+    closeButtonField.onclick = () => onReset(closeButtonField, "close", true)
 
     closeButtonField.appendChild(closeButtonText)
     filterAndResetWrapper.appendChild(closeButtonField)
@@ -1762,7 +1762,7 @@ function createPages(pageContent, powerPlants, regionalData, continentData, regi
 
     resetButtonField.classList.add("sidePanelResetButton")
     resetButtonText.textContent = "Reset Filters"
-    resetButtonField.onclick = () => onReset(resetButtonField, "reset")
+    resetButtonField.onclick = () => onReset(resetButtonField, "reset", true)
 
     resetButtonField.appendChild(resetButtonText)
     filterAndResetWrapper.appendChild(resetButtonField)
