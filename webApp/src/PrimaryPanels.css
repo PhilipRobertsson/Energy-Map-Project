@@ -213,14 +213,16 @@
     border: #AAD3DE solid 0.1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
+    margin: 0 0.5dvw 0 0.5dvw;
 }
 
 .sidePanelResetButton span{
     font-family: "Lato", sans-serif;
     font-weight: 700;
     font-style: normal;
-    font-size: 1.2vmin;
+    font-size: 1.6vmin;
     margin: 0;
+    margin: 0 0.5dvw 0 0.5dvw;
     /*color: #030303;*/
     color:#f7f7f7;
     cursor: pointer;
@@ -804,6 +806,17 @@
 }
 #sidePanelToggleIcon{
     filter: brightness(0) saturate(100%) invert(85%) sepia(1%) saturate(7343%) hue-rotate(192deg) brightness(117%) contrast(86%);
+}
+
+#closeAndResetContainer{
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    bottom: 0;
+    left: 25%;
+    background-color: rgba(0, 75, 112, 0.88);
+    padding: 1dvh;
+    border-radius: 2.5dvh 2.5dvh 0 0;
 }
 
 /*Scroll bar*/

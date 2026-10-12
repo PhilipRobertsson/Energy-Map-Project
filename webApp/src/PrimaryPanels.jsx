@@ -629,7 +629,7 @@ function PrimaryPanels() {
         const boldText = mainDiagram.querySelector("#linePlotExBoldText")
         const altMainTitle = mainDiagram.querySelector("#linePlotAltTitle")
 
-        const openPopUps = document.querySelectorAll(".maplibregl-popup-selection-info")
+        const openPopUps = document.querySelectorAll(".maplibregl-popup")
 
         // Get shown regions
         const shownRegions = regionFilter.filter(f=>f.show)
@@ -796,8 +796,10 @@ function PrimaryPanels() {
 
                     const infoIcon = contentElement.querySelector(".regionalInfoWrapper")
                     const infoToolTip = contentElement.querySelector(".generationInfoTooltipText")
-                    infoIcon.onmouseover = () => infoToolTip.style.visibility = "visible"
-                    infoIcon.onmouseout = () => infoToolTip.style.visibility = "hidden"
+                    if(infoIcon){
+                        infoIcon.onmouseover = () => infoToolTip.style.visibility = "visible"
+                        infoIcon.onmouseout = () => infoToolTip.style.visibility = "hidden"
+                    }
 
                     makePopUpMovable(popup.getElement(),mapRef.current)
                 }
@@ -1471,7 +1473,14 @@ function PrimaryPanels() {
             sidePanel.querySelectorAll(".sidePanelFilterSliderContainer").forEach(slider => {
                 if (slider.reset) slider.reset()
             })
+            const lineplotGlobalButton = sidePanel.querySelectorAll(".linePlotContinentButton ")[0];
+            handleContinentClick(lineplotGlobalButton, regionalData, "Global", continentalData, regionFilterRef, setRegionFilter,shareYears, false, zoomToRegionFilter)
+            const compPlotGlobalButton = sidePanel.querySelectorAll(".linePlotContinentButton ")[7];
+            if(compPlotGlobalButton){
+                handleContinentClick(compPlotGlobalButton, regionalData, "Global", continentalData, regionFilterRef, setRegionFilter,shareYears, false, zoomToRegionFilter)
+            }
         }
+
     }
 
     // Used by the two drop down and legends filter update functions, to set corresponding filters
@@ -1562,6 +1571,14 @@ function PrimaryPanels() {
         }} />
         <div id="sidePanelToggleContainer" onClick={() => handleSidePanelToggle(sidePanelContainer, sidePanelOpenRef)}>
             <img src={assetSources.sidePanelInfo} id="sidePanelToggleIcon"></img>
+        </div>
+        <div id="closeAndResetContainer">
+            <div className="sidePanelResetButton" onClick={(This) => handleResetClick(This.target, "close", null, true)}>
+                <span>Close Pop-Ups</span>
+            </div>
+            <div className="sidePanelResetButton" onClick={(This) => handleResetClick(This.target, "reset", resetAllFilters(), true)}>
+                <span>Reset Filters</span>
+            </div>
         </div>
     </>)
 }
@@ -1745,27 +1762,6 @@ function createPages(pageContent, powerPlants, regionalData, continentData, regi
     filterCounter.appendChild(filterCounterStatic)
     filterAndResetWrapper.appendChild(filterCounter)
 
-    // Close pop-ups button
-    const closeButtonField = document.createElement("div")
-    const closeButtonText = document.createElement("span")
-
-    closeButtonField.classList.add("sidePanelResetButton")
-    closeButtonText.textContent = "Close Pop-Ups"
-    closeButtonField.onclick = () => onReset(closeButtonField, "close", true)
-
-    closeButtonField.appendChild(closeButtonText)
-    filterAndResetWrapper.appendChild(closeButtonField)
-
-    // Reset button
-    const resetButtonField = document.createElement("div")
-    const resetButtonText = document.createElement("span")
-
-    resetButtonField.classList.add("sidePanelResetButton")
-    resetButtonText.textContent = "Reset Filters"
-    resetButtonField.onclick = () => onReset(resetButtonField, "reset", true)
-
-    resetButtonField.appendChild(resetButtonText)
-    filterAndResetWrapper.appendChild(resetButtonField)
     pageContainer.appendChild(filterAndResetWrapper)
 
     const multiYearFilterContainer = document.createElement("div");

@@ -109,7 +109,7 @@ export function handleZoomSelection(element, regionFilter, fuelFilter, yearFilte
     element.classList.toggle("selection");
 }
 
-export function handleResetClick(button, option, resetAllFilters, closeAll){
+export function handleResetClick(button, option, resetFunction, closeAll){
     if(button){
         gsap.fromTo(button, 
             { opacity: 1 }, 
@@ -124,7 +124,7 @@ export function handleResetClick(button, option, resetAllFilters, closeAll){
     }
     switch(option){
         case "reset":
-            resetAllFilters()
+            resetFunction
             break;
         case "close":
             const openPopUps = document.querySelectorAll(".maplibregl-popup")
