@@ -650,8 +650,8 @@ function PrimaryPanels() {
                 altMainTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
                 if(showingMainOutput){boldText.textContent = "Global electric generation per year "}
                 else{boldText.textContent = "Global power plant capacity by source "}
-            }else{ // A continent is selected, check first item to see which
-                let continent = shownRegions[0].continent
+            }else{ // A continent is selected
+                const continent = document.querySelector("#sidePanelLinePlot .continentSelected span")?.textContent || shownRegions[0].continent
                 mainTitle.textContent = continent + "'s Electricity Source Trends"
                 altMainTitle.textContent = continent + "'s Low Carbon and Fossil Fuel Usage Shares"
                 if(showingMainOutput){boldText.textContent = continent + "'s electric generation per year "}
@@ -832,8 +832,8 @@ function PrimaryPanels() {
                 altCompTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
                 if(showingCompOutput){boldCompText.textContent = "Global electric generation per year "}
                 else{boldCompText.textContent = "Global power plant capacity by source "}
-            }else{ // A continent is selected, check first item to see which
-                let continentComp = shownCompRegions[0].continent
+            }else{ // A continent is selected
+                const continentComp = document.querySelector("#sidePanelComparisonLinePlot .continentSelected span")?.textContent || shownCompRegions[0].continent
                 compTitle.textContent = continentComp + "'s Electricity Source Trends"
                 altCompTitle.textContent = continentComp + "'s Low Carbon and Fossil Fuel Usage Shares"
                 if(showingCompOutput){boldCompText.textContent = continentComp + "'s electric generation per year "}

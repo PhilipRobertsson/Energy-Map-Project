@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { createDiagram, otherFuels } from "./sidePanelUtilities.js";
+import { crossContinentCountries } from "./crossContinentCountries.js";
 
 // powerplants, region, fuel, year, generation filters
 export function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
@@ -381,7 +382,12 @@ export function handleContinentClick(element, regionalData, continent,continentD
     if(continent == "Global"){
         toggled = prevFilter.map(r => ({ ...r, show: true }))
     }else{
-        toggled = prevFilter.map(r => ({ ...r, show: r.continent === continent }))
+        // Include countries whose primary continent matches, plus countries
+        // that span the selected continent (e.g. Russia/Turkey for Asia).
+        toggled = prevFilter.map(r => ({
+            ...r,
+            show: r.continent === continent || crossContinentCountries[r.country]?.includes(continent)
+        }))
     }
 
     setFilter(toggled)
