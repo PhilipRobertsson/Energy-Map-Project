@@ -318,7 +318,7 @@ export function makePopUpMovable(popUpE, map){
     const onStart = (e) => {
         // Don't start a drag when tapping an interactive element
         // (close button, rollup icon, etc.) so touch/click still works
-        if(e.target && e.target.closest && e.target.closest('img,button,rect,a,input,[role="button')){
+        if(e.target && e.target.closest && e.target.closest('img,button,rect,a,input,[role="button"],.selection-overview-header,.regional-overview-panel')){
             return;
         }
         e.preventDefault()
