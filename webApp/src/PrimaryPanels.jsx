@@ -1350,9 +1350,25 @@ function PrimaryPanels() {
             coordinates.push(p.geometry.coordinates)
         })
         if(coordinates.length && coordinates.length != powerPlants.features.length){
-            const bounds = getBounds(coordinates)
+            
+            const sidePanelPadding = Math.floor(window.innerWidth * 0.30)
+            const referenceLng = coordinates[0][0]
+            const unwrapped = coordinates.map(coord => {
+                let lng = coord[0]
+                while (Math.abs(lng - referenceLng) > 180) {
+                    lng += lng < referenceLng ? 360 : -360
+                }
+                return [lng, coord[1]]
+            })
+
+            const bounds = getBounds(unwrapped)
             mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
-                padding: 75,
+                padding: {
+                    top: 50,
+                    bottom: 50,
+                    left: 50,
+                    right: 50 + sidePanelPadding
+                },
                 maxZoom: 15
             });
         }else{

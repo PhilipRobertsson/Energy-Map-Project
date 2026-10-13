@@ -93,7 +93,19 @@ export function handleZoomSelection(element, regionFilter, fuelFilter, yearFilte
         })
         
         if(coordinates.length && coordinates.length != powerPlants.features.length){
-            const bounds = getBounds(coordinates)
+            // Unwrap longitudes relative to the region's own first longitude so
+            // the bounds stay continuous and west < east, avoiding antimeridian
+            // wrapping (mirrors zoomToRegionFilter()).
+            const referenceLng = coordinates[0][0]
+            const unwrapped = coordinates.map(coord => {
+                let lng = coord[0]
+                while (Math.abs(lng - referenceLng) > 180) {
+                    lng += lng < referenceLng ? 360 : -360
+                }
+                return [lng, coord[1]]
+            })
+
+            const bounds = getBounds(unwrapped)
             mapRef.current?.fitBounds([bounds.southWest, bounds.northEast],{
                 padding: 50,
                 maxZoom: 15
