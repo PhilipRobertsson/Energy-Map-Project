@@ -131,6 +131,7 @@
 .regional-overview-panel{
     width: 100%;
     padding-top: 0.5dvh;
+    cursor: pointer;
 }
 
 .regional-overview-header{

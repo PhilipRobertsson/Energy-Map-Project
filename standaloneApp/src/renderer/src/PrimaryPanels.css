@@ -1021,6 +1021,7 @@
     padding: 0.5dvh 0 0.5dvh 0;
     justify-content: space-between;
     border-top: 0.3dvh solid #e0e0e0;
+    cursor: pointer;
 }
 
 .selection-overview-header img{

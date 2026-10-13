@@ -440,7 +440,7 @@ function Map({ children }) {
               const regionalInformation = getRegionalInfo(properties, regionalData, colourData, reportedYears, estimatedYears)
           
               // Handle clicks on the rollup icon
-              overviewOpen.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
+              regionalOverview.onclick = () => handleRollupClick(overviewOpen.src, overviewOpen, regionalInformation);
         
               // Get regionalInfoIcon
               if(regionalInformation.children[0].children[2]){
