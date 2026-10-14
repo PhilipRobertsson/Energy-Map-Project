@@ -196,11 +196,6 @@ const assetSources ={
     alertIcon: "./sidePanel/sidePanelInfoIcon.svg"
 }
 
-// Variables for the timer
-// Convert to seconds: 60, Desired reset time in minutes: 5 (default), Convert to miliseconds: 1000
-const TIME_IN_MILISECONDS_TO_EXHIBITION_RESET = 60*5*1000;
-const INTERVAL_IN_MILISECONDS = 1000;
-
 function Map({ children }) {
   const [data, setData] = useState(null);
   const [boundaryData, setBoundaryData] = useState(null);
@@ -259,7 +254,9 @@ function Map({ children }) {
     map.setLayoutProperty("powerplants-layer", "visibility", "visible")
     map.setFilter("powerplants-layer", powerplantsFilter)
   }, [])
-  const [time, setTime] = useState(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET);
+
+  const [config, setConfig] = useState(null);
+  const [time, setTime] = useState(null);
   const [referenceTime, setReferenceTime] = useState(Date.now());
 
   // Load needed data from public folder
@@ -304,6 +301,12 @@ function Map({ children }) {
         const usageKeys = Object.keys(data[0].usage_shares)
         const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
         setShareYears({first: Math.min(...dataYears), last: Math.max(...dataYears)})
+      });
+    fetch("./config.json")
+      .then((response) => response.json())
+      .then((data) =>{
+        setConfig(data);
+        setTime(data.idleTimeoutMin * 60 * 1000)
       });
   }, []);
 
@@ -721,14 +724,15 @@ function Map({ children }) {
 
   // Timer update
   useEffect(() =>{
+    if(config == null) return;
     const countDownUntilZero = () => {
         const now = Date.now();
         const interval = now - referenceTime;
         setReferenceTime(now);
         setTime(prevTime => Math.max(0, prevTime - interval));
     }
-    const timeoutId = setTimeout(countDownUntilZero, INTERVAL_IN_MILISECONDS);
-    //console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
+    const timeoutId = setTimeout(countDownUntilZero, config.intervalMs);
+    console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
     return () => clearTimeout(timeoutId);
   }, [time]);
 
@@ -793,7 +797,9 @@ function Map({ children }) {
   // Reset the timer
   function resetTimer(){
     setReferenceTime(Date.now())
-    setTime(TIME_IN_MILISECONDS_TO_EXHIBITION_RESET)
+    if(config != null){
+      setTime(config.idleTimeoutMin * 60 * 1000)
+    }
   }
 
   return (
