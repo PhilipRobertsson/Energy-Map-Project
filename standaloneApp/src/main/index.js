@@ -1,7 +1,33 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+
+// Default values used when no user config file exists yet. The user can
+// override these by editing the JSON file at app.getPath('userData')/config.json.
+const DEFAULT_CONFIG = { idleTimeoutMin: 5, intervalMs: 1000 }
+
+function configPath() {
+  return join(app.getPath('userData'), 'config.json')
+}
+
+// Read the user's config file, falling back to DEFAULT_CONFIG for any missing
+// fields. Writes the default file on first run so the user has something to edit.
+function loadConfig() {
+  const path = configPath()
+  let userConfig = {}
+  if (existsSync(path)) {
+    try {
+      userConfig = JSON.parse(readFileSync(path, 'utf-8'))
+    } catch {
+      userConfig = {}
+    }
+  } else {
+    writeFileSync(path, JSON.stringify(DEFAULT_CONFIG, null, 2))
+  }
+  return { ...DEFAULT_CONFIG, ...userConfig }
+}
 
 function createWindow() {
   // Create the browser window.
@@ -25,6 +51,21 @@ function createWindow() {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
+
+  // Allow opening DevTools with F12 in the packaged app too. The toolkit's
+  // watchWindowShortcuts only wires F12 up in development, so handle it here
+  // explicitly for production builds.
+  if (!is.dev) {
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+      if (input.type === 'keyDown' && input.code === 'F12') {
+        if (mainWindow.webContents.isDevToolsOpened()) {
+          mainWindow.webContents.closeDevTools()
+        } else {
+          mainWindow.webContents.openDevTools({ mode: 'undocked' })
+        }
+      }
+    })
+  }
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -51,6 +92,9 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  // Serve the user-editable configuration to the renderer.
+  ipcMain.handle('config:get', () => loadConfig())
 
   createWindow()
 

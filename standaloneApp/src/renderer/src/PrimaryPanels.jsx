@@ -209,8 +209,7 @@ function PrimaryPanels() {
 
     // Check the timer, if it reaches zero, reset everything
     useEffect(() =>{
-        console.log("Time left before reset: " + timeRef)
-        if(timeRef <= 0){
+        if(timeRef !== null && timeRef <= 0){
             mapRef.current?.setZoom(1.8)
             setTimeout(()=>{
                 mapRef.current?.flyTo({

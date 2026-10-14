@@ -302,8 +302,7 @@ function Map({ children }) {
         const dataYears = usageKeys.map((s) => parseInt(s.replace(/^\D+/g, "")))
         setShareYears({first: Math.min(...dataYears), last: Math.max(...dataYears)})
       });
-    fetch("./config.json")
-      .then((response) => response.json())
+    window.api.getConfig()
       .then((data) =>{
         setConfig(data);
         setTime(data.idleTimeoutMin * 60 * 1000)
