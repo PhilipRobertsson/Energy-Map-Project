@@ -61,6 +61,11 @@
     align-items: center;
 }
 
+.pop-up-header img{
+    width: 1.5vmin;
+    height: auto;
+}
+
 .pop-up-info{
     display: flex;
     flex-direction: column;
