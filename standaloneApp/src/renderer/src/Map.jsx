@@ -351,15 +351,27 @@ function Map({ children }) {
     if (!map) return;
 
     const displayInformation = (e, mode) =>{
-        // Check wheter or not the clicked country has data, return if it doesn't
-        const emptyPaint = mode=='usage'? Object([0,0,0,1]) : Object([0,0,0,0]) 
-        if((mode=='usage' || mode=='fuelType') &&
-          JSON.stringify(e.features[0]?.layer.paint['fill-color'].rgb) == JSON.stringify(emptyPaint)){
-          return;
+        const properties = e.features[0].properties;
+        // Skip fill-layer countries without data (their colour is transparent,
+        // so clicking them shouldn't open a pop-up).
+        if(mode == "usage"){
+            const usage = properties.usageShares
+            const removeEmptyObjectsByKeys = (object) => {
+                let newObject = {};
+                Object.keys(object).forEach((key) => {
+                  if (object[key].LC || object[key].FC) {
+                    newObject[key] = object[key];
+                  }
+                });
+              return newObject;
+            };
+            const trimmed = removeEmptyObjectsByKeys(JSON.parse(usage))
+            if(!Object.keys(trimmed).length) return
+        }else if(mode == "fuelType"){
+            if(properties.highestFuelType == null) return
         }
 
         const coordinates = (mode=="powerPlants")? e.features[0].geometry.coordinates.slice() : e.lngLat;
-        const properties = e.features[0].properties;
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
@@ -404,6 +416,9 @@ function Map({ children }) {
           closeButton.onclick = (e) => {
             e.preventDefault()
             e.stopPropagation()
+            if(mode=="fuelType"){
+              console.log("Closed fuel type pop-up")
+            }
             gsap.to(contentElement.children, {opacity: 0, duration: 0.2, ease: "power2.in"})
             gsap.to(contentElement, { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
           }
