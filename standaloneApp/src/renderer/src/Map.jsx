@@ -255,6 +255,17 @@ function Map({ children }) {
     map.setFilter("powerplants-layer", powerplantsFilter)
   }, [])
 
+  // Clear the clicked-country selection and restore the base filters, so the
+  // fuel type / power plant layers return to the full continent view.
+  const resetFuelTypeCountries = useCallback(() => {
+    fuelTypeSelectedCountries.current = []
+    const map = mapInstance.current
+    if (!map) return
+    map.setFilter("fuelType-fill", fuelTypeBaseFilter.current)
+    map.setFilter("fuelType-border", fuelTypeBaseFilter.current)
+    map.setFilter("powerplants-layer", powerplantsBaseFilter.current)
+  }, [])
+
   const [config, setConfig] = useState(null);
   const [time, setTime] = useState(null);
   const [referenceTime, setReferenceTime] = useState(Date.now());
@@ -739,7 +750,7 @@ function Map({ children }) {
         setTime(prevTime => Math.max(0, prevTime - interval));
     }
     const timeoutId = setTimeout(countDownUntilZero, config.intervalMs);
-    console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
+    //console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
     return () => clearTimeout(timeoutId);
   }, [time]);
 
@@ -814,7 +825,7 @@ function Map({ children }) {
                                                     barChartFilter: filter, setBarChartFilter: setFilter,
                                                     popupCount, timeRef: time, resetTimer,
                                                     reportedYears, estimatedYears, shareYears, mapReady,
-                                                    clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters }}>
+                                                    clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters, resetFuelTypeCountries }}>
       <div ref={mapContainer} style={{ width: "100dvw", height: "100dvh", position: "fixed", top: 0, left: 0 }} />
       <div id="popUpAlert">
         <h1>You can only open 4 cards at a time</h1>

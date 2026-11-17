@@ -73,7 +73,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent", "ContinentalData"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters } = useContext(MapContext);
+    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters, resetFuelTypeCountries } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
 
@@ -114,6 +114,10 @@ function PrimaryPanels() {
     const fuelFilterRef = useRef([]);
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
+
+    // Tracks whether the "zoom out -> power plants" switch has already fired,
+    // so it only happens once below the zoom threshold.
+    const zoomSwitchDoneRef = useRef(false);
 
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -186,17 +190,63 @@ function PrimaryPanels() {
     // Register user interactions for usage-statistics tracking (any pointer / key / touch)
     // and stop the screen saver once the user starts interacting.
     useEffect(() =>{
+        // Fade a map layer's opacity in or out and toggle its visibility around
+        // the fade so the layer doesn't pop in/out.
+        const fadeLayer = (map, layerId, opacityProperty, fullOpacity, fadeIn) => {
+            const proxy = { opacity: fadeIn ? 0 : fullOpacity };
+            if(fadeIn){
+                map.setLayoutProperty(layerId, "visibility", "visible");
+            }
+            gsap.to(proxy, {
+                opacity: fadeIn ? fullOpacity : 0,
+                duration: 0.4,
+                ease: "power2.inOut",
+                onUpdate: () => map.setPaintProperty(layerId, opacityProperty, proxy.opacity),
+                onComplete: () => {
+                    if(!fadeIn){
+                        map.setLayoutProperty(layerId, "visibility", "none");
+                    }
+                }
+            });
+        };
+
         const onInput = () => {
             registerInteraction();
             stopScreenSaver();
+
+            // Only relevant in the "Power Plants" map mode.
+            const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Power Plants")
+            if(!powerPlantsButton?.classList.contains("selectedMapMode")) return
+
+            const map = mapRef.current
+            if(!map) return
+            const zoom = map.getZoom()
+
+            if(!zoomSwitchDoneRef.current && zoom > 4){
+                // Zoomed far out: fade out the fuel type map and fade in the power plants.
+                zoomSwitchDoneRef.current = true;
+                fadeLayer(map, "fuelType-fill", "fill-opacity", 0.5, false);
+                fadeLayer(map, "fuelType-border", "line-opacity", 1, false);
+                fadeLayer(map, "powerplants-layer", "circle-opacity", 1, true);
+                resetFuelTypeCountries();
+            }else if(zoomSwitchDoneRef.current && zoom <= 4){
+                // Zoomed back in: fade out the power plants and fade in the fuel type map.
+                zoomSwitchDoneRef.current = false;
+                fadeLayer(map, "powerplants-layer", "circle-opacity", 1, false);
+                fadeLayer(map, "fuelType-fill", "fill-opacity", 0.5, true);
+                fadeLayer(map, "fuelType-border", "line-opacity", 1, true);
+            }
         };
         window.addEventListener("pointerdown", onInput);
         window.addEventListener("keydown", onInput);
         window.addEventListener("touchstart", onInput);
+        window.addEventListener("wheel", onInput);
         return () =>{
             window.removeEventListener("pointerdown", onInput);
             window.removeEventListener("keydown", onInput);
             window.removeEventListener("touchstart", onInput);
+            window.removeEventListener("wheel", onInput);
         }
     }, [])
 
