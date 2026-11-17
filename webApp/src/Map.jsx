@@ -351,6 +351,13 @@ function Map({ children }) {
     if (!map) return;
 
     const displayInformation = (e, mode) =>{
+        // Check wheter or not the clicked country has data, return if it doesn't
+        const emptyPaint = mode=='usage'? Object([0,0,0,1]) : Object([0,0,0,0]) 
+        if((mode=='usage' || mode=='fuelType') &&
+          JSON.stringify(e.features[0]?.layer.paint['fill-color'].rgb) == JSON.stringify(emptyPaint)){
+          return;
+        }
+
         const coordinates = (mode=="powerPlants")? e.features[0].geometry.coordinates.slice() : e.lngLat;
         const properties = e.features[0].properties;
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -488,42 +495,9 @@ function Map({ children }) {
               popUpHeader.style.marginBottom = "0.5dvh"
 
               var regionInfo = document.createElement("div")
-              regionInfo.classList.add("pop-up-info", "noBorder", "hide")
+              regionInfo.classList.add("pop-up-info", "noBorder")
               
-              var usageInfo = document.createElement("div")
-              usageInfo.classList.add("pop-up-info", "noBorder", "hide")
-              
-              var regionDropDownHeader = document.createElement("div")
-              regionDropDownHeader.classList.add("selection-overview-header")
-              var usageDropDownHeader = document.createElement("div")
-              usageDropDownHeader.classList.add("selection-overview-header")
-              
-              regionDropDownHeader.onclick = () => toggleSelectionDropDown(regionDropDownHeader, map)
-              usageDropDownHeader.onclick = () => toggleSelectionDropDown(usageDropDownHeader, map)
-                                  
-              var rDropDownTitle = document.createElement("h1")
-              var rDropDownIcon =document.createElement("img")
-              var uDropDownTitle = document.createElement("h1")
-              var uDropDownIcon =document.createElement("img")
-              
-              // Set header title and add open/clsoe image
-              rDropDownTitle.textContent = "Electric Generation"
-              rDropDownIcon.src = assetSources.popupRollupOpened
-              
-              uDropDownTitle.textContent = "Usage Shares"
-              uDropDownIcon.src = assetSources.popupRollupOpened
-              
-              regionDropDownHeader.appendChild(rDropDownTitle)
-              regionDropDownHeader.appendChild(rDropDownIcon)
-              
-              usageDropDownHeader.appendChild(uDropDownTitle)
-              usageDropDownHeader.appendChild(uDropDownIcon)
-              
-              
-              contentElement.appendChild(regionDropDownHeader)
               contentElement.appendChild(regionInfo)
-              contentElement.appendChild(usageDropDownHeader)
-              contentElement.appendChild(usageInfo)
 
               const iso = properties.adm0_iso
               const altIso = properties.iso_a3
@@ -560,7 +534,6 @@ function Map({ children }) {
               applyFuelTypeSelection()
 
               createPopUpBarChart(contentElement,entry.country, regionalData,colourData, estimatedYears, assetSources.popupInfo,true)
-              createPopUpUsagePlot(contentElement,entry.country, regionalData, shareYears, true)
 
               const infoIcon = contentElement.querySelector(".regionalInfoWrapper")
               const infoToolTip = contentElement.querySelector(".generationInfoTooltipText")
