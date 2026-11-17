@@ -417,7 +417,26 @@ function Map({ children }) {
             e.preventDefault()
             e.stopPropagation()
             if(mode=="fuelType"){
-              console.log("Closed fuel type pop-up")
+              // Revert the fuel type map filter for the closed country: remove
+              // it from the selection and re-apply the filters, restoring its
+              // boundary and hiding its power plants again.
+              const iso = properties.adm0_iso
+              const altIso = properties.iso_a3
+              let entry = regionalData.find(r => r.country == iso)
+              if(!entry){ entry = regionalData.find(r => r.country == altIso) }
+
+              const selected = fuelTypeSelectedCountries.current
+              const index = selected.indexOf(entry?.country)
+              if(index !== -1){ selected.splice(index, 1) }
+
+              if(selected.length){
+                applyFuelTypeSelection()
+              }else{
+                map.setFilter("fuelType-fill", fuelTypeBaseFilter.current)
+                map.setFilter("fuelType-border", fuelTypeBaseFilter.current)
+                map.setLayoutProperty("powerplants-layer", "visibility", "none")
+                map.setFilter("powerplants-layer", powerplantsBaseFilter.current)
+              }
             }
             gsap.to(contentElement.children, {opacity: 0, duration: 0.2, ease: "power2.in"})
             gsap.to(contentElement, { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
