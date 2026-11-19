@@ -14,6 +14,7 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
 import { registerInteraction, endSession } from './usageStatistics.js'
 import { startScreenSaver, stopScreenSaver } from './screenSaver.js';
 import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable, toggleSelectionDropDown} from './popUpUtilites.js'
+import { fadeToMapMode } from './mapMode.js'
 
 import './PrimaryPanels.css'
 
@@ -190,26 +191,6 @@ function PrimaryPanels() {
     // Register user interactions for usage-statistics tracking (any pointer / key / touch)
     // and stop the screen saver once the user starts interacting.
     useEffect(() =>{
-        // Fade a map layer's opacity in or out and toggle its visibility around
-        // the fade so the layer doesn't pop in/out.
-        const fadeLayer = (map, layerId, opacityProperty, fullOpacity, fadeIn) => {
-            const proxy = { opacity: fadeIn ? 0 : fullOpacity };
-            if(fadeIn){
-                map.setLayoutProperty(layerId, "visibility", "visible");
-            }
-            gsap.to(proxy, {
-                opacity: fadeIn ? fullOpacity : 0,
-                duration: 0.4,
-                ease: "power2.inOut",
-                onUpdate: () => map.setPaintProperty(layerId, opacityProperty, proxy.opacity),
-                onComplete: () => {
-                    if(!fadeIn){
-                        map.setLayoutProperty(layerId, "visibility", "none");
-                    }
-                }
-            });
-        };
-
         const onInput = () => {
             registerInteraction();
             stopScreenSaver();
@@ -226,16 +207,12 @@ function PrimaryPanels() {
             if(!zoomSwitchDoneRef.current && zoom > 4){
                 // Zoomed far out: fade out the fuel type map and fade in the power plants.
                 zoomSwitchDoneRef.current = true;
-                fadeLayer(map, "fuelType-fill", "fill-opacity", 0.5, false);
-                fadeLayer(map, "fuelType-border", "line-opacity", 1, false);
-                fadeLayer(map, "powerplants-layer", "circle-opacity", 1, true);
                 resetFuelTypeCountries();
+                fadeToMapMode(map, "powerplants");
             }else if(zoomSwitchDoneRef.current && zoom <= 4){
                 // Zoomed back in: fade out the power plants and fade in the fuel type map.
                 zoomSwitchDoneRef.current = false;
-                fadeLayer(map, "powerplants-layer", "circle-opacity", 1, false);
-                fadeLayer(map, "fuelType-fill", "fill-opacity", 0.5, true);
-                fadeLayer(map, "fuelType-border", "line-opacity", 1, true);
+                fadeToMapMode(map, "fuelType");
             }
         };
         window.addEventListener("pointerdown", onInput);
@@ -657,12 +634,6 @@ function PrimaryPanels() {
     useEffect(()=>{
         if(!regionFilter) return;
 
-        // Set visibility for a set of layer ids
-        const setVisibility = (layerIds, visibility) => {
-            layerIds.forEach(id => {
-                if (mapRef.current.getLayer(id)) mapRef.current.setLayoutProperty(id, "visibility", visibility)
-            })
-        }
         const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
                 .find(button => button.querySelector("span")?.textContent === "Power Plants")
         const powerPlantsSelected = powerPlantsButton?.classList.contains("selectedMapMode")
@@ -690,8 +661,7 @@ function PrimaryPanels() {
             })
 
             if(powerPlantsSelected){
-                setVisibility(["fuelType-fill","fuelType-border"], "visible")
-                setVisibility(["powerplants-layer"], "none")
+                fadeToMapMode(mapRef.current, "fuelType")
             }
 
             if(shownRegions.length == regionFilter.length){ // Global option selected
@@ -709,8 +679,7 @@ function PrimaryPanels() {
         }else{ // User has selected a country or used the storymode
 
             if(powerPlantsSelected){
-                setVisibility(["fuelType-fill","fuelType-border"], "none")
-                setVisibility(["powerplants-layer"], "visible")
+                fadeToMapMode(mapRef.current, "powerplants")
             }
 
             if(shownRegions <= 0) return; // Just to be sure undefined objects aren't checked

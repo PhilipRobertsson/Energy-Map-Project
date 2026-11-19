@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import { createDiagram, otherFuels } from "./sidePanelUtilities.js";
 import { crossContinentCountries } from "./crossContinentCountries.js";
+import { fadeToMapMode } from "./mapMode.js";
 
 // powerplants, region, fuel, year, generation filters
 export function getShownPowerPlants(pps, rFilter, fFilter, yFilter, gFilter){
@@ -423,13 +424,6 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
     // Get different containers in the fuel filter
     const fuelFilterContents = document.querySelectorAll(".fuelFilterContent")
 
-    // Set visibility for a set of layer ids
-    const setVisibility = (layerIds, visibility) => {
-        layerIds.forEach(id => {
-            if (currentMap.getLayer(id)) currentMap.setLayoutProperty(id, "visibility", visibility)
-        })
-    }
-
     const filterContainers = document.querySelectorAll(".sidePanelFilterContainer")
 
     const diagramHeader = document.querySelector("#linePlotHeader")
@@ -445,8 +439,6 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
     // Hide previous mode's layers
     switch(prevMode){
         case "Power Plants":
-            setVisibility(["fuelType-border", "fuelType-fill"], "none")
-            setVisibility(["powerplants-layer"], "none")
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")
@@ -466,7 +458,6 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
 
             break;
         case "Energy Usage":
-            setVisibility(["usage-fill", "usage-border"], "none")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")
@@ -486,10 +477,10 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
     switch(selectedMode){
         case "Power Plants":
             if(shownRegions.length > 2){
-                setVisibility(["fuelType-border", "fuelType-fill"], "visible")
                 applyTypeSelection()
+                fadeToMapMode(currentMap, "fuelType")
             }else{
-                setVisibility(["powerplants-layer"], "visible")
+                fadeToMapMode(currentMap, "powerplants")
             }
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
@@ -510,7 +501,7 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
 
             break;
         case "Energy Usage":
-            setVisibility(["usage-fill", "usage-border"], "visible")
+            fadeToMapMode(currentMap, "usage")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")

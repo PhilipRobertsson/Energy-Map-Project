@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 
 import { createPopUpBarChart, createPopUpUsagePlot,
               getLatestDataArray,makePopUpMovable, toggleSelectionDropDown } from "./popUpUtilites.js";
+import { getMapMode } from "./mapMode.js";
 
 import './Map.css'
 
@@ -387,6 +388,8 @@ function Map({ children }) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
+        console.log(coordinates)
+
         // Check if the clicked power plant has been opened already
         var isOpen = false
         const openPopups = document.querySelectorAll(".maplibregl-popup")
@@ -430,23 +433,27 @@ function Map({ children }) {
             if(mode=="fuelType"){
               // Revert the fuel type map filter for the closed country: remove
               // it from the selection and re-apply the filters, restoring its
-              // boundary and hiding its power plants again.
-              const iso = properties.adm0_iso
-              const altIso = properties.iso_a3
-              let entry = regionalData.find(r => r.country == iso)
-              if(!entry){ entry = regionalData.find(r => r.country == altIso) }
+              // boundary and hiding its power plants again. Only do this while
+              // the fuel type layer is the current view; if the user has zoomed
+              // in to the power plants layer, just close the pop-up.
+              if(getMapMode() === "fuelType"){
+                const iso = properties.adm0_iso
+                const altIso = properties.iso_a3
+                let entry = regionalData.find(r => r.country == iso)
+                if(!entry){ entry = regionalData.find(r => r.country == altIso) }
 
-              const selected = fuelTypeSelectedCountries.current
-              const index = selected.indexOf(entry?.country)
-              if(index !== -1){ selected.splice(index, 1) }
+                const selected = fuelTypeSelectedCountries.current
+                const index = selected.indexOf(entry?.country)
+                if(index !== -1){ selected.splice(index, 1) }
 
-              if(selected.length){
-                applyFuelTypeSelection()
-              }else{
-                map.setFilter("fuelType-fill", fuelTypeBaseFilter.current)
-                map.setFilter("fuelType-border", fuelTypeBaseFilter.current)
-                map.setLayoutProperty("powerplants-layer", "visibility", "none")
-                map.setFilter("powerplants-layer", powerplantsBaseFilter.current)
+                if(selected.length){
+                  applyFuelTypeSelection()
+                }else{
+                  map.setFilter("fuelType-fill", fuelTypeBaseFilter.current)
+                  map.setFilter("fuelType-border", fuelTypeBaseFilter.current)
+                  map.setLayoutProperty("powerplants-layer", "visibility", "none")
+                  map.setFilter("powerplants-layer", powerplantsBaseFilter.current)
+                }
               }
             }
             gsap.to(contentElement.children, {opacity: 0, duration: 0.2, ease: "power2.in"})
