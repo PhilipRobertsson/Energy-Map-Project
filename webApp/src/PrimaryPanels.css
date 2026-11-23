@@ -78,6 +78,8 @@
 }
 
 #mapToggleContainer{
+    display: flex;
+    flex-direction: row;
     margin: 0.5dvh 0 0.5dvh 0;
     border-radius: 0.2dvh;
     border: 0.1vmin solid #AAD3DE;
@@ -213,7 +215,7 @@
     border: #AAD3DE solid 0.1dvh;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
     padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;
-    margin: 0 0.5dvw 0 0.5dvw;
+    margin: 0 0 0 0;
 }
 
 .sidePanelResetButton span{
@@ -222,7 +224,6 @@
     font-style: normal;
     font-size: 1.6vmin;
     margin: 0;
-    margin: 0 0.5dvw 0 0.5dvw;
     /*color: #030303;*/
     color:#f7f7f7;
     cursor: pointer;
@@ -808,15 +809,22 @@
     filter: brightness(0) saturate(100%) invert(85%) sepia(1%) saturate(7343%) hue-rotate(192deg) brightness(117%) contrast(86%);
 }
 
-#closeAndResetContainer{
+#mapModeContainer{
     position: absolute;
     display: flex;
     flex-direction: row;
     bottom: 0;
     left: 25%;
     background-color: rgba(0, 75, 112, 0.88);
-    padding: 1dvh;
+    padding: 1dvh 1dvw;
     border-radius: 2.5dvh 2.5dvh 0 0;
+}
+
+#closeResetContainer{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0.5dvh 0 0.5dvh 0;
 }
 
 /*Scroll bar*/

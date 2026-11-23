@@ -77,6 +77,7 @@ function PrimaryPanels() {
     const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters, resetFuelTypeCountries } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
+    const mapModeContainer = useRef(null)
 
     // Filter states
     const [fuelFilter, setFuelFilter] = useState([]);
@@ -376,8 +377,12 @@ function PrimaryPanels() {
             mapToggleButtonContainer.appendChild(toggleButton)
         }
 
+        // Place the map mode toggle buttons in the independent container.
+        if (mapModeContainer.current) {
+            mapModeContainer.current.replaceChildren(mapToggleButtonContainer)
+        }
+
         if(filter.children.length > 0){
-            filter.replaceChild(mapToggleButtonContainer, filter.children[filter.children.length-2])
             filter.replaceChild(controlContainer, filter.children[filter.children.length - 1])
         }
 
@@ -426,8 +431,31 @@ function PrimaryPanels() {
 
         filter.appendChild(legendContainer)
         filter.appendChild(usageContainer)
-        filter.appendChild(mapToggleButtonContainer)
+
+        // Close and reset buttons at the bottom of the filter panel
+        const closeResetContainer = document.createElement("div")
+        closeResetContainer.id = "closeResetContainer"
+
+        const closeButton = document.createElement("div")
+        closeButton.className = "sidePanelResetButton"
+        closeButton.onclick = (e) => handleResetClick(e.target, "close", null, true)
+        const closeText = document.createElement("span")
+        closeText.textContent = "Close Pop-Ups"
+        closeButton.appendChild(closeText)
+
+        const resetButton = document.createElement("div")
+        resetButton.className = "sidePanelResetButton"
+        resetButton.onclick = (e) => handleResetClick(e.target, "reset", resetAllFilters(), true)
+        const resetText = document.createElement("span")
+        resetText.textContent = "Reset Filters"
+        resetButton.appendChild(resetText)
+
+        closeResetContainer.appendChild(closeButton)
+        closeResetContainer.appendChild(resetButton)
+
+        filter.appendChild(closeResetContainer)
         filter.appendChild(controlContainer) // Append control panel to filter panel
+
     }, [fuelFilter, powerPlants, regionFilter, yearFilter, generationFilter]);
 
     // Update zoom selection icon when filters change, redraw plots
@@ -1606,14 +1634,7 @@ function PrimaryPanels() {
         <div id="sidePanelToggleContainer" onClick={() => handleSidePanelToggle(sidePanelContainer, sidePanelOpenRef)}>
             <img src={assetSources.sidePanelInfo} id="sidePanelToggleIcon"></img>
         </div>
-        <div id="closeAndResetContainer">
-            <div className="sidePanelResetButton" onClick={(This) => handleResetClick(This.target, "close", null, true)}>
-                <span>Close Pop-Ups</span>
-            </div>
-            <div className="sidePanelResetButton" onClick={(This) => handleResetClick(This.target, "reset", resetAllFilters(), true)}>
-                <span>Reset Filters</span>
-            </div>
-        </div>
+        <div id="mapModeContainer" ref={mapModeContainer}></div>
     </>)
 }
 
