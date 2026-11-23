@@ -457,7 +457,7 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
             handleResetClick(null, "close", null, false)
 
             break;
-        case "Energy Usage":
+        case "Sustainability":
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
             filterContainers[3].classList.toggle("hide")
@@ -500,7 +500,7 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
             handleResetClick(null, "close", null, false)
 
             break;
-        case "Energy Usage":
+        case "Sustainability":
             fadeToMapMode(currentMap, "usage")
             fuelFilterContents[1].classList.toggle("hide")
             filterContainers[1].classList.toggle("hide")
@@ -613,16 +613,15 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
     if(element.classList.contains("runningPlayBack")) return;
     element.classList.add("runningPlayBack")
 
-    // Used to disable slider interaction during playback.
-    const sliderThumbLeft = element.parentElement.parentElement.querySelector(".sliderThumbLeft")
-    const sliderThumbRight = element.parentElement.parentElement.querySelector(".sliderThumbRight")
-    const sliderRange = element.parentElement.parentElement.querySelector(".sliderRange")
+    // Sliders that can interrupt the playback.
+    const sliderContainer = element.parentElement.parentElement
+    const sliders = [
+        sliderContainer.querySelector(".sliderThumbLeft"),
+        sliderContainer.querySelector(".sliderThumbRight"),
+        sliderContainer.querySelector(".sliderRange"),
+    ]
     
-    if(sliderThumbLeft){sliderThumbLeft.style.pointerEvents = "none";}
-    if(sliderThumbRight){sliderThumbRight.style.pointerEvents = "none";}
-    if(sliderRange){sliderRange.style.pointerEvents = "none";}
-
-
+    
     let mapVisibility
     if(mapRef?.getLayer("powerplants-layer").visibility == "visible" ||
     typeof mapRef?.getLayer("powerplants-layer").visibility == 'undefined'){mapVisibility = true}
@@ -655,8 +654,8 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
         { width: newWidth, duration: 0.10 }
     );
 
-    // Animate the year filter from the earliest to the latest bound year,
-    // stepping one year at a time over the playback duration.
+    // Animate the year filter from the currently selected year to the latest
+    // bound year, stepping one year at a time over the playback duration.
     const bounds = filter.length === 2 ? filter[1] : null
 
     // Set visibility for a set of layer ids
@@ -666,50 +665,74 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
         })
     }
 
-    if (bounds && bounds[1] > bounds[0]) {
-        const [minYear, maxYear] = bounds
-        const totalSteps = maxYear - minYear
-        const stepDuration = playTime / totalSteps
+    const stepTimeoutIds = []
+    let endTimeoutId = null
+    let finished = false
 
-        // Start at the earliest year, then increment the max value each step
-        if(filter[0].length == 2){
-            if(!mapVisibility){
-                setVisibility(["fuelType-border", "fuelType-fill"], "none")
-                setVisibility(["powerplants-layer"], "visible")
-            }
-            setFilter([[minYear, minYear], bounds])
-            for(let step = 1; step <= totalSteps; step++){
-                setTimeout(() => {
-                    setFilter([[minYear, minYear + step], bounds])
-                }, step * stepDuration)
-            }
-        }else{
-            setFilter([minYear,bounds])
-            for(let step = 1; step <= totalSteps; step++){
-                setTimeout(()=>{
-                    setFilter([minYear+step,bounds])
-                }, step * stepDuration)
-            }
-        }
-    }
+    // Restore the button and (if the playback switched to the power plants
+    // layer) the original map layers. Used both when playback finishes normally
+    // and when the user interrupts it by dragging a slider.
+    const finishPlayBack = () => {
+        if(finished) return
+        finished = true
 
-    // When the playback time has elapsed, restore the original label and width
-    setTimeout(() =>{
-        if(sliderThumbLeft){sliderThumbLeft.style.pointerEvents = "auto";}
-        if(sliderThumbRight){sliderThumbRight.style.pointerEvents = "auto";}
-        if(sliderRange){sliderRange.style.pointerEvents = "auto";}
+        stepTimeoutIds.forEach(id => clearTimeout(id))
+        if(endTimeoutId) clearTimeout(endTimeoutId)
+
+        sliders.forEach(slider => {
+            if(slider) slider.removeEventListener("pointerdown", finishPlayBack)
+        })
 
         if(filter[0].length == 2 && !mapVisibility){
-                setVisibility(["fuelType-border", "fuelType-fill"], "visible")
-                setVisibility(["powerplants-layer"], "none")
+            setVisibility(["fuelType-border", "fuelType-fill"], "visible")
+            setVisibility(["powerplants-layer"], "none")
         }
-        gsap.fromTo(element, 
-            { width: newWidth }, 
+
+        gsap.fromTo(element,
+            { width: newWidth },
             { width: originalWidth, duration: 0.10, onComplete: () =>{
                 element.classList.remove("runningPlayBack")
                 text.textContent = "Animated historical playback"
                 gsap.set(element, { clearProps: "width" })
             }}
         );
-    }, playTime);
+    }
+
+    // Stop the playback if the user starts dragging one of the sliders.
+    sliders.forEach(slider => {
+        if(slider) slider.addEventListener("pointerdown", finishPlayBack)
+    })
+
+    if (bounds && bounds[1] > bounds[0]) {
+        const [minYear, maxYear] = bounds
+        const startYear = filter[0][0] ?? minYear
+        const totalSteps = maxYear - startYear
+        const stepDuration = totalSteps > 0 ? playTime / totalSteps : 0
+
+        // Start at the selected year, then increment the max value each step
+        if(filter[0].length == 2){
+            if(!mapVisibility){
+                setVisibility(["fuelType-border", "fuelType-fill"], "none")
+                setVisibility(["powerplants-layer"], "visible")
+            }
+            setFilter([[startYear, startYear], bounds])
+            for(let step = 1; step <= totalSteps; step++){
+                const id = setTimeout(() => {
+                    setFilter([[startYear, startYear + step], bounds])
+                }, step * stepDuration)
+                stepTimeoutIds.push(id)
+            }
+        }else{
+            setFilter([startYear,bounds])
+            for(let step = 1; step <= totalSteps; step++){
+                const id = setTimeout(()=>{
+                    setFilter([startYear+step,bounds])
+                }, step * stepDuration)
+                stepTimeoutIds.push(id)
+            }
+        }
+    }
+
+    // When the playback time has elapsed, restore the original label and width
+    endTimeoutId = setTimeout(finishPlayBack, playTime);
 }

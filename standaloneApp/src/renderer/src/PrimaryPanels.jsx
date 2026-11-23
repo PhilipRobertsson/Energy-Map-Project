@@ -363,7 +363,7 @@ function PrimaryPanels() {
                     toggleText.textContent = "Power Plants"
                     break;
                 case 1:
-                    toggleText.textContent = "Energy Usage"
+                    toggleText.textContent = "Sustainability"
                     break;
             }
             toggleButton.appendChild(toggleText);
@@ -666,15 +666,15 @@ function PrimaryPanels() {
 
             if(shownRegions.length == regionFilter.length){ // Global option selected
                 mainTitle.textContent = "Global Electricity Source Trends"
-                altMainTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
-                if(showingMainOutput){boldText.textContent = "Global electric generation per year "}
-                else{boldText.textContent = "Global power plant capacity by source "}
+                altMainTitle.textContent = "Global Sustainable and Fossil Fuel Usage Shares"
+                if(showingMainOutput){boldText.textContent = "Global Electric Generation per Year "}
+                else{boldText.textContent = "Global Power Plant Capacity by Source "}
             }else{ // A continent is selected
                 const continent = document.querySelector("#sidePanelLinePlot .continentSelected span")?.textContent || shownRegions[0].continent
                 mainTitle.textContent = continent + "'s Electricity Source Trends"
-                altMainTitle.textContent = continent + "'s Low Carbon and Fossil Fuel Usage Shares"
-                if(showingMainOutput){boldText.textContent = continent + "'s electric generation per year "}
-                else{boldText.textContent = continent + "'s power plant capacity by source "}
+                altMainTitle.textContent = continent + "'s Sustainable and Fossil Fuel Usage Shares"
+                if(showingMainOutput){boldText.textContent = continent + "'s Electric Generation per Year "}
+                else{boldText.textContent = continent + "'s Power Plant Capacity by Source "}
             }
         }else{ // User has selected a country or used the storymode
 
@@ -689,9 +689,9 @@ function PrimaryPanels() {
                 titleToShow += r.country_long
             })
             mainTitle.textContent = titleToShow + "'s Electricity Source Trends"
-            altMainTitle.textContent = titleToShow + "'s Low Carbon and Fossil Fuel Usage Shares"
-            if(showingMainOutput){boldText.textContent = titleToShow + "'s electric generation per year "}
-            else{boldText.textContent = titleToShow + "'s power plant capacity by source "}
+            altMainTitle.textContent = titleToShow + "'s Sustainable and Fossil Fuel Usage Shares"
+            if(showingMainOutput){boldText.textContent = titleToShow + "'s Electric Generation per Year "}
+            else{boldText.textContent = titleToShow + "'s Power Plant Capacity by Source "}
 
             const isOpen = (name) =>{
                 let opened = document.querySelectorAll(".maplibregl-popup-selection-info")
@@ -847,15 +847,15 @@ function PrimaryPanels() {
         if(shownCompRegions.length > 2){ // Assumption that the user only can select more than two regions by clicking on the continent button
             if(shownCompRegions.length == comparisonRegionFilter.length){ // Global option selected
                 compTitle.textContent = "Global Electricity Source Trends"
-                altCompTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
-                if(showingCompOutput){boldCompText.textContent = "Global electric generation per year "}
-                else{boldCompText.textContent = "Global power plant capacity by source "}
+                altCompTitle.textContent = "Global Sustainable and Fossil Fuel Usage Shares"
+                if(showingCompOutput){boldCompText.textContent = "Global Electric Generation per Year "}
+                else{boldCompText.textContent = "Global Power Plant Capacity by Source "}
             }else{ // A continent is selected
                 const continentComp = document.querySelector("#sidePanelComparisonLinePlot .continentSelected span")?.textContent || shownCompRegions[0].continent
                 compTitle.textContent = continentComp + "'s Electricity Source Trends"
-                altCompTitle.textContent = continentComp + "'s Low Carbon and Fossil Fuel Usage Shares"
-                if(showingCompOutput){boldCompText.textContent = continentComp + "'s electric generation per year "}
-                else{boldCompText.textContent = continentComp + "'s power plant capacity by source "}
+                altCompTitle.textContent = continentComp + "'s Sustainable and Fossil Fuel Usage Shares"
+                if(showingCompOutput){boldCompText.textContent = continentComp + "'s Electric Generation per Year "}
+                else{boldCompText.textContent = continentComp + "'s Power Plant Capacity by Source "}
             }
         }else{ // User has selected a country or used the storymode
             if(shownCompRegions <= 0) return; // Just to be sure undefined objects aren't checked
@@ -865,9 +865,9 @@ function PrimaryPanels() {
                 titleToShowComp += r.country_long
             })
             compTitle.textContent = titleToShowComp + "'s Electricity Source Trends"
-            altCompTitle.textContent = titleToShowComp + "'s Low Carbon and Fossil Fuel Usage Shares"
-            if(showingCompOutput){boldCompText.textContent = titleToShowComp + "'s electric generation per year "}
-            else{boldCompText.textContent = titleToShowComp + "'s power plant capacity by source "}
+            altCompTitle.textContent = titleToShowComp + "'s Sustainable and Fossil Fuel Usage Shares"
+            if(showingCompOutput){boldCompText.textContent = titleToShowComp + "'s Electric Generation per Year "}
+            else{boldCompText.textContent = titleToShowComp + "'s Power Plant Capacity by Source "}
         }
     }, [comparisonRegionFilter])
 
@@ -1236,7 +1236,7 @@ function PrimaryPanels() {
                 const currentSelectionButton = document.querySelectorAll(".mapToggleButton.selectedMapMode")
 
                 const usageButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Energy Usage")
+                .find(button => button.querySelector("span")?.textContent === "Sustainability")
 
                 switch(sidePanelPage.id){
                     case 2: // First instructions page
@@ -1961,7 +1961,7 @@ function getSliders(filter, regionalData, onChange){
                     break;
                 case "LCShare":
                 case "FFShare":
-                    textSliderTitle.textContent = (filter == "LCShare")? "Share of Low Carbon Usage" : "Share of Fossil Fuel Usage"
+                    textSliderTitle.textContent = (filter == "LCShare")? "Share of Sustainable Usage" : "Share of Fossil Fuel Usage"
                     break;
             }
 

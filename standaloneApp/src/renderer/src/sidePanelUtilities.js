@@ -666,7 +666,7 @@ export function createDiagram({
 
     const linePlotAlternativeTitle = document.createElement("span");
     linePlotAlternativeTitle.id = ids.altTitle;
-    linePlotAlternativeTitle.textContent = "Global Low Carbon and Fossil Fuel Usage Shares"
+    linePlotAlternativeTitle.textContent = "Global Sustainable and Fossil Fuel Usage Shares"
 
     const linePlotUsageLegends = document.createElement("div");
     linePlotUsageLegends.id = ids.usageLegends
@@ -681,7 +681,7 @@ export function createDiagram({
     FFLegendColour.style.background = "#c01603"
 
     const LCLegendText = document.createElement("span");
-    LCLegendText.textContent = "Share of Low Carbon Usage"
+    LCLegendText.textContent = "Share of Sustainable Usage"
     const FFLegendText = document.createElement("span");
     FFLegendText.textContent = "Share of Fossil Fuel Usage"
 

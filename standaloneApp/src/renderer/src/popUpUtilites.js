@@ -275,7 +275,7 @@ export function createPopUpUsagePlot(parent, country, regionalData, shareYears, 
     const LCShareField = document.createElement("span")
     const LCShareTitle = document.createElement("strong")
     const LCShareValue = document.createElement("span");
-    LCShareTitle.textContent = "Low Carbon: "
+    LCShareTitle.textContent = "Sustainable: "
     if(usageShares[String(year)]["LC"]?.toFixed(0)){LCShareValue.textContent = usageShares[String(year)]["LC"]?.toFixed(0) + "%"}
     else{LCShareValue.textContent = "N/A"}
     LCShareField.appendChild(LCShareTitle)
