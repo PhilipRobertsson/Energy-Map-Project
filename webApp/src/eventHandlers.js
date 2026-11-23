@@ -613,6 +613,15 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
     if(element.classList.contains("runningPlayBack")) return;
     element.classList.add("runningPlayBack")
 
+    // Used to disable slider interaction during playback.
+    const sliderThumbLeft = element.parentElement.parentElement.querySelector(".sliderThumbLeft")
+    const sliderThumbRight = element.parentElement.parentElement.querySelector(".sliderThumbRight")
+    const sliderRange = element.parentElement.parentElement.querySelector(".sliderRange")
+    
+    if(sliderThumbLeft){sliderThumbLeft.style.pointerEvents = "none";}
+    if(sliderThumbRight){sliderThumbRight.style.pointerEvents = "none";}
+    if(sliderRange){sliderRange.style.pointerEvents = "none";}
+
 
     let mapVisibility
     if(mapRef?.getLayer("powerplants-layer").visibility == "visible" ||
@@ -686,6 +695,10 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
 
     // When the playback time has elapsed, restore the original label and width
     setTimeout(() =>{
+        if(sliderThumbLeft){sliderThumbLeft.style.pointerEvents = "auto";}
+        if(sliderThumbRight){sliderThumbRight.style.pointerEvents = "auto";}
+        if(sliderRange){sliderRange.style.pointerEvents = "auto";}
+
         if(filter[0].length == 2 && !mapVisibility){
                 setVisibility(["fuelType-border", "fuelType-fill"], "visible")
                 setVisibility(["powerplants-layer"], "none")
