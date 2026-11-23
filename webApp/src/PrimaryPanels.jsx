@@ -350,8 +350,10 @@ function PrimaryPanels() {
         const mapToggleButtonContainer = document.createElement("div");
         mapToggleButtonContainer.id = "mapToggleContainer"
 
-        // Find the currently selected map mode, defaulting to "Power Plants"
-        const currentSelection = filter.querySelector(".selectedMapMode");
+        // Find the currently selected map mode, defaulting to "Power Plants".
+        // The toggle buttons live in the independent map mode container (not the
+        // filter panel), so look them up there.
+        const currentSelection = mapModeContainer.current?.querySelector(".selectedMapMode");
         const selectedModeName = currentSelection ? currentSelection.querySelector("span").textContent : "Power Plants";
 
         for(let i = 0; i<2;i++){
