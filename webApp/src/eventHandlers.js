@@ -730,7 +730,6 @@ export function handlePlayBackClick(element,filter, setFilter, mapRef){
     })
     if(pauseButton) pauseButton.addEventListener("click", finishPlayBack)
 
-    console.log(filter)
     if (bounds && bounds[1] > bounds[0]) {
         const [minYear, maxYear] = bounds
         let startYear, endYear

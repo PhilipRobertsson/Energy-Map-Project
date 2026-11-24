@@ -1021,8 +1021,6 @@ function PrimaryPanels() {
                 const entry = linePlotEntries[i+1] // +1 to skip the select all entry
                 if (entry) {
                     entry.style.opacity = fuel.show ? "1" : "0.3";
-                    const checkMark = entry.querySelector(".fuelFilterCheckMark")
-                    if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
 
                     const regionFuel = allRegionFuels.find(rf => rf.fuel === fuel.fuel)
                     const capacityValue = regionFuel ? regionFuel.sum_capacity_mw : fuel.sum_capacity_mw
@@ -1055,8 +1053,6 @@ function PrimaryPanels() {
                 const entry = comparisonEntries[i+1] // +1 to skip the select all entry
                 if (entry) {
                     entry.style.opacity = fuel.show ? "1" : "0.3";
-                    const checkMark = entry.querySelector(".fuelFilterCheckMark")
-                    if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
                 }
             })
         }

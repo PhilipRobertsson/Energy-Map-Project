@@ -411,6 +411,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
+    transition-property: opacity;
+    transition-duration: 0.15s;
 }
 
 .fuelFilterLegendColour{
@@ -429,22 +432,6 @@
     margin-right: 0.32dvw;
 }
 
-.fuelFilterCheckBox{
-    border: 0.25vmin solid #004B70;
-    border-radius: 0.2vmin;
-    height: 1.5vmin;
-    width: 1.5vmin;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.fuelFilterCheckMark{
-    width: 1.2dvh;
-    height: 1.2dvh;
-    margin-left: unset;
-}
-
 #fuelFilterSelectAllName, #compFuelFilterSelectAllName{
     font-weight: 400;
     margin-right: 0.32dvw;
@@ -458,7 +445,6 @@
     width: 1.5vmin;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 #fuelFilterSelectAllCheck, #compFuelFilterSelectAllCheck{

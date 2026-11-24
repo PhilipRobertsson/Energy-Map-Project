@@ -775,6 +775,7 @@ export function createDiagram({
             const regionFuel = allRegionFuels.find(rf => rf.fuel === f.fuel)
             const filterEntry = document.createElement("div");
             filterEntry.classList.add("fuelFilterEntry");
+            filterEntry.onclick = () => onLegendClick(f.fuel, setBarChartFilter, setFuelFilter)
 
             const leftDiv = document.createElement("div");
             leftDiv.style.display = "flex";
@@ -810,20 +811,8 @@ export function createDiagram({
             filterGeneration.classList.add("fuelFilterValue", "ffGeneration");
             filterGeneration.textContent = formatPowerOf10(getLatestGenerationValue(regionFuel || f, years));
 
-            const checkBox = document.createElement("div");
-            checkBox.style.backgroundColor = "rgba(0,0,0,0.0)"
-            checkBox.classList.add("fuelFilterCheckBox")
-
-            const checkMark = document.createElement("img")
-            checkMark.classList.add("fuelFilterCheckMark")
-            checkMark.src = assetSources.sidePanelCheckMark
-
-            checkBox.onclick = () => onLegendClick(f.fuel, setBarChartFilter,setFuelFilter)
-            checkBox.appendChild(checkMark)
-
             rightDiv.appendChild(filterCapacity)
             rightDiv.appendChild(filterGeneration)
-            rightDiv.appendChild(checkBox)
 
             filterEntry.appendChild(leftDiv)
             filterEntry.appendChild(rightDiv)
