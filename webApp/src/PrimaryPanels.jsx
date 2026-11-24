@@ -116,6 +116,8 @@ function PrimaryPanels() {
     const fuelFilterRef = useRef([]);
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
+    const yearFilterRef = useRef([]);
+    const shareYearFilterRef = useRef([]);
 
     // Tracks whether the "zoom out -> power plants" switch has already fired,
     // so it only happens once below the zoom threshold.
@@ -132,11 +134,13 @@ function PrimaryPanels() {
         fuelFilterRef.current = fuelFilter
         compRegionFilterRef.current = comparisonRegionFilter
         compFuelFilterRef.current = comparisonFuelFilter
+        yearFilterRef.current = yearFilter
+        shareYearFilterRef.current = shareYearFilter
         regionalDataRef.current = regionalData
         yearsRef.current = { reported: reportedYears, estimated: estimatedYears }
         shareYearsRef.current = shareYears
         continentalDataRef.current = continentalData
-    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears, continentalData]);
+    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears, continentalData, yearFilter, shareYearFilter]);
 
     // Clear the fuel type country selection whenever the region filter changes
     useEffect(() => {
@@ -1317,8 +1321,8 @@ function PrimaryPanels() {
             // Add playback eventlisteners
             const playBackParents = pages.querySelectorAll("#sliderPlaybackField")
 
-            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilter, setYearFilter, 20000, mapRef.current);
-            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilter, setShareYearFilter, 20000, null);
+            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilterRef.current, setYearFilter, mapRef.current);
+            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilterRef.current, setShareYearFilter, null);
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]
@@ -2032,12 +2036,20 @@ function getSliders(filter, regionalData, onChange){
         playbackSliderButton.id = "sliderPlaybackButton"
 
         const playbackSliderButtonText = document.createElement("span");
-        playbackSliderButtonText.textContent = "Animated historical playback";
+        playbackSliderButtonText.textContent = "▶ Animated historical playback";
         playbackSliderButton.appendChild(playbackSliderButtonText)
+
+        const playbackPauseButton = document.createElement("div");
+        playbackPauseButton.id = "sliderPauseButton"
+
+        const playbackPauseButtonText = document.createElement("span");
+        playbackPauseButtonText.textContent = "❚❚ Pause Animation";
+        playbackPauseButton.appendChild(playbackPauseButtonText)
 
 
         playbackField.appendChild(playbackSliderTitle)
         playbackField.appendChild(playbackSliderButton)
+        playbackField.appendChild(playbackPauseButton)
         sliderContainer.appendChild(playbackField)
     }
 

@@ -609,9 +609,13 @@ export function handleAddDiagramClick(assetSources, comparisonFuelFilter, region
     )
 }
 
-export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
+export function handlePlayBackClick(element,filter, setFilter, mapRef){
     if(element.classList.contains("runningPlayBack")) return;
     element.classList.add("runningPlayBack")
+
+    // Dynamic playtime based on the number of years within filter bounds, original time was 20 seconds, divide by the 130 year span to get time per data point.
+    const nYears = (filter[0].length == 2)? (filter[0][1] - filter[0][0]) : (filter[0] - filter[1][0]);
+    const playTime =Math.floor((20000/130)*(nYears))
 
     // Sliders that can interrupt the playback.
     const sliderContainer = element.parentElement.parentElement
@@ -620,7 +624,16 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
         sliderContainer.querySelector(".sliderThumbRight"),
         sliderContainer.querySelector(".sliderRange"),
     ]
-    
+    const pauseButton = sliderContainer.querySelector("#sliderPauseButton")
+
+    // Show the pause button while the animation is running.
+    if (pauseButton) {
+        pauseButton.style.display = "flex"
+        gsap.fromTo(pauseButton, 
+            { width: 0 }, 
+            { width: "auto", duration: 0.10 }
+        );
+    }
     
     let mapVisibility
     if(mapRef?.getLayer("powerplants-layer").visibility == "visible" ||
@@ -646,7 +659,7 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
     const originalWidth = element.getBoundingClientRect().width
 
     // Shrink to the width of the "Playing..." label
-    text.textContent = "Playing..."
+    text.textContent = "▶ Playing..."
     const newWidth = element.getBoundingClientRect().width
 
     gsap.fromTo(element, 
@@ -654,8 +667,8 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
         { width: newWidth, duration: 0.10 }
     );
 
-    // Animate the year filter from the currently selected year to the latest
-    // bound year, stepping one year at a time over the playback duration.
+    // Animate the year filter over the playback duration, stepping one year at
+    // a time between the relevant lower/upper range values.
     const bounds = filter.length === 2 ? filter[1] : null
 
     // Set visibility for a set of layer ids
@@ -682,6 +695,18 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
         sliders.forEach(slider => {
             if(slider) slider.removeEventListener("pointerdown", finishPlayBack)
         })
+        if(pauseButton){
+            pauseButton.children[0].style.display = "none"
+            gsap.fromTo(pauseButton,
+                { width: "auto" },
+                { width: 0, duration: 0.10, onComplete: () =>{
+                    pauseButton.removeEventListener("click", finishPlayBack)
+                    pauseButton.style.display = "none"
+                    pauseButton.children[0].style.display = "block"
+                    gsap.set(pauseButton, { clearProps: "width" })
+                }}
+            );
+        }
 
         if(filter[0].length == 2 && !mapVisibility){
             setVisibility(["fuelType-border", "fuelType-fill"], "visible")
@@ -692,24 +717,37 @@ export function handlePlayBackClick(element,filter, setFilter,playTime, mapRef){
             { width: newWidth },
             { width: originalWidth, duration: 0.10, onComplete: () =>{
                 element.classList.remove("runningPlayBack")
-                text.textContent = "Animated historical playback"
+                text.textContent = "▶ Animated historical playback"
                 gsap.set(element, { clearProps: "width" })
             }}
         );
     }
 
-    // Stop the playback if the user starts dragging one of the sliders.
+    // Stop the playback if the user starts dragging one of the sliders or
+    // presses the pause button.
     sliders.forEach(slider => {
         if(slider) slider.addEventListener("pointerdown", finishPlayBack)
     })
+    if(pauseButton) pauseButton.addEventListener("click", finishPlayBack)
 
+    console.log(filter)
     if (bounds && bounds[1] > bounds[0]) {
         const [minYear, maxYear] = bounds
-        const startYear = filter[0][0] ?? minYear
-        const totalSteps = maxYear - startYear
+        let startYear, endYear
+        if(filter[0].length == 2){
+            // Dual-thumb slider: play between the user's chosen range.
+            startYear = filter[0][0] ?? minYear
+            endYear = filter[0][1] ?? maxYear
+        }else{
+            // Single-thumb slider: play from the earliest bound up to the
+            // selected value.
+            startYear = minYear
+            endYear = filter[0] ?? maxYear
+        }
+        const totalSteps = endYear - startYear
         const stepDuration = totalSteps > 0 ? playTime / totalSteps : 0
 
-        // Start at the selected year, then increment the max value each step
+        // Start at the lower year, then increment the max value each step
         if(filter[0].length == 2){
             if(!mapVisibility){
                 setVisibility(["fuelType-border", "fuelType-fill"], "none")
