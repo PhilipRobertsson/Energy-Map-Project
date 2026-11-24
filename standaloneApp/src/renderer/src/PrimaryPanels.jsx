@@ -115,6 +115,8 @@ function PrimaryPanels() {
     const fuelFilterRef = useRef([]);
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
+    const yearFilterRef = useRef([]);
+    const shareYearFilterRef = useRef([]);
 
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -127,11 +129,13 @@ function PrimaryPanels() {
         fuelFilterRef.current = fuelFilter
         compRegionFilterRef.current = comparisonRegionFilter
         compFuelFilterRef.current = comparisonFuelFilter
+        yearFilterRef.current = yearFilter
+        shareYearFilterRef.current = shareYearFilter
         regionalDataRef.current = regionalData
         yearsRef.current = { reported: reportedYears, estimated: estimatedYears }
         shareYearsRef.current = shareYears
         continentalDataRef.current = continentalData
-    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears, continentalData]);
+    }, [regionFilter, fuelFilter, regionalData, comparisonRegionFilter, comparisonFuelFilter, reportedYears, estimatedYears, shareYears, continentalData, yearFilter, shareYearFilter]);
 
     // Clear the fuel type country selection whenever the region filter changes
     useEffect(() => {
@@ -363,7 +367,7 @@ function PrimaryPanels() {
         const mapToggleButtonContainer = document.createElement("div");
         mapToggleButtonContainer.id = "mapToggleContainer"
 
-        // Find the currently selected map mode, defaulting to "Primary Fuel Types".
+        // Find the currently selected map mode, defaulting to "Power Plants".
         // The toggle buttons live in the independent map mode container (not the
         // filter panel), so look them up there.
         const currentSelection = mapModeContainer.current?.querySelector(".selectedMapMode");
@@ -1021,8 +1025,6 @@ function PrimaryPanels() {
                 const entry = linePlotEntries[i+1] // +1 to skip the select all entry
                 if (entry) {
                     entry.style.opacity = fuel.show ? "1" : "0.3";
-                    const checkMark = entry.querySelector(".fuelFilterCheckMark")
-                    if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
 
                     const regionFuel = allRegionFuels.find(rf => rf.fuel === fuel.fuel)
                     const capacityValue = regionFuel ? regionFuel.sum_capacity_mw : fuel.sum_capacity_mw
@@ -1055,8 +1057,6 @@ function PrimaryPanels() {
                 const entry = comparisonEntries[i+1] // +1 to skip the select all entry
                 if (entry) {
                     entry.style.opacity = fuel.show ? "1" : "0.3";
-                    const checkMark = entry.querySelector(".fuelFilterCheckMark")
-                    if (checkMark) checkMark.style.opacity = fuel.show ? "1" : "0";
                 }
             })
         }
@@ -1321,8 +1321,8 @@ function PrimaryPanels() {
             // Add playback eventlisteners
             const playBackParents = pages.querySelectorAll("#sliderPlaybackField")
 
-            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilter, setYearFilter, 20000, mapRef.current);
-            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilter, setShareYearFilter, 20000, null);
+            playBackParents[0].onclick = () => handlePlayBackClick(playBackParents[0].children[1], yearFilterRef.current, setYearFilter, mapRef.current);
+            playBackParents[1].onclick = () => handlePlayBackClick(playBackParents[1].children[1], shareYearFilterRef.current, setShareYearFilter, null);
 
             // Add eventlisteners to rollups
             const sidePanelRegionFilter = pages.querySelector("#linePlotRegionFilter").children[0]
@@ -2036,12 +2036,20 @@ function getSliders(filter, regionalData, onChange){
         playbackSliderButton.id = "sliderPlaybackButton"
 
         const playbackSliderButtonText = document.createElement("span");
-        playbackSliderButtonText.textContent = "Animated historical playback";
+        playbackSliderButtonText.textContent = "▶ Animated historical playback";
         playbackSliderButton.appendChild(playbackSliderButtonText)
+
+        const playbackPauseButton = document.createElement("div");
+        playbackPauseButton.id = "sliderPauseButton"
+
+        const playbackPauseButtonText = document.createElement("span");
+        playbackPauseButtonText.textContent = "❚❚ Pause Animation";
+        playbackPauseButton.appendChild(playbackPauseButtonText)
 
 
         playbackField.appendChild(playbackSliderTitle)
         playbackField.appendChild(playbackSliderButton)
+        playbackField.appendChild(playbackPauseButton)
         sliderContainer.appendChild(playbackField)
     }
 

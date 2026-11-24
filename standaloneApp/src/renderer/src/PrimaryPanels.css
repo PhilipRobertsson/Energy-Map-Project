@@ -411,6 +411,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
+    transition-property: opacity;
+    transition-duration: 0.15s;
 }
 
 .fuelFilterLegendColour{
@@ -429,22 +432,6 @@
     margin-right: 0.32dvw;
 }
 
-.fuelFilterCheckBox{
-    border: 0.25vmin solid #004B70;
-    border-radius: 0.2vmin;
-    height: 1.5vmin;
-    width: 1.5vmin;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.fuelFilterCheckMark{
-    width: 1.2dvh;
-    height: 1.2dvh;
-    margin-left: unset;
-}
-
 #fuelFilterSelectAllName, #compFuelFilterSelectAllName{
     font-weight: 400;
     margin-right: 0.32dvw;
@@ -458,7 +445,6 @@
     width: 1.5vmin;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 #fuelFilterSelectAllCheck, #compFuelFilterSelectAllCheck{
@@ -952,6 +938,20 @@
     font-weight: 700;
     font-style: normal;
     box-sizing: border-box;
+    white-space: nowrap;
+}
+
+#sliderPauseButton{
+    display: none;
+    border: 0.1vmin solid #AAD3DE;
+    border-radius: 2vmin;
+    padding: 0.4dvh 1.1dvh;
+    font-size: 1.2vmin;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    box-sizing: border-box;
+    white-space: nowrap;
 }
 
 .sliderTitle{

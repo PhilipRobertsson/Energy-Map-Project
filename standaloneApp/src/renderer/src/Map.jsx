@@ -603,7 +603,7 @@ function Map({ children }) {
           // dock them in the top-left corner, stacking each subsequent pop-up
           // slightly towards the centre of the screen.
           if(mode === "fuelType" || mode === "usage"){
-              disconnectPopUp(popup.getElement(), map, openPopups.length)
+              disconnectPopUp(popup.getElement(), map, (openPopups.length*10))
           }
         }else if(!isOpen){
           const alertEl = document.getElementById("popUpAlert");
