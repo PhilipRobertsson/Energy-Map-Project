@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { gsap } from "gsap";
 
 import { createPopUpBarChart, createPopUpUsagePlot,
-              getLatestDataArray,makePopUpMovable, toggleSelectionDropDown } from "./popUpUtilites.js";
+              getLatestDataArray,makePopUpMovable, disconnectPopUp, toggleSelectionDropDown } from "./popUpUtilites.js";
 import { getMapMode } from "./mapMode.js";
 
 import './Map.css'
@@ -598,6 +598,13 @@ function Map({ children }) {
 
           // Make pop up movable
           makePopUpMovable(popup.getElement(), map)
+
+          // Immediately detach fuel type and usage pop-ups from the map and
+          // dock them in the top-left corner, stacking each subsequent pop-up
+          // slightly towards the centre of the screen.
+          if(mode === "fuelType" || mode === "usage"){
+              disconnectPopUp(popup.getElement(), map, (openPopups.length*10))
+          }
         }else if(!isOpen){
           const alertEl = document.getElementById("popUpAlert");
           alertEl.classList.remove("animate");

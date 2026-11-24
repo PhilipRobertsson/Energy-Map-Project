@@ -311,6 +311,41 @@ export function createPopUpUsagePlot(parent, country, regionalData, shareYears, 
 // Observers that keep moved pop-ups disconnected from MapLibre
 const moveObservers = new globalThis.Map()
 
+// Immediately disconnect a pop-up from MapLibre and dock it in the top-left
+// corner of the viewport, offset towards the centre for each already-open
+// pop-up. Mirrors the detachment performed by the drag interaction.
+export function disconnectPopUp(popUpE, map, offset){
+    // Hide the tip since the pop-up is no longer anchored to the map
+    const popUpTip = popUpE.children[0]
+    if (popUpTip) popUpTip.style.display = "none";
+
+    // Detach from the map so it stops snapping back to its anchor
+    if (map && map.getContainer().parentElement) {
+        map.getContainer().parentElement.insertBefore(popUpE, map.nextSibling)
+    }
+
+    // Position directly in the viewport, with a 1vmin margin from the sides
+    // and an additional offset towards the centre for each open pop-up
+    popUpE.style.position = "fixed"
+    popUpE.style.left = `calc(1vmin + ${offset}vmin)`
+    popUpE.style.top = `calc(1vmin + ${offset}vmin)`
+    popUpE.style.transform = "none"
+    popUpE.style.marginLeft = "0"
+    popUpE.style.marginTop = "0"
+
+    // Observe and neutralize MapLibre's transform updates,
+    // regardless of listener registration order
+    if(!moveObservers.has(popUpE)){
+      const observer = new MutationObserver(()=>{
+        if(popUpE.style.transform && popUpE.style.transform !== "none"){
+          popUpE.style.transform = "none"
+        }
+      })
+      observer.observe(popUpE, {attributes: true, attributeFilter: ['style']})
+      moveObservers.set(popUpE, observer)
+    }
+}
+
 export function makePopUpMovable(popUpE, map){
     const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX
     const getClientY = (e) => e.touches ? e.touches[0].clientY : e.clientY
