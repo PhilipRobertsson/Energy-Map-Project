@@ -231,6 +231,7 @@ export function handleNavigationClick(id, icon, setPage, allPages){
 export function handleSidePanelToggle(panelContainer, panelOpenRef){
     const sidePanel = panelContainer.current
     const toggleButton = document.querySelector("#sidePanelToggleContainer")
+    const mapModeContainer = document.querySelector("#mapModeContainer")
     if (!sidePanel) return;
 
     if (panelOpenRef.current) {
@@ -244,6 +245,8 @@ export function handleSidePanelToggle(panelContainer, panelOpenRef){
                 })
         }})
         gsap.fromTo(toggleButton, {right:"28dvw"}, {right:"0dvw", duration: 0.15, ease: "power2.out"})
+        // Slide the map mode container to the centre of the screen
+        gsap.to(mapModeContainer, {left: "50%", xPercent: -50, duration: 0.15, ease: "power2.out"})
     } else {
         gsap.fromTo(sidePanel,
             {rotateY:90},
@@ -259,6 +262,8 @@ export function handleSidePanelToggle(panelContainer, panelOpenRef){
                 }
             })
         gsap.fromTo(toggleButton, {right:"0dvw"}, {right:"28dvw", duration: 0.15, ease: "power2.in"})
+        // Slide the map mode container back to its default position
+        gsap.to(mapModeContainer, {left: "25%", xPercent: 0, duration: 0.15, ease: "power2.in"})
     }
 }
 
@@ -397,7 +402,20 @@ export function handleContinentClick(element, regionalData, continent,continentD
     }
 }
 
-export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSelection){
+export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSelection, sidePanelContainer, sidePanelOpenRef){
+    const selectedMode = element.querySelector("span").textContent
+
+    // Reveal/dock the side panel to match the selected mode. This runs before
+    // the identical-click guard so re-clicking the current mode still toggles
+    // the panel ("Primary Fuel Types" hides it, the others show it).
+    if(sidePanelContainer && sidePanelOpenRef){
+        if(selectedMode === "Primary Fuel Types"){
+            if(sidePanelOpenRef.current) handleSidePanelToggle(sidePanelContainer, sidePanelOpenRef)
+        }else if(!sidePanelOpenRef.current){
+            handleSidePanelToggle(sidePanelContainer, sidePanelOpenRef)
+        }
+    }
+
     // Get previous selection, return if identical click
     const prev = document.querySelector(".selectedMapMode")
     if(element == prev) return;
@@ -419,7 +437,6 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
     const currentMap = mapRef.current
 
     const prevMode = prev.querySelector("span").textContent
-    const selectedMode = element.querySelector("span").textContent
 
     // Get different containers in the fuel filter
     const fuelFilterContents = document.querySelectorAll(".fuelFilterContent")
@@ -434,11 +451,10 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
     const altDiagramBody = document.querySelector("#altLinePlotBody")
     const compaAltDiagramBody = document.querySelector("#compAltLinePlotBody")
 
-    const shownRegions = regionFilter.filter(r=>r.show)
-
     // Hide previous mode's layers
     switch(prevMode){
         case "Power Plants":
+        case "Primary Fuel Types":
             fuelFilterContents[0].classList.toggle("hide")
             filterContainers[0].classList.toggle("hide")
             filterContainers[2].classList.toggle("hide")
@@ -476,7 +492,8 @@ export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSele
     // Show selected mode's layers
     switch(selectedMode){
         case "Power Plants":
-            if(shownRegions.length > 2){
+        case "Primary Fuel Types":
+            if(selectedMode == "Primary Fuel Types"){
                 applyTypeSelection()
                 fadeToMapMode(currentMap, "fuelType")
             }else{

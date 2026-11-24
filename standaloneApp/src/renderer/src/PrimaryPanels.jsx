@@ -14,7 +14,6 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
 import { registerInteraction, endSession } from './usageStatistics.js'
 import { startScreenSaver, stopScreenSaver } from './screenSaver.js';
 import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable, toggleSelectionDropDown} from './popUpUtilites.js'
-import { fadeToMapMode } from './mapMode.js'
 
 import './PrimaryPanels.css'
 
@@ -74,7 +73,7 @@ const fetchJSON = ["fuelCatagories", "regionalInformation", "regionalFilter", "i
 const statesToSet = ["FuelFilter", "RegionalData", "RegionFilter", "PageContent", "ContinentalData"]
 
 function PrimaryPanels() {
-    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters, resetFuelTypeCountries } = useContext(MapContext);
+    const { mapRef, powerPlants, boundaryData, barChartFilter, setBarChartFilter, popupCount, timeRef, resetTimer, reportedYears, estimatedYears,shareYears, mapReady, clearFuelTypeSelection, applyFuelTypeSelection, setBaseFilters } = useContext(MapContext);
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
     const mapModeContainer = useRef(null)
@@ -106,7 +105,7 @@ function PrimaryPanels() {
     // General references
     const prevPageRef = useRef(null);
     const regionalDataRef = useRef([]);
-    const sidePanelOpenRef = useRef(true);
+    const sidePanelOpenRef = useRef(false);
     const yearsRef = useRef({ reported: { first: 0, last: 0 }, estimated: { first: 0, last: 0 } });
     const shareYearsRef = useRef({first: 0, last: 0}); // similar to yearsRef
     const continentalDataRef = useRef([]); // continent-level usage data
@@ -116,10 +115,6 @@ function PrimaryPanels() {
     const fuelFilterRef = useRef([]);
     const compRegionFilterRef = useRef([]);
     const compFuelFilterRef = useRef([]);
-
-    // Tracks whether the "zoom out -> power plants" switch has already fired,
-    // so it only happens once below the zoom threshold.
-    const zoomSwitchDoneRef = useRef(false);
 
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -182,6 +177,21 @@ function PrimaryPanels() {
         sidePanelContainer.current = document.createElement("div");
     }, []);
 
+    // Start with the side panel closed, matching the default "Primary Fuel
+    // Types" map mode. The closed state is applied directly (no animation).
+    useEffect(() => {
+        const sidePanel = sidePanelContainer.current;
+        if(!sidePanel) return;
+
+        gsap.set(sidePanel, { rotateY: 90, transformOrigin: "right 50%" });
+
+        const toggleButton = document.querySelector("#sidePanelToggleContainer");
+        if(toggleButton) gsap.set(toggleButton, { right: "0dvw" });
+
+        const mapModeEl = mapModeContainer.current;
+        if(mapModeEl) gsap.set(mapModeEl, { left: "50%", xPercent: -50 });
+    }, []);
+
     // Check if anything updates, resets timer
     useEffect(() =>{
         resetTimer()
@@ -195,26 +205,6 @@ function PrimaryPanels() {
         const onInput = () => {
             registerInteraction();
             stopScreenSaver();
-
-            // Only relevant in the "Power Plants" map mode.
-            const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Power Plants")
-            if(!powerPlantsButton?.classList.contains("selectedMapMode")) return
-
-            const map = mapRef.current
-            if(!map) return
-            const zoom = map.getZoom()
-
-            if(!zoomSwitchDoneRef.current && zoom > 4){
-                // Zoomed far out: fade out the fuel type map and fade in the power plants.
-                zoomSwitchDoneRef.current = true;
-                resetFuelTypeCountries();
-                fadeToMapMode(map, "powerplants");
-            }else if(zoomSwitchDoneRef.current && zoom <= 4){
-                // Zoomed back in: fade out the power plants and fade in the fuel type map.
-                zoomSwitchDoneRef.current = false;
-                fadeToMapMode(map, "fuelType");
-            }
         };
         window.addEventListener("pointerdown", onInput);
         window.addEventListener("keydown", onInput);
@@ -233,6 +223,29 @@ function PrimaryPanels() {
         if(mapReady && mapRef?.current){
             startScreenSaver(mapRef.current, 1, 50)
         }
+    }, [mapReady])
+
+    // In "Primary Fuel Types" mode, zooming in past the threshold switches to
+    // "Power Plants" (same as clicking its toggle button). This is one-way: it
+    // does not switch back when zooming out again.
+    useEffect(() =>{
+        const map = mapRef.current;
+        if(!map) return;
+
+        const onZoom = () => {
+            const primaryFuelButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Primary Fuel Types")
+            if(!primaryFuelButton?.classList.contains("selectedMapMode")) return
+
+            if(map.getZoom() > 4){
+                const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                    .find(button => button.querySelector("span")?.textContent === "Power Plants")
+                if(powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
+            }
+        };
+
+        map.on("zoom", onZoom);
+        return () => map.off("zoom", onZoom);
     }, [mapReady])
 
     // Check the timer, if it reaches zero, reset everything
@@ -262,7 +275,7 @@ function PrimaryPanels() {
             // Reset the map mode to "Power Plants" (sets the selected class / colours and map layers)
             const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
                 .find(button => button.querySelector("span")?.textContent === "Power Plants")
-            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
+            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
 
             handleNavigationClick(0, document.getElementById("navigationID0"), setSidePanelPage, allPages)
         }
@@ -350,13 +363,13 @@ function PrimaryPanels() {
         const mapToggleButtonContainer = document.createElement("div");
         mapToggleButtonContainer.id = "mapToggleContainer"
 
-        // Find the currently selected map mode, defaulting to "Power Plants".
+        // Find the currently selected map mode, defaulting to "Primary Fuel Types".
         // The toggle buttons live in the independent map mode container (not the
         // filter panel), so look them up there.
         const currentSelection = mapModeContainer.current?.querySelector(".selectedMapMode");
-        const selectedModeName = currentSelection ? currentSelection.querySelector("span").textContent : "Power Plants";
+        const selectedModeName = currentSelection ? currentSelection.querySelector("span").textContent : "Primary Fuel Types";
 
-        for(let i = 0; i<2;i++){
+        for(let i = 0; i<3;i++){
             let toggleButton = document.createElement("div");
             toggleButton.classList.add("mapToggleButton");
 
@@ -366,11 +379,14 @@ function PrimaryPanels() {
                     toggleText.textContent = "Power Plants"
                     break;
                 case 1:
+                    toggleText.textContent = "Primary Fuel Types"
+                    break;
+                case 2:
                     toggleText.textContent = "Sustainability"
                     break;
             }
             toggleButton.appendChild(toggleText);
-            toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef, regionFilter, applyFuelTypeSelection)
+            toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
 
             if(toggleText.textContent === selectedModeName){
                 toggleButton.classList.add("selectedMapMode");
@@ -664,10 +680,6 @@ function PrimaryPanels() {
     useEffect(()=>{
         if(!regionFilter) return;
 
-        const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Power Plants")
-        const powerPlantsSelected = powerPlantsButton?.classList.contains("selectedMapMode")
-
         const mainDiagram = document.getElementById("sidePanelLinePlot")
 
         // Check settings of the main diagram and update texts
@@ -690,10 +702,6 @@ function PrimaryPanels() {
                     gsap.to(popup.children[1], { height: 0, width: 0, opacity: 0, duration: 0.3, ease: "power2.in", transformOrigin: "bottom center", onComplete: () => popup.remove() })
             })
 
-            if(powerPlantsSelected){
-                fadeToMapMode(mapRef.current, "fuelType")
-            }
-
             if(shownRegions.length == regionFilter.length){ // Global option selected
                 mainTitle.textContent = "Global Electricity Source Trends"
                 altMainTitle.textContent = "Global Sustainable and Fossil Fuel Usage Shares"
@@ -707,10 +715,6 @@ function PrimaryPanels() {
                 else{boldText.textContent = continent + "'s Power Plant Capacity by Source "}
             }
         }else{ // User has selected a country or used the storymode
-
-            if(powerPlantsSelected){
-                fadeToMapMode(mapRef.current, "powerplants")
-            }
 
             if(shownRegions <= 0) return; // Just to be sure undefined objects aren't checked
             let titleToShow = ""
@@ -1273,31 +1277,31 @@ function PrimaryPanels() {
                         setRegionFilterTo(["SWE", "NOR"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
                         break;
                     case 3: // Second instructions page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
                         break;
                     case 4: // Third instruction page
                         setRegionFilterTo(["SWE"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
                         break;
                     case 5: // Fourth instructions page
                         setRegionFilterTo(["SWE", "DNK"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection)
+                        if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
                         break;
                     case 6: // Fifth instructions page
                         setRegionFilterTo(["SWE", "FIN"])
                         setFuelFilterTo(fuelFilterRef.current.map(f => f.fuel))
                         setGenerationFilterTo(0, 38000)
-                        if(usageButton) handleMapModeToggle(usageButton, mapRef, regionFilter, applyFuelTypeSelection)
+                        if(usageButton) handleMapModeToggle(usageButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
                         break;
                     default:
                         if(sidePanel.children.length){ // Is needed to ensure the select all options exists
@@ -1309,7 +1313,7 @@ function PrimaryPanels() {
                                 curve: 1.4
                             });
                             // Keep user selection for switch to home and info pages
-                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef, regionFilter, applyFuelTypeSelection)
+                            if (currentSelectionButton[0]) handleMapModeToggle(currentSelectionButton[0], mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
                         }
                 }
             }

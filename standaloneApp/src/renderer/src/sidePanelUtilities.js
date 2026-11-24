@@ -557,6 +557,10 @@ export function createDiagram({
     // Used to display the correct elements upon creation, if mapMode == undefined, power plants is assumed
     const mapMode = document.getElementById("mapToggleContainer")?.querySelector(".selectedMapMode").querySelector("span").textContent
 
+    // "Power Plants" and "Primary Fuel Types" share the same line plot diagram,
+    // while "Sustainability" (usage) shows the alternative usage diagram.
+    const isLinePlotMode = !mapMode || mapMode == "Power Plants" || mapMode == "Primary Fuel Types"
+
     // Region filter
     const regionFilterEl = document.createElement("div");
     regionFilterEl.id = ids.regionFilter
@@ -591,7 +595,7 @@ export function createDiagram({
 
     const titleAndDataWrapper = document.createElement("div");
     titleAndDataWrapper.id = ids.titleWrapper
-    if(mapMode && mapMode!="Power Plants"){
+    if(!isLinePlotMode){
         titleAndDataWrapper.classList.toggle("hide")
     }
 
@@ -641,7 +645,7 @@ export function createDiagram({
     // Explanation text
     const linePlotTextCollector = document.createElement("div");
     linePlotTextCollector.id = ids.textCollector
-    if(mapMode && mapMode!="Power Plants"){
+    if(!isLinePlotMode){
         linePlotTextCollector.classList.toggle("hide")
     }
 
@@ -660,7 +664,7 @@ export function createDiagram({
     // Alternative linePlot header (for the alternative map modes)
     const linePlotAlternativeHeader = document.createElement("div");
     linePlotAlternativeHeader.id = ids.altHeader;
-    if(!mapMode || mapMode=="Power Plants"){
+    if(isLinePlotMode){
         linePlotAlternativeHeader.style.display = "none"
     }
 
@@ -705,14 +709,14 @@ export function createDiagram({
     // Body of line plot (the graph and filter buttons)
     const linePlotBody = document.createElement("div");
     linePlotBody.id = ids.body;
-    if(mapMode && mapMode!="Power Plants"){
+    if(!isLinePlotMode){
         linePlotBody.style.display = "none"
     }
 
     // Alternative line plot body
     const altLinePlotBody = document.createElement("div");
     altLinePlotBody.id = ids.altBody;
-    if(!mapMode || mapMode=="Power Plants"){
+    if(isLinePlotMode){
         altLinePlotBody.style.display = "none"
     }
 
