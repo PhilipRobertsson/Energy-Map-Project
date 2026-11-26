@@ -388,8 +388,6 @@ function Map({ children }) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
-        console.log(coordinates)
-
         // Check if the clicked power plant has been opened already
         var isOpen = false
         const openPopups = document.querySelectorAll(".maplibregl-popup")

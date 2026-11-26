@@ -234,29 +234,6 @@ function PrimaryPanels() {
         }
     }, [mapReady])
 
-    // In "Primary Fuel Types" mode, zooming in past the threshold switches to
-    // "Power Plants" (same as clicking its toggle button). This is one-way: it
-    // does not switch back when zooming out again.
-    useEffect(() =>{
-        const map = mapRef.current;
-        if(!map) return;
-
-        const onZoom = () => {
-            const primaryFuelButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Primary Fuel Types")
-            if(!primaryFuelButton?.classList.contains("selectedMapMode")) return
-
-            if(map.getZoom() > 4){
-                const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                    .find(button => button.querySelector("span")?.textContent === "Power Plants")
-                if(powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
-            }
-        };
-
-        map.on("zoom", onZoom);
-        return () => map.off("zoom", onZoom);
-    }, [mapReady])
-
     // Check the timer, if it reaches zero, reset everything
     useEffect(() =>{
         if(timeRef !== null && timeRef <= 0){
