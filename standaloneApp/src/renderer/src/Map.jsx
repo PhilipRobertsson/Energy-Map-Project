@@ -764,7 +764,7 @@ function Map({ children }) {
         setTime(prevTime => Math.max(0, prevTime - interval));
     }
     const timeoutId = setTimeout(countDownUntilZero, config.intervalMs);
-    //console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
+    console.log("Time remaining: " + Math.floor(time/1000) + "s"); // To check if timing function works
     return () => clearTimeout(timeoutId);
   }, [time]);
 

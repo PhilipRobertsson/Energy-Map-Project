@@ -10,7 +10,8 @@ import { handleZoomIn, handleZoomOut, handleZoomSelection, handleResetClick,
               handleIndexClick, handleFueLegClick, handleRegLegClick, handleNavigationClick,
               handleSidePanelToggle, handleRollupClick, handleLinePlotToggle, handleContinentClick,
               handleMapModeToggle, handleAddDiagramClick, getShownPowerPlants, getBounds,
-              handlePlayBackClick } from './eventHandlers.js'
+              handlePlayBackClick, 
+              handleTitleScreenChoice} from './eventHandlers.js'
 import { registerInteraction, endSession } from './usageStatistics.js'
 import { startScreenSaver, stopScreenSaver } from './screenSaver.js';
 import {createPopUpBarChart, createPopUpUsagePlot, makePopUpMovable, toggleSelectionDropDown} from './popUpUtilites.js'
@@ -54,7 +55,10 @@ const assetSources ={
     infoIcon: "./popup/popupInfo.svg",
     jinyiPaperQR: "./qrCodes/jinyiPaper.png",
     energyDataQR: "./qrCodes/energyData.png",
-    closeIcon: "./popup/popupClose.svg"
+    closeIcon: "./popup/popupClose.svg",
+    titleImagePowerPlants: "./sidePanel/titlePowerPlants.svg",
+    titleImageFuelTypes: "./sidePanel/titleFuelTypes.svg",
+    titleImageUsage: "./sidePanel/titleUsage.svg",
 };
 
 // The different pages on the instruction page
@@ -77,6 +81,7 @@ function PrimaryPanels() {
     const filterContainer = useRef(null);
     const sidePanelContainer = useRef(null)
     const mapModeContainer = useRef(null)
+    const titleScreenContainer = useRef(null)
 
     // Filter states
     const [fuelFilter, setFuelFilter] = useState([]);
@@ -277,11 +282,19 @@ function PrimaryPanels() {
             if (promptIcon) promptIcon.src = assetSources.sidePanelRollupOpen
 
             // Reset the map mode to "Power Plants" (sets the selected class / colours and map layers)
-            const powerPlantsButton = Array.from(document.querySelectorAll(".mapToggleButton"))
-                .find(button => button.querySelector("span")?.textContent === "Power Plants")
-            if (powerPlantsButton) handleMapModeToggle(powerPlantsButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
+            const fuelTypesButton = Array.from(document.querySelectorAll(".mapToggleButton"))
+                .find(button => button.querySelector("span")?.textContent === "Primary Fuel Types")
+            if (fuelTypesButton) handleMapModeToggle(fuelTypesButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
 
             handleNavigationClick(0, document.getElementById("navigationID0"), setSidePanelPage, allPages)
+
+            // Show title screen
+             const titleScreen = document.querySelector("#titleScreenContainer");
+            if(titleScreen){titleScreen.style.display = "flex"}
+
+            // Hide the map mode container
+            const mapMode = document.querySelector("#mapModeContainer")
+            if(mapMode){mapMode.style.display = "none"}
         }
     }, [timeRef])
 
@@ -367,6 +380,10 @@ function PrimaryPanels() {
         const mapToggleButtonContainer = document.createElement("div");
         mapToggleButtonContainer.id = "mapToggleContainer"
 
+        // Title screen with similar buttons
+        const titleScreenContent = document.createElement("div");
+        titleScreenContent.id = "titleScreenContent"
+
         // Find the currently selected map mode, defaulting to "Power Plants".
         // The toggle buttons live in the independent map mode container (not the
         // filter panel), so look them up there.
@@ -375,28 +392,54 @@ function PrimaryPanels() {
 
         for(let i = 0; i<3;i++){
             let toggleButton = document.createElement("div");
+            let titleButton = document.createElement("div");
+            let titleImage = document.createElement("img");
+
             toggleButton.classList.add("mapToggleButton");
+            titleButton.classList.add("titleToggleButton");
+            titleImage.classList.add("titleImage");
 
             let toggleText = document.createElement("span");
+            let titleToggleText = document.createElement("span");
             switch(i){
                 case 0:
                     toggleText.textContent = "Power Plants"
+                    titleToggleText.textContent = "Power Plants"
+                    titleImage.src = assetSources.titleImagePowerPlants;
                     break;
                 case 1:
                     toggleText.textContent = "Primary Fuel Types"
+                    titleToggleText.textContent = "Primary Fuel Types"
+                    titleImage.src = assetSources.titleImageFuelTypes;
                     break;
                 case 2:
                     toggleText.textContent = "Sustainability"
+                    titleToggleText.textContent ="Sustainability"
+                    titleImage.src = assetSources.titleImageUsage;
                     break;
             }
             toggleButton.appendChild(toggleText);
             toggleButton.onclick = () => handleMapModeToggle(toggleButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
+            titleButton.appendChild(titleImage)
+            titleButton.appendChild(titleToggleText);
+            titleButton.onclick = () => handleTitleScreenChoice(titleButton, mapRef, regionFilter, applyFuelTypeSelection, sidePanelContainer, sidePanelOpenRef)
 
             if(toggleText.textContent === selectedModeName){
                 toggleButton.classList.add("selectedMapMode");
             }
             
             mapToggleButtonContainer.appendChild(toggleButton)
+            titleScreenContent.appendChild(titleButton)
+        }
+
+        // Create title screen
+        if(titleScreenContainer.current){
+            let titleText = document.createElement("h1");
+            titleText.id = "mainTitle";
+            titleText.textContent = "Energy Map"
+            
+            titleScreenContainer.current.replaceChildren(titleScreenContent)
+            titleScreenContainer.current.prepend(titleText)
         }
 
         // Place the map mode toggle buttons in the independent container.
@@ -1637,6 +1680,7 @@ function PrimaryPanels() {
             bottom: sidePanelDef.position[3],
             left: sidePanelDef.position[4],
         }} />
+        <div id="titleScreenContainer" ref={titleScreenContainer}></div>
         <div id="sidePanelToggleContainer" onClick={() => handleSidePanelToggle(sidePanelContainer, sidePanelOpenRef)}>
             <img src={assetSources.sidePanelInfo} id="sidePanelToggleIcon"></img>
         </div>

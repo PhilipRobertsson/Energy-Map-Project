@@ -84,7 +84,6 @@
     border-radius: 0.2dvh;
     border: 0.1vmin solid #AAD3DE;
     filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.10));
-    /*padding: 0.4dvh 0.8dvh 0.4dvh 0.8dvh;*/
 }
 
 .mapToggleButton{
@@ -797,7 +796,7 @@
 
 #mapModeContainer{
     position: absolute;
-    display: flex;
+    display: none;
     flex-direction: row;
     bottom: 0;
     left: 25%;
@@ -805,6 +804,58 @@
     padding: 1dvh 1dvw;
     border-radius: 2.5dvh 2.5dvh 0 0;
 }
+
+#titleScreenContainer{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(0, 75, 112, 0.88);
+    padding: 2dvh;
+    border-radius: 2.5dvh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#titleScreenContent{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#mainTitle{
+    display: flex;
+    align-self: center;
+    font-family: "DM Serif Display", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 5vmin;
+    margin: 0;
+    color:#DEEAED;
+}
+
+.titleToggleButton{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1dvh;
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 2vmin;
+    margin: 1dvh;
+    color: #030303;
+    cursor: pointer;
+    background: #AAD3DE;
+    border-radius: 2.5dvh;
+    filter: drop-shadow(0 0.8dvh 1dvh rgba(0, 0, 0, 0.50));
+}
+
+.titleImage{
+    width: 20vmin;
+    height: 20vmin;
+}
+
 
 #closeResetContainer{
     display: flex;

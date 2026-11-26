@@ -402,6 +402,25 @@ export function handleContinentClick(element, regionalData, continent,continentD
     }
 }
 
+export function handleTitleScreenChoice(element, mapRef, regionFilter, applyTypeSelection, sidePanelContainer, sidePanelOpenRef){
+    // Hide title screen
+    const titleScreen = document.querySelector("#titleScreenContainer");
+    if(titleScreen){titleScreen.style.display = "none"}
+
+    // Show the map mode container
+    const mapMode = document.querySelector("#mapModeContainer")
+    if(mapMode){mapMode.style.display = "flex"}
+
+    // Chosen mapmode from title screen
+    const titleScreenClickedName = element.querySelector("span").textContent;
+    const matchedMapModeButton = Array.from(mapMode.querySelectorAll('.mapToggleButton'))
+                                                            .find(el => el.querySelector("span").textContent === titleScreenClickedName);
+
+    
+     // Handle the map mode toggle call identical to if it was processed from anywhere else.
+     handleMapModeToggle(matchedMapModeButton, mapRef, regionFilter, applyTypeSelection, sidePanelContainer, sidePanelOpenRef)                                                       
+}
+
 export function handleMapModeToggle(element, mapRef, regionFilter, applyTypeSelection, sidePanelContainer, sidePanelOpenRef){
     const selectedMode = element.querySelector("span").textContent
 
